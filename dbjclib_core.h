@@ -88,7 +88,13 @@ extern "C" {
 #endif  uchar_t
 
 #ifndef size_t
+#if defined(_WIN64)
 	typedef uint_fast64_t  size_t;
+#elif defined(_WIN32)
+	typedef uint_fast32_t  size_t;
+#else
+	/* nothing */
+#endif
 #endif
 
 

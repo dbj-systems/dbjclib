@@ -3,7 +3,10 @@
 #include <string.h>
 #include <assert.h>
 
+#ifndef NDEBUG
 static unsigned dbj_string_list_max_size = 0xFFFF;
+#endif // ! NDEBUG
+
 
 static const char dbj_string_list_sentinel_char = '\033'; // ESC aka ((char)127);
 
@@ -27,7 +30,9 @@ dbj_string_list_type dbj_string_list_new()
 static dbj_string_list_type dbj_string_list_sentinel_ptr(dbj_string_list_type head_)
 {
 	dbj_string_list_type walker_ = head_;
+#ifdef _DEBUG
 	unsigned counter = 0;
+#endif
 	while (1 == 1) {
 		if (*walker_ == dbj_string_list_sentinel_) break;
 		walker_++;
