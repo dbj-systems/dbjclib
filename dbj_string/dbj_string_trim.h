@@ -1,4 +1,8 @@
-#pragma once
+#ifndef _DBJ_STRING_TRIM_INC_
+#define _DBJ_STRING_TRIM_INC_
+
+
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -88,3 +92,4 @@ extern "C" {
 } // extern "C" 
 #endif
 
+#endif // _DBJ_STRING_TRIM_INC_

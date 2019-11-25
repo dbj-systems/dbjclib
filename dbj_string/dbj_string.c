@@ -1,6 +1,7 @@
 // the actual dbj++clib low level stuff
 
-#include "dbjclib.h"
+#include "../dbjclib_core.h"
+#include "dbj_string.h"
 #include <stdarg.h>
 
 /*

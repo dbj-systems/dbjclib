@@ -1,4 +1,5 @@
-#include "../dbjclib.h"
+#include "../dbjclib_core.h"
+#include "dbj_string_trim.h"
 
 /*
 Copyright 2018 by dbj@dbj.org

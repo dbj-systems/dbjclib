@@ -14,6 +14,7 @@ limitations under the License.
 */
 
 
+#include "../dbjclib_core.h"
 #include "dbj_sll.h"
 
 #include <stdio.h>
@@ -26,10 +27,6 @@ limitations under the License.
 #ifdef _MSC_VER
 #pragma warning( push )
 #pragma warning( disable : 4505 )
-#endif
-
-#ifndef DBJ_UNUSED
-#define DBJ_UNUSED(x) (void) sizeof((x))
 #endif
 
 /* apparently only *static extern* variables can use thread local storage */
@@ -289,40 +286,6 @@ dbj_sll_node * dbj_sll_remove_tail(dbj_sll_node * head_)
 }
 
 /********************************************************/
-
-#ifdef DBJ_SLL_TESTING
-void test_dbj_sll(const char * what_to_append, size_t how_many_times, bool verbose)
-{
-	dbj_sll_node * head_ = dbj_sll_make_head();
-
-	while (1 < how_many_times--) dbj_sll_append(head_, what_to_append);
-
-	if (verbose) {
-		printf("\nDBJ SLL dump");
-		dbj_sll_foreach(head_, dbj_sll_node_dump_visitor);
-		printf("\n");
-	}
-
-	assert(0 == strcmp(dbj_sll_remove_tail(head_)->data, what_to_append));
-	dbj_sll_erase(head_);
-	if (verbose) {
-		printf("\nHead after SLL erasure");
-		dbj_sll_node_dump_visitor(head_);
-	}
-	assert(true == is_dbj_sll_empty(head_));
-
-	DBJ_UNUSED unsigned long k1 = dbj_sll_append(head_, "Abra")->key;
-	DBJ_UNUSED unsigned long k2 = dbj_sll_append(head_, "Ka")->key;
-	DBJ_UNUSED unsigned long k3 = dbj_sll_append(head_, "Dabra")->key;
-
-	(void)(sizeof(k1)); (void)(sizeof(k3)); // combat no warning hassle
-
-	dbj_sll_node * node_ = dbj_sll_find(head_, k2);
-	assert(0 == strcmp(node_->data, "Ka"));
-	assert(false == is_dbj_sll_empty(head_));
-	dbj_sll_erase_with_head(head_);
-}
-#endif /*DBJ_SLL_TESTING */
 
 #ifdef _MSC_VER
 #pragma warning( pop )

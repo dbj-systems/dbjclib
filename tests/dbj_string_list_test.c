@@ -17,7 +17,7 @@ static void worker(TEST_DBJ_DYNAMIC_METADATA * test_descriptor)
 	dbj_string_list_free(head_);
 }
 
-void dbj_string_list_test( char (*output)[BUFSIZ] )
+static void dbj_string_list_test( char output [BUFSIZ] )
 {
 	TEST_DBJ_DYNAMIC_METADATA test_descriptor =
 	{ .number_of_iterations = BUFSIZ * 10
@@ -41,5 +41,14 @@ void dbj_string_list_test( char (*output)[BUFSIZ] )
 		"\nEach itrtation added the word '%s', %d times, and then destroyed the list\n\n",
 		BUFSIZ, elapsed_time_sec,
 		test_descriptor.word, test_descriptor.words_to_append);
+}
+
+int dbj_string_list_test(FILE* fp_)
+{
+	char output[BUFSIZ] = {0};
+
+	dbj_string_list_test( output );
+
+	fprintf(fp_, "%s", output);
 }
 

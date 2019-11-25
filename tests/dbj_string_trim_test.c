@@ -23,7 +23,7 @@
 	// return the result in a char array given
 	// caller is responsible to free()
 	static char * trimmer(
-		const char * text,
+		const char text[0xFF],
 		// if false send the whole buffer
 		bool zero_limited_string 
 	)
@@ -71,7 +71,8 @@
 
 	// extern "C" void dbj_string_trim_test();
 
-	extern void dbj_string_trim_test() {
+	int dbj_string_trim_test( FILE * fp_ ) 
+	{
 
 		// the classic use case is trimming spaces
 		// from zero delimited string literals

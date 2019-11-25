@@ -51,10 +51,6 @@ extern "C" {
 	*/
 	void dbj_string_list_free(dbj_string_list_type);
 
-// #define TEST_DBJ_DYNAMIC
-#ifdef TEST_DBJ_DYNAMIC
-	void dbj_string_list_test(char(*)[BUFSIZ]);
-#endif
 
 #ifdef __cplucplus
 }
