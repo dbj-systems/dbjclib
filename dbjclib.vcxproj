@@ -114,6 +114,10 @@
     <ClInclude Include="dbj_string_list\dbj_string_list.h" />
     <ClInclude Include="tests\tests.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Library Include="x64\Debug\dbjclib.lib" />
+    <Library Include="x64\Release\dbjclib.lib" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>

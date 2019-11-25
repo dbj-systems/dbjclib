@@ -49,7 +49,7 @@ char * dbj_strdup(const char *source_)
 	}  
 
 	destination_[destination_size] = '\0';
-	return (uchar_t *)memcpy(destination_, source_, destination_size);
+	return (char *)memcpy(destination_, source_, destination_size);
 }
 
 char * dbj_strndup(const char *s, size_t n)

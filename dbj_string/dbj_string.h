@@ -27,7 +27,7 @@ always null terminating the copied string.
 char* dbj_strndup(const char* s, size_t n);
 
 #ifndef strndup
-#define strdup dbj_strndup
+#define strndup dbj_strndup
 #endif // !strndup
 
 // remove chars given in the string arg
