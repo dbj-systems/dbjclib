@@ -64,8 +64,7 @@ http://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-in-system-he
 
 /* use this to remove unused code */
 /* this verion does not evaluate the expression at runtime or compile time even */
-#define DBJ_REMOVE(expr) (void)(sizeof(expr))
-#define DBJ_UNUSED DBJ_REMOVE
+#define DBJ_UNUSED(expr) (void)(sizeof(expr))
 
 #	if ! defined(_MSC_EXTENSIONS)
 #error Need MSC EXTENSIONS DEFINED

@@ -1,4 +1,5 @@
 #include "../dbjclib.h"
+#include <string.h>
 #include <assert.h>
 
 	// DBJ proposal :
@@ -48,7 +49,7 @@
 		dbj_string_trim(text, &front_, &back_);
 
 		// declare VLA
-		const int rez_size_ = back_ - front_;
+		const __int64 rez_size_ = back_ - front_;
 		char * rezbuf = calloc(rez_size_,1);
 		// copy to VLA
 		memcpy(rezbuf, front_, back_ - front_);
@@ -113,5 +114,8 @@
 
 		free((void *)r_0);
 		free((void *)r_1);
+
+		return true;
 	}
+
 

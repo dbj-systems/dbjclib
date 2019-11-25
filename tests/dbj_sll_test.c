@@ -23,11 +23,13 @@ void test_dbj_sll(FILE * fp_, const char* what_to_append, size_t how_many_times,
 	}
 	assert(true == is_dbj_sll_empty(head_));
 
-	DBJ_UNUSED unsigned long k1 = dbj_sll_append(head_, "Abra")->key;
-	DBJ_UNUSED unsigned long k2 = dbj_sll_append(head_, "Ka")->key;
-	DBJ_UNUSED unsigned long k3 = dbj_sll_append(head_, "Dabra")->key;
+	unsigned long k1 = dbj_sll_append(head_, "Abra")->key;
+	unsigned long k2 = dbj_sll_append(head_, "Ka")->key;
+	unsigned long k3 = dbj_sll_append(head_, "Dabra")->key;
 
-	(void)(sizeof(k1)); (void)(sizeof(k3)); // combat no warning hassle
+	DBJ_UNUSED(k1);
+	DBJ_UNUSED(k2);
+	DBJ_UNUSED(k3);
 
 	dbj_sll_node* node_ = dbj_sll_find(head_, k2);
 	assert(0 == strcmp(node_->data, "Ka"));
@@ -37,5 +39,5 @@ void test_dbj_sll(FILE * fp_, const char* what_to_append, size_t how_many_times,
 
 int dbj_sll_test(FILE* fp_) {
 	
-	void test_dbj_sll(fp_,"BIMBILI BAMBILI BUMBILI", 0xFF, true)
+	test_dbj_sll(fp_, "BIMBILI BAMBILI BUMBILI", 0xFF, true);
 }
