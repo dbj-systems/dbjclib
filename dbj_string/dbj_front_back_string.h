@@ -27,6 +27,7 @@ http://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-in-system-he
 static const size_t		DBJ_NPOS = (size_t)-1;
 static const size_t		DBJ_MAX_STRING_LENGTH = 0xFFFF;
 
+#include <stdbool.h>
 
 typedef struct dbj_string {
 	 /*if true, free the front ptr
@@ -73,7 +74,7 @@ dbj_string* dbj_string_append(
 compare the contents of two strings,
 return true if equal
 */
-inline bool dbj_string_compare(
+bool dbj_string_compare(
 	const dbj_string* left_,
 	const dbj_string* right_
 );

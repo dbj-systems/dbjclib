@@ -44,19 +44,19 @@ extern "C" {
 #pragma clang diagnostic pop
 #endif
 
-#ifdef NDEBUG
-#if defined( _WIN32 ) 
-#pragma comment(lib, "dbjclib_x86_Release.lib")
-#else // _WIN64
-#pragma comment(lib, "dbjclib_x64_Release.lib")
-#endif
-#else /* DEBUG */
-#if defined( _WIN32 ) 
-#pragma comment(lib, "dbjclib_x86_Debug.lib")
-#else // _WIN64
-#pragma comment(lib, "dbjclib_x64_Debug.lib")
-#endif
-#endif
+//#ifdef NDEBUG
+//#if defined( _WIN32 ) 
+//#pragma comment(lib, "dbjclib_x86_Release.lib")
+//#else // _WIN64
+//#pragma comment(lib, "dbjclib_x64_Release.lib")
+//#endif
+//#else /* DEBUG */
+//#if defined( _WIN32 ) 
+//#pragma comment(lib, "dbjclib_x86_Debug.lib")
+//#else // _WIN64
+//#pragma comment(lib, "dbjclib_x64_Debug.lib")
+//#endif
+//#endif
 
 #endif // ! _DBJ_CLIB_API_
 

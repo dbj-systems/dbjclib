@@ -27,7 +27,7 @@ allocate the new structure
  dbj_string * dbj_string_null()
 {
 	dbj_string * pair_ = (dbj_string *)malloc(sizeof(dbj_string));
-	_ASSERTE(pair_);
+	assert(pair_);
 	pair_->front = 0; pair_->back = 0; pair_->full_free = false; return pair_;
 }
 
@@ -48,7 +48,7 @@ and size is in the allowed boundaries
 
  void dbj_string_free(dbj_string * str)
 {
-	_ASSERTE(str);
+	assert(str);
 	if (str->full_free) free((void*)str->front);
 	free(str);
 	str = 0;
@@ -56,8 +56,8 @@ and size is in the allowed boundaries
 
  const size_t dbj_string_len(const dbj_string * str_)
 {
-	_ASSERTE(str_);
-	_ASSERTE(DBJ_MAX_STRING_LENGTH > (size_t)(str_->back - str_->front));
+	assert(str_);
+	assert(DBJ_MAX_STRING_LENGTH > (size_t)(str_->back - str_->front));
 	return (size_t)(str_->back - str_->front);
 }
 
@@ -68,16 +68,16 @@ effectively make a view from const char *
 dbj_string_make_view(const char * string_)
 {
 	const size_t slen = strlen(string_);
-	_ASSERTE(DBJ_MAX_STRING_LENGTH > slen);
+	assert(DBJ_MAX_STRING_LENGTH > slen);
 
 	dbj_string * pair_ = (dbj_string *)malloc(sizeof(dbj_string));
-	_ASSERTE(pair_);
+	assert(pair_);
 	/* front not to be freed */
 	pair_->full_free = false;
 	pair_->front = (char *)string_;
 	/* NOTE! if string_ is empty, back == front */
 	pair_->back = (char *)string_ + slen;
-	_ASSERTE((size_t)(pair_->back - pair_->front) == slen);
+	assert((size_t)(pair_->back - pair_->front) == slen);
 	return pair_;
 }
 /*
@@ -85,9 +85,9 @@ front of the allocated dbj_string has to be freed
 */
  dbj_string * dbj_string_alloc(size_t count)
 {
-	_ASSERTE(DBJ_MAX_STRING_LENGTH > count);
+	assert(DBJ_MAX_STRING_LENGTH > count);
 	char * payload = (char*)calloc(count + 1, 1);
-	_ASSERTE(payload);
+	assert(payload);
 	dbj_string * rez = dbj_string_make_view(payload);
 	// since we made it with the empty string 
 	// the back is pointing to the front 
@@ -101,8 +101,8 @@ front of the allocated dbj_string has to be freed
 	const dbj_string * right_
 )
 {
-	_ASSERTE(dbj_valid_string(left_));
-	_ASSERTE(dbj_valid_string(right_));
+	assert(dbj_valid_string(left_));
+	assert(dbj_valid_string(right_));
 
 	dbj_string * rezult_ = dbj_string_alloc(dbj_string_len(left_) + dbj_string_len(right_));
 	char * w_ = 0;
@@ -116,7 +116,7 @@ front of the allocated dbj_string has to be freed
 		*r_ = *w_; ++r_;
 	}
 
-	_ASSERTE((rezult_->back - rezult_->front) > 0);
+	assert((rezult_->back - rezult_->front) > 0);
 
 	return rezult_;
 }
@@ -130,8 +130,8 @@ return true if equal
 	const dbj_string * right_
 )
 {
-	_ASSERTE(dbj_valid_string(left_));
-	_ASSERTE(dbj_valid_string(right_));
+	assert(dbj_valid_string(left_));
+	assert(dbj_valid_string(right_));
 
 	if (dbj_string_len(left_) != dbj_string_len(right_)) return false;
 
@@ -171,10 +171,10 @@ or NULL , with errno set to the the error
 */
  dbj_string *  dbj_to_subrange(dbj_string * str_, dbj_string * sub_)
 {
-	_ASSERTE(str_ && sub_);
-	_ASSERTE(dbj_string_len(str_) > 0);
-	_ASSERTE(dbj_string_len(sub_) > 0);
-	_ASSERTE(dbj_string_len(sub_) < dbj_string_len(str_));
+	assert(str_ && sub_);
+	assert(dbj_string_len(str_) > 0);
+	assert(dbj_string_len(sub_) > 0);
+	assert(dbj_string_len(sub_) < dbj_string_len(str_));
 
 	dbj_string * sub_range_ = 0;
 
