@@ -17,7 +17,7 @@ static void worker(TEST_DBJ_DYNAMIC_METADATA * test_descriptor)
 	dbj_string_list_free(head_);
 }
 
-static void actual_dbj_string_list_test( char output [BUFSIZ] )
+static void actual_dbj_string_list_test( char * output, size_t output_size )
 {
 	TEST_DBJ_DYNAMIC_METADATA test_descriptor =
 	{ .number_of_iterations = BUFSIZ * 10
@@ -37,8 +37,8 @@ static void actual_dbj_string_list_test( char output [BUFSIZ] )
 	time_t elapsed_time_sec = (finish - start);
 	// double elapsed_time_msec = 1000.0 * (elapsed_time_sec);
 
-	sprintf_s( output, _countof(output) ,"\ndbj list test\n%d iterations, has taken\n\t%6.2zu sec"
-		"\nEach itrtation added the word '%s', %d times, and then destroyed the list\n\n",
+	sprintf_s( output, output_size,"\ndbj list test\n%d iterations, has taken: %zu sec"
+		"\nEach iteration added the word '%s', %d times, and then destroyed the list\n\n",
 		BUFSIZ, elapsed_time_sec,
 		test_descriptor.word, test_descriptor.words_to_append);
 }
@@ -47,8 +47,10 @@ int dbj_string_list_test(FILE* fp_)
 {
 	char output[BUFSIZ] = {0};
 
-	actual_dbj_string_list_test( output );
+	actual_dbj_string_list_test( output, BUFSIZ );
 
 	fprintf(fp_, "%s", output);
+
+	return 42;
 }
 

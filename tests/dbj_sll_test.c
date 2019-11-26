@@ -40,4 +40,5 @@ void test_dbj_sll(FILE * fp_, const char* what_to_append, size_t how_many_times,
 int dbj_sll_test(FILE* fp_) {
 	
 	test_dbj_sll(fp_, "BIMBILI BAMBILI BUMBILI", 0xFF, true);
+	return 42;
 }

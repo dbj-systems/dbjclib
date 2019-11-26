@@ -25,6 +25,7 @@
 	// caller is responsible to free()
 	static char * trimmer(
 		const char text[0xFF],
+		size_t text_size ,
 		// if false send the whole buffer
 		bool zero_limited_string 
 	)
@@ -37,7 +38,7 @@
 			return rezbuf;
 		}
 
-		const int text_size = _countof(text);
+		// const int text_size = _countof(text);
 		char * front_ = 0, *back_ = 0;
 
 		// if requested set back_ pointer
@@ -64,7 +65,7 @@
 		bool zero_delimited_strings
 	) {
 		const char * trim_rezult
-			= trimmer(text_test_data[test_data_index], zero_delimited_strings);
+			= trimmer(text_test_data[test_data_index], strlen(text_test_data[test_data_index]),   zero_delimited_strings);
 		bool outcome_ = (0 == strcmp( required_outcome, trim_rezult));
 			free((void *)trim_rezult);
 		return outcome_;
@@ -108,9 +109,9 @@
 		// in here for example
 		// all spaces input will collapse to 
 		// char[1]{0} not char * to ""
-		const char * r_0 = trimmer(text_test_data[3], false);
+		const char * r_0 = trimmer(text_test_data[3], strlen(text_test_data[3]), false);
 		// same is for empty string input
-		const char * r_1 = trimmer(text_test_data[4], false);
+		const char * r_1 = trimmer(text_test_data[4], strlen(text_test_data[3]), false);
 
 		free((void *)r_0);
 		free((void *)r_1);
