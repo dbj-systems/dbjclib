@@ -1,4 +1,6 @@
 #include "../dbj_string_list/dbj_string_list.h"
+#include <time.h>
+#include <stdio.h>
 
 typedef struct TEST_DBJ_DYNAMIC_METADATA_ {
 	const unsigned number_of_iterations;
@@ -42,6 +44,8 @@ static void actual_dbj_string_list_test( char * output, size_t output_size )
 		BUFSIZ, elapsed_time_sec,
 		test_descriptor.word, test_descriptor.words_to_append);
 }
+
+#include <stdio.h>
 
 int dbj_string_list_test(FILE* fp_)
 {

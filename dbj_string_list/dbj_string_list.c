@@ -3,17 +3,19 @@
 #include <string.h>
 #include <assert.h>
 
+#ifndef DBJ_MALLOC
+#define DBJ_MALLOC(N) calloc(1,N)
+#endif
+
 #ifndef NDEBUG
-static unsigned dbj_string_list_max_size = 0xFFFF;
+static unsigned dbj_string_list_max_size = UINT16_MAX;
 #endif // ! NDEBUG
 
 
 static const char dbj_string_list_sentinel_char = '\033'; // ESC aka ((char)127);
 
-typedef char dbj_string_list_value_type;
-
-static const dbj_string_list_value_type * dbj_string_list_sentinel_		
-	= (dbj_string_list_value_type *)(&dbj_string_list_sentinel_char);
+static const dbj_string_list_value_type* dbj_string_list_sentinel_
+= (dbj_string_list_value_type*)(&dbj_string_list_sentinel_char);
 
 dbj_string_list_type dbj_string_list_new()
 {
@@ -42,8 +44,8 @@ static dbj_string_list_type dbj_string_list_sentinel_ptr(dbj_string_list_type he
 }
 
 dbj_string_list_type dbj_string_list_append
-(dbj_string_list_type head_, 
-	const dbj_string_list_value_type * str_)
+(dbj_string_list_type head_,
+	const dbj_string_list_value_type* str_)
 {
 	assert(str_);
 	dbj_string_list_type end_ = dbj_string_list_sentinel_ptr(head_);
@@ -64,12 +66,34 @@ dbj_string_list_type dbj_string_list_append
 	// attention: count and index are not the same
 	head_[current_count_ + 0] = _strdup(str_);
 	// removing the constness
-	head_[current_count_ + 1] 
-		= (dbj_string_list_value_type *)dbj_string_list_sentinel_;
+	head_[current_count_ + 1]
+		= (dbj_string_list_value_type*)dbj_string_list_sentinel_;
 
 	return head_;
 }
 
+uint16_t dbj_string_list_size(dbj_string_list_type head_) {
+
+	dbj_string_list_type end_ = dbj_string_list_sentinel_ptr(head_);
+	// check if we have the overflow
+	uint16_t current_count_ = (uint16_t)(end_ - head_);
+	assert(current_count_ < dbj_string_list_max_size);
+	return current_count_;
+}
+
+/**
+get by index
+*/
+dbj_string_list_value_type
+dbj_string_list_at_index(uint16_t idx_, dbj_string_list_type head_, uint16_t size_)
+{
+	uint16_t current_size_ = size_;
+	if (current_size_ < 1) {
+		current_size_ = dbj_string_list_size(head_);
+	}
+	assert(idx_ < current_size_);
+	return head_[idx_];
+}
 
 void dbj_string_list_free(dbj_string_list_type head_)
 {
@@ -78,7 +102,7 @@ void dbj_string_list_free(dbj_string_list_type head_)
 	if (dbj_string_list_sentinel_ != *head_) {
 		// 
 		dbj_string_list_type end_ = dbj_string_list_sentinel_ptr(head_);
-		char * last_word_ = 0;
+		char* last_word_ = 0;
 		// we skip over the sentinel
 		// as the space for it was not allocated
 		end_ -= 1;
@@ -89,9 +113,9 @@ void dbj_string_list_free(dbj_string_list_type head_)
 			end_ -= 1;
 		};
 	}
-	if ( head_) {
+	if (head_) {
 		free(head_);
-		head_ = 0  ;
+		head_ = 0;
 	}
 	// free(head_);
 }

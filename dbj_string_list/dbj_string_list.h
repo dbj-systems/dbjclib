@@ -18,36 +18,59 @@ to keep it's size for example.
 					 [ char * ] ----------> "DABRA"
 					 [ char * ] ----------> SENTINEL
   size == 3
+
+  Maximum size of this structure is 0xFFFFui8 aka UINT16_MAX aka 65535
 */
 
 #include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
+#include <stdint.h>
 
-#ifndef DBJ_MALLOC
-	#define DBJ_MALLOC(N) calloc(1,N)
-#endif
 
 #ifdef __cplucplus
 extern "C" {
 #endif
 
-	typedef char ** dbj_string_list_type;
+	typedef char * dbj_string_list_value_type;
+
+	typedef dbj_string_list_value_type * dbj_string_list_type;
 
 	/*
-	returns the empty list
+	returns the head of an new empty list
+
+	head: char  ** --------->[ char * ] ----------> SENTINEL
 	*/
 	dbj_string_list_type dbj_string_list_new();
 
-	dbj_string_list_type dbj_string_list_append(dbj_string_list_type, const char *);
+	/**
+	string to be appended is duplicated
+	return the head of the list
+	*/
+	dbj_string_list_type dbj_string_list_append(dbj_string_list_type, const char*);
+
+	/**
+	minus sentinel
+	*/
+	    uint16_t dbj_string_list_size(dbj_string_list_type);
+    
+	/**
+	get by index, 
+	
+	first  argument is index
+	second argument is list head
+	third  argument is list size -- if 0, size will be computed on each call
+
+	if calling this repeatdely first call  dbj_string_list_size() and use the size obtained
+
+	*/
+	dbj_string_list_value_type dbj_string_list_at_index( uint16_t, dbj_string_list_type , uint16_t );
 
 	/*
-	reset the list and return the head
+	reset the list and return the head of the new empty list
 	*/
 	dbj_string_list_type dbj_string_list_reset(dbj_string_list_type);
 
 	/*
-	head must be freed manually when no longer needed
+	WARNING! Argument to this funcitom is a list head. Afterwards it is invalid. It is NULL.
 	*/
 	void dbj_string_list_free(dbj_string_list_type);
 
