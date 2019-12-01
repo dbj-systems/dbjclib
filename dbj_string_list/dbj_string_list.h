@@ -45,7 +45,7 @@ extern "C" {
 	string to be appended is duplicated
 	return the head of the list
 	*/
-	dbj_string_list_type dbj_string_list_append(dbj_string_list_type, const char*);
+	dbj_string_list_type dbj_string_list_append(dbj_string_list_type, const dbj_string_list_value_type );
 
 	/**
 	minus sentinel

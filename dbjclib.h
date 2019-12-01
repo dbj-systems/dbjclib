@@ -20,6 +20,16 @@ http://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-in-system-he
 #pragma clang diagnostic ignored "-Wunused-function"
 #endif
 
+#define dbj_clib_MAJOR  0
+#define dbj_clib_MINOR  3
+#define dbj_clib_PATCH  0
+
+#define dbj_clib_VERSION  dbj_clib_STRINGIFY(dbj_clib_MAJOR) "." dbj_clib_STRINGIFY(dbj_clib_MINOR) "." dbj_clib_STRINGIFY(dbj_clib_PATCH)
+
+#define dbj_clib_STRINGIFY(  x )  dbj_clib_STRINGIFY_( x )
+#define dbj_clib_STRINGIFY_( x )  #x
+
+
 /*
 Note: it is a good idea, while inside c++ to have this inside a namespace
 namespace dbjclib {}

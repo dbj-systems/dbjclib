@@ -14,8 +14,8 @@ static unsigned dbj_string_list_max_size = UINT16_MAX;
 
 static const char dbj_string_list_sentinel_char = '\033'; // ESC aka ((char)127);
 
-static const dbj_string_list_value_type* dbj_string_list_sentinel_
-= (dbj_string_list_value_type*)(&dbj_string_list_sentinel_char);
+static const dbj_string_list_value_type dbj_string_list_sentinel_
+= (dbj_string_list_value_type)(&dbj_string_list_sentinel_char);
 
 dbj_string_list_type dbj_string_list_new()
 {
@@ -45,7 +45,7 @@ static dbj_string_list_type dbj_string_list_sentinel_ptr(dbj_string_list_type he
 
 dbj_string_list_type dbj_string_list_append
 (dbj_string_list_type head_,
-	const dbj_string_list_value_type* str_)
+	const dbj_string_list_value_type str_)
 {
 	assert(str_);
 	dbj_string_list_type end_ = dbj_string_list_sentinel_ptr(head_);
@@ -67,7 +67,7 @@ dbj_string_list_type dbj_string_list_append
 	head_[current_count_ + 0] = _strdup(str_);
 	// removing the constness
 	head_[current_count_ + 1]
-		= (dbj_string_list_value_type*)dbj_string_list_sentinel_;
+		= (dbj_string_list_value_type)dbj_string_list_sentinel_;
 
 	return head_;
 }
