@@ -22,7 +22,7 @@ http://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-in-system-he
 #endif
 
 #define dbj_clib_MAJOR  0
-#define dbj_clib_MINOR  3
+#define dbj_clib_MINOR  4
 #define dbj_clib_PATCH  0
 
 #define dbj_clib_VERSION  dbj_clib_STRINGIFY(dbj_clib_MAJOR) "." dbj_clib_STRINGIFY(dbj_clib_MINOR) "." dbj_clib_STRINGIFY(dbj_clib_PATCH)

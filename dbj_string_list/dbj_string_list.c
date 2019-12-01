@@ -2,6 +2,7 @@
 #include "dbj_string_list.h"
 #include <string.h>
 #include <assert.h>
+#include <stdbool.h>
 
 static const char dbj_string_list_sentinel_char = '\033'; // ESC aka ((char)127);
 
