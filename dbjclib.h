@@ -6,7 +6,8 @@ Copyright 2017,2018,2019,2020 by dbj@dbj.org
 before hotly disagreeing onsome details, and trying to reach me, please read
  https://matt.sh/howto-c
 */
-
+#include <stdint.h>
+#include <stdlib.h>
 
 #ifdef __clang__
 /*

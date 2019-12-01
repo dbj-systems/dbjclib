@@ -3,32 +3,34 @@
 #include <string.h>
 #include <assert.h>
 
-#ifndef DBJ_MALLOC
-#define DBJ_MALLOC(N) calloc(1,N)
-#endif
-
-#ifndef NDEBUG
-static unsigned dbj_string_list_max_size = UINT16_MAX;
-#endif // ! NDEBUG
-
-
 static const char dbj_string_list_sentinel_char = '\033'; // ESC aka ((char)127);
 
 static const dbj_string_list_value_type dbj_string_list_sentinel_
 = (dbj_string_list_value_type)(&dbj_string_list_sentinel_char);
 
+/***************************************************************************s
+Here is the secret sauce ... we allocate the whole array of NULL's
+and we put the sentinel in the slot 0
+*/
 dbj_string_list_type dbj_string_list_new()
 {
 	dbj_string_list_type empty_ = 0;
-	empty_ = (dbj_string_list_type)DBJ_MALLOC(sizeof(empty_));
+	empty_ = (dbj_string_list_type)calloc( dbj_string_list_max_size, sizeof(empty_) );
+
 	assert(empty_);
 
-	*empty_ = (char*)dbj_string_list_sentinel_;
-
+	if (!empty_) {
+		errno = ENOMEM; return NULL;
+	}
+		*empty_ = (char*)dbj_string_list_sentinel_;
 	return empty_;
 }
 
-// return the pointer to the sentinel element
+/***************************************************************************
+where is the sentinel currently?
+Here is the secret sauce no 2 ... we do not keep it, we find it each time
+return the pointer to the sentinel element
+*/
 static dbj_string_list_type dbj_string_list_sentinel_ptr(dbj_string_list_type head_)
 {
 	dbj_string_list_type walker_ = head_;
@@ -43,35 +45,45 @@ static dbj_string_list_type dbj_string_list_sentinel_ptr(dbj_string_list_type he
 	return (walker_);
 }
 
-dbj_string_list_type dbj_string_list_append
-(dbj_string_list_type head_,
-	const dbj_string_list_value_type str_)
+/***************************************************************************
+thus on append we do not reallocate, we just increment the sentinel
+side effect: head is not invalidated
+*/
+dbj_string_list_type dbj_string_list_append (dbj_string_list_type head_, const dbj_string_list_value_type str_)
 {
 	assert(str_);
+
+	if (!str_ || !head_) {
+		errno = EINVAL; return NULL;
+	}
+
 	dbj_string_list_type end_ = dbj_string_list_sentinel_ptr(head_);
 
 	// check if we have the overflow
+	// WARNING : the last stol is reserved for sentinel
+	// str_ can not be placed in the last slot
 	size_t current_count_ = (end_ - head_);
-	assert(current_count_ < dbj_string_list_max_size);
+	assert((1+ current_count_) < dbj_string_list_max_size);
 
-	// we expand +2
-	// one for the new payload and one for the sentinel
-	dbj_string_list_type tmp
-		= (dbj_string_list_type)realloc(head_, (current_count_ + 2) * sizeof(tmp));
+	if (false == ((1+ current_count_) < dbj_string_list_max_size)) {
+		errno = ENOMEM; return NULL;
+	}
 
-	assert(tmp);
-	// point to resized block just after it is OK
-	head_ = tmp;
+	char* str_copy = _strdup(str_);
+	if (!str_copy) {errno = ENOMEM;	return NULL ; }
 
-	// attention: count and index are not the same
-	head_[current_count_ + 0] = _strdup(str_);
-	// removing the constness
+	// new string goes to where the sentinel was
+	head_[current_count_ + 0] =  str_copy ;
+	// move the sentinel
 	head_[current_count_ + 1]
 		= (dbj_string_list_value_type)dbj_string_list_sentinel_;
 
 	return head_;
 }
 
+/***************************************************************************
+size = sentinel pos - head
+*/
 uint16_t dbj_string_list_size(dbj_string_list_type head_) {
 
 	dbj_string_list_type end_ = dbj_string_list_sentinel_ptr(head_);

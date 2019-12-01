@@ -7,17 +7,21 @@ it is said to be "self contained" because of the sentinel
 at the end, it does not need a structure above it,
 to keep it's size for example.
 
-  empty:
+ empty:
+		  char  ** --------->[ char * ] ----------> SENTINEL
 
-  char  ** --------->[ char * ] ----------> SENTINEL
+ populated:
 
-  populated:
-
-  char  ** --------->[ char * ] ----------> "ABRA"
-					 [ char * ] ----------> "KA"
-					 [ char * ] ----------> "DABRA"
-					 [ char * ] ----------> SENTINEL
-  size == 3
+ head     char  ** --------->[ char * ] ----------> "ABRA"
+		             		 [ char * ] ----------> "KA"
+							 [ char * ] ----------> "DABRA"
+sentinel		   --------->[ char * ] ----------> SENTINEL  (size == 3)
+							 [   0    ] 
+							 [   0    ] 
+							 [   0    ] 
+								...
+			max_size		 [   0    ] (reserved for SENTINEL)
+		
 
   Maximum size of this structure is 0xFFFFui8 aka UINT16_MAX aka 65535
 */
@@ -34,6 +38,7 @@ extern "C" {
 
 	typedef dbj_string_list_value_type * dbj_string_list_type;
 
+	static uint16_t dbj_string_list_max_size = UINT16_MAX;
 	/*
 	returns the head of an new empty list
 
