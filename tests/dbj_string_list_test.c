@@ -38,10 +38,10 @@ static void worker(TEST_DBJ_DYNAMIC_METADATA * test_descriptor)
 
 static void dbj_string_list_performance( FILE * fp_ )
 {
-	TEST_DBJ_DYNAMIC_METADATA test_descriptor =	
-	{ 
+	TEST_DBJ_DYNAMIC_METADATA test_descriptor =
+	{
 	.number_of_iterations = BUFSIZ * 10,
-	.words_to_append = BUFSIZ,
+	.words_to_append = dbj_string_list_max_capacity,
 	.word = "12345678" 
 	};
 
@@ -59,10 +59,10 @@ static void dbj_string_list_performance( FILE * fp_ )
 
 	fprintf( fp_ ,
 		"\n\ndbj list test"
-		"\n%06d iterations,"
-		"\nhas taken: %06.3f sec"
+		"\n%d iterations,"
+		"\nhas taken: %07.3f sec"
 		"\nEach iteration added the word '%s',"
-		"\n%06l times, and then destroyed the list\n\n",
+		"\n%d times, and then destroyed the list\n\n",
 		BUFSIZ, 
 		elapsed_time_sec,
 		test_descriptor.word, 
@@ -73,9 +73,7 @@ void dbj_string_list_precision( FILE * fp_ )
 {
 	/* make the string list */
 	dbj_string_list_type head_ = dbj_string_list_new();
-	{
-		uint16_t size_ = dbj_string_list_size(head_);
-	}
+	assert(0 == dbj_string_list_size(head_));
 	/* populate */
 	head_ = dbj_string_list_append(head_, "Abra");
 	head_ = dbj_string_list_append(head_, "Ca");

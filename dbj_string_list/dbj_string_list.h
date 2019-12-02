@@ -38,7 +38,8 @@ extern "C" {
 
 	typedef dbj_string_list_value_type * dbj_string_list_type;
 
-	static uint16_t dbj_string_list_max_size = UINT16_MAX;
+	/* last slot is reserved for sentinel */
+	static uint16_t dbj_string_list_max_capacity = UINT16_MAX - 1;
 	/*
 	returns the head of an new empty list
 

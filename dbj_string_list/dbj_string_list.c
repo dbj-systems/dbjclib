@@ -16,7 +16,9 @@ and we put the sentinel in the slot 0
 dbj_string_list_type dbj_string_list_new()
 {
 	dbj_string_list_type empty_ = 0;
-	empty_ = (dbj_string_list_type)calloc( dbj_string_list_max_size, sizeof(empty_) );
+
+	/* last slot is for the sentinel of the full list  */
+	empty_ = (dbj_string_list_type)calloc(dbj_string_list_max_capacity + 1, sizeof(empty_) );
 
 	assert(empty_);
 
@@ -30,6 +32,9 @@ dbj_string_list_type dbj_string_list_new()
 /***************************************************************************
 where is the sentinel currently?
 Here is the secret sauce no 2 ... we do not keep it, we find it each time
+why? because this is very fast on moden machines, and because that simplifies
+the design
+
 return the pointer to the sentinel element
 */
 static dbj_string_list_type dbj_string_list_sentinel_ptr(dbj_string_list_type head_)
@@ -41,7 +46,7 @@ static dbj_string_list_type dbj_string_list_sentinel_ptr(dbj_string_list_type he
 	while (1 == 1) {
 		if (*walker_ == dbj_string_list_sentinel_) break;
 		walker_++;
-		assert(counter++ < dbj_string_list_max_size);
+		assert(counter++ < dbj_string_list_max_capacity);
 	}
 	return (walker_);
 }
@@ -64,9 +69,9 @@ dbj_string_list_type dbj_string_list_append (dbj_string_list_type head_, const d
 	// WARNING : the last stol is reserved for sentinel
 	// str_ can not be placed in the last slot
 	size_t current_count_ = (end_ - head_);
-	assert((1+ current_count_) < dbj_string_list_max_size);
+	assert((1+ current_count_) < dbj_string_list_max_capacity);
 
-	if (false == ((1+ current_count_) < dbj_string_list_max_size)) {
+	if (false == ((1+ current_count_) < dbj_string_list_max_capacity)) {
 		errno = ENOMEM; return NULL;
 	}
 
@@ -90,7 +95,7 @@ uint16_t dbj_string_list_size(dbj_string_list_type head_) {
 	dbj_string_list_type end_ = dbj_string_list_sentinel_ptr(head_);
 	// check if we have the overflow
 	uint16_t current_count_ = (uint16_t)(end_ - head_);
-	assert(current_count_ < dbj_string_list_max_size);
+	assert(current_count_ < dbj_string_list_max_capacity);
 	return current_count_;
 }
 
