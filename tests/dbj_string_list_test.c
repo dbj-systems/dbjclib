@@ -23,6 +23,7 @@ static void worker(TEST_DBJ_DYNAMIC_METADATA * test_descriptor)
 	/* populate */
 	unsigned int k;
 	for (k = 0; k < test_descriptor->words_to_append; k++) {
+		// on error head_ will be null
 		head_ = dbj_string_list_append(head_, (char *)test_descriptor->word);
 	}
 	/* iterate and use */
@@ -40,9 +41,9 @@ static void dbj_string_list_performance( FILE * fp_ )
 {
 	TEST_DBJ_DYNAMIC_METADATA test_descriptor =
 	{
-	.number_of_iterations = BUFSIZ * 10,
+	.number_of_iterations = 0xFF ,
 	.words_to_append = dbj_string_list_max_capacity,
-	.word = "12345678" 
+	.word = SPECIMEN /*"12345678"*/
 	};
 
 	unsigned int k = 0;
@@ -63,10 +64,10 @@ static void dbj_string_list_performance( FILE * fp_ )
 		"\nhas taken: %07.3f sec"
 		"\nEach iteration added the word '%s',"
 		"\n%d times, and then destroyed the list\n\n",
-		BUFSIZ, 
+		test_descriptor.number_of_iterations ,
 		elapsed_time_sec,
 		test_descriptor.word, 
-		test_descriptor.number_of_iterations);
+		test_descriptor.words_to_append);
 }
 
 void dbj_string_list_precision( FILE * fp_ )
@@ -75,12 +76,14 @@ void dbj_string_list_precision( FILE * fp_ )
 	dbj_string_list_type head_ = dbj_string_list_new();
 	assert(0 == dbj_string_list_size(head_));
 	/* populate */
-	head_ = dbj_string_list_append(head_, "Abra");
-	head_ = dbj_string_list_append(head_, "Ca");
-	head_ = dbj_string_list_append(head_, "Dabra");
+	dbj_string_list_append(head_, "Abra");
+	dbj_string_list_append(head_, "Ca");
+	dbj_string_list_append(head_, "Dabra");
 
 	uint16_t size_ = dbj_string_list_size(head_);
+	assert( 3 == size_);
 
+	/* must not free indivodual strings */
 	char const* abra_	= dbj_string_list_at_index(0, head_, size_);
 	char const* ca_		= dbj_string_list_at_index(1, head_, size_);
 	char const* dabra_	= dbj_string_list_at_index(2, head_, size_);
