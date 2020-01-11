@@ -84,9 +84,11 @@ void dbj_string_list_precision( FILE * fp_ )
 	assert( 3 == size_);
 
 	/* must not free indivodual strings */
-	char const* abra_	= dbj_string_list_at_index(0, head_, size_);
+	char const* abra_  = dbj_string_list_at_index(0, head_, size_);
 	char const* ca_		= dbj_string_list_at_index(1, head_, size_);
 	char const* dabra_	= dbj_string_list_at_index(2, head_, size_);
+
+	(void)abra_; (void)ca_; (void)dabra_;
 
 	dbj_string_list_free(head_);
 }
