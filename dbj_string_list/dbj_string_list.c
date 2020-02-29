@@ -33,16 +33,15 @@ dbj_string_list_type dbj_string_list_new()
 where is the sentinel currently?
 Here is the secret sauce no 2 ... we do not keep it, we find it each time
 why? because this is very fast on moden machines, and because that simplifies
-the design
+the design AND the implementation
 
 return the pointer to the sentinel element
 */
 static dbj_string_list_type dbj_string_list_sentinel_ptr(dbj_string_list_type head_)
 {
 	dbj_string_list_type walker_ = head_;
-#ifdef _DEBUG
 	unsigned counter = 0;
-#endif
+
 	while (1 == 1) {
 		if (*walker_ == dbj_string_list_sentinel_) break;
 		walker_++;
@@ -52,7 +51,9 @@ static dbj_string_list_type dbj_string_list_sentinel_ptr(dbj_string_list_type he
 }
 
 /***************************************************************************
-thus on append we do not reallocate, we just increment the sentinel
+on append we do not reallocate, we just increment the sentinel
+note: we do copy the string argument
+side effect: this is fast because there is no realloc
 side effect: head is not invalidated
 */
 dbj_string_list_type dbj_string_list_append (dbj_string_list_type head_, const dbj_string_list_value_type str_)
@@ -66,7 +67,7 @@ dbj_string_list_type dbj_string_list_append (dbj_string_list_type head_, const d
 	dbj_string_list_type end_ = dbj_string_list_sentinel_ptr(head_);
 
 	// check if we have the overflow
-	// WARNING : the last stol is reserved for sentinel
+	// WARNING : the last slot is reserved for sentinel
 	// str_ can not be placed in the last slot
 	size_t current_count_ = (end_ - head_);
 	assert((1+ current_count_) < dbj_string_list_max_capacity);
@@ -89,6 +90,7 @@ dbj_string_list_type dbj_string_list_append (dbj_string_list_type head_, const d
 
 /***************************************************************************
 size = sentinel pos - head
+has to be computed when needed
 */
 uint16_t dbj_string_list_size(dbj_string_list_type head_) {
 
@@ -101,6 +103,14 @@ uint16_t dbj_string_list_size(dbj_string_list_type head_) {
 
 /**
 get by index
+last arg is list size, if 0 will be computed
+thus you can optimize:
+
+    const size_t size_ = dbj_string_list_size( head ) ;
+    
+	// for k from 0 to size_
+	dbj_string_list_value_type element_ =
+	dbj_string_list_at_index( k, head, size_ );
 */
 dbj_string_list_value_type
 dbj_string_list_at_index(uint16_t idx_, dbj_string_list_type head_, uint16_t size_)

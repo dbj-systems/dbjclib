@@ -21,12 +21,25 @@ Concept 2: minimize the use of the string.h
 #define DBJ_MALLOC(N) calloc(1,N)
 #endif
 
+/* private utils */
+static size_t private_strlen( char const * str_ ) {
+	assert( str_ );
+	char* walker_ = (char*)str_;
+	size_t rezult_ = 0;
+	while (walker_ != '\0') {
+		rezult_ += 1;
+		walker_++;
+		if (rezult_ == DBJ_MAX_STRING_LENGTH) break;
+	}
+	return rezult_;
+}
+
 /*
 allocate the new structure
 */
- dbj_string * dbj_string_null()
+ dbj_string * dbj_string_make_empty()
 {
-	dbj_string * pair_ = (dbj_string *)malloc(sizeof(dbj_string));
+	dbj_string * pair_ = (dbj_string *)DBJ_MALLOC(sizeof(dbj_string));
 	assert(pair_);
 	pair_->front = 0; pair_->back = 0; pair_->full_free = false; return pair_;
 }
@@ -54,24 +67,28 @@ and size is in the allowed boundaries
 	str = 0;
 }
 
+/*
+just a pointer distance
+*/
  const size_t dbj_string_len(const dbj_string * str_)
 {
-	assert(str_);
-	assert(DBJ_MAX_STRING_LENGTH > (size_t)(str_->back - str_->front));
+	assert( dbj_valid_string(str_));
 	return (size_t)(str_->back - str_->front);
 }
 
 /*
-effectively make a view from const char *
+effectively make a dbj_string from const char *
+if arg is longer then DBJ_MAX_STRING_LENGTH
+that is where the bacj wikk be
 */
  dbj_string *
 dbj_string_make_view(const char * string_)
 {
-	const size_t slen = strlen(string_);
+	const size_t slen = private_strlen(string_);
 	assert(DBJ_MAX_STRING_LENGTH > slen);
 
-	dbj_string * pair_ = (dbj_string *)malloc(sizeof(dbj_string));
-	assert(pair_);
+	dbj_string* pair_ = dbj_string_make_empty();
+
 	/* front not to be freed */
 	pair_->full_free = false;
 	pair_->front = (char *)string_;
@@ -81,18 +98,18 @@ dbj_string_make_view(const char * string_)
 	return pair_;
 }
 /*
-front of the allocated dbj_string has to be freed
+make and allocate for a size givent
 */
  dbj_string * dbj_string_alloc(size_t count)
 {
+	dbj_string* rez = dbj_string_make_empty();
+
 	assert(DBJ_MAX_STRING_LENGTH > count);
-	char * payload = (char*)calloc(count + 1, 1);
+	char* payload = (char*)calloc(count, 1);
 	assert(payload);
-	dbj_string * rez = dbj_string_make_view(payload);
-	// since we made it with the empty string 
-	// the back is pointing to the front 
-	// so we have to re-adjust it!
-	rez->back = rez->front + count;
+		rez->full_free = true;
+		rez->front = payload;
+		rez->back  = payload + count;
 	return rez;
 }
 
@@ -154,11 +171,11 @@ free the string struct eventually but not the front pointer
 	from_ -= 1;
 	// to_ -= 1; we do not move the 'to' left since the concept is 
 	// back pointer is one beyond the last 'to'
-	if ((to_ - from_) > strlen(str)) {
+	if ((to_ - from_) > private_strlen(str)) {
 		errno = EINVAL; return NULL;
 	}
-	dbj_string * retval = dbj_string_null();
-	// full_free is false here
+	dbj_string * retval = dbj_string_make_empty();
+	// full_free is false here already
 	retval->front = (char *)& str[from_];
 	retval->back = (char *)& str[to_];
 	return retval;
@@ -198,7 +215,7 @@ or NULL , with errno set to the the error
 			/* inner loop has finished    */
 			/* and there where no misses? */
 			if (sub_found_flag) {
-				sub_range_ = dbj_string_null();
+				sub_range_ = dbj_string_make_empty();
 				sub_range_->front = sub_start_location;
 				sub_range_->back = sp;
 				return sub_range_;
@@ -251,8 +268,8 @@ return append left and right of a sub_range
 		errno = EINVAL; return 0;
 	}
 
-	dbj_string * left = dbj_string_null();
-	dbj_string * right = dbj_string_null();
+	dbj_string * left = dbj_string_make_empty();
+	dbj_string * right = dbj_string_make_empty();
 
 	left->front = range->front; left->back = sub_range->front;
 	right->front = sub_range->back; right->back = range->back;

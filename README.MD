@@ -25,18 +25,19 @@ Thus test output will go wherever you want it to go.
 
 ### Building
 
-This is LLVM C LIB made and used by Visual Studio 2019 solutions
-Basically MSFT are denying any C involvment when talking about CL. LLVM + Visual Studio = the real C compiler.
+This is LLVM C LIB made and used by Visual Studio 2019 solutions.
 
+Basically MSFT are denying any C involvment when talking about CL. Thus  LLVM + Visual Studio = the real C compiler.
 
 -------------------------------------
+
 ## Contact
 
-In case you hotly dislike or hotly like my work, or anything else on the long scale in between, you wish to discuss, please do write me.
+In case you hotly dislike or hotly like this work, or anything else on the long scale in between, you might desire to discuss, please do write us.
 
-#### License
+### License
 
-#### CC BY-SA 4.0 -- https://creativecommons.org/licenses/by-sa/4.0/ 
+#### [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 
-[![dbj();](http://dbj.org/wp-content/uploads/2015/12/cropped-dbj-icon-e1486129719897.jpg)](http://www.dbj.org "dbj")  
+[![dbj();](https://dbj.org/wp-content/uploads/2015/12/cropped-dbj-icon-e1486129719897.jpg)](http://www.dbj.org "dbj")  
 

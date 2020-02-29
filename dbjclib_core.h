@@ -106,7 +106,7 @@ extern "C" {
 		  max args is 255
 	*/
 	void free_free_set_them_free(void* vp, ...);
-
+/* yes that is a NULL as the last arg */
 #define DBJ_MULTI_FREE(...) free_free_set_them_free((void *)__VA_ARGS__, NULL)
 
 #ifdef __cplusplus

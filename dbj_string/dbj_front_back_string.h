@@ -2,19 +2,9 @@
 #define _DBJ_FRONT_BACK_STRING_
 
 /*
-Copyright 2018, 2019, 2020 by dbj@dbj.org
+Copyright 2018, 2019, 2020 by dbj@dbj.org, CC BY SA 4.0
 
 DBJ_FBS == dbj Front Back String
-
-DBJ_FBS is two pointers, front and back
-char * str = "ABC" ;
-char * front = str ;
-char * back  = str + strlen(str) ;
-
-Effectively this is the concept of a 'range'
-Sub-range is two pointers to the *same* buffer
-
-Concept: minimize the use of the string.h
 */
 // #include "dbjclib.h"
 #ifdef __clang__
@@ -24,14 +14,23 @@ http://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-in-system-he
 #pragma clang system_header
 #endif /* __clang__ */
 
-static const size_t		DBJ_NPOS = (size_t)-1;
-static const size_t		DBJ_MAX_STRING_LENGTH = 0xFFFF;
-
 #include <stdbool.h>
 
+static const size_t		DBJ_NPOS = (size_t)-1;
+static const size_t		DBJ_MAX_STRING_LENGTH = 0xFFFF;
+/*
+DBJ_FBS is two pointers, front and back
+char * str = "ABC" ;
+char * front = str ;
+char * back  = str + strlen(str) ;
+
+Effectively this is the concept of a 'range'
+Sub-range is two pointers to the *same* buffer
+
+Motivation: minimize the use of the string.h
+*/
 typedef struct dbj_string {
-	 /*if true, free the front ptr
-	 before freeing the struct*/
+ /*if true, free the front ptr before freeing the struct*/
 	bool   full_free;
 	char * front;
 	char * back;
@@ -40,7 +39,7 @@ typedef struct dbj_string {
 /*
 allocate the new structure
 */
-dbj_string* dbj_string_null();
+dbj_string* dbj_string_make_empty();
 
 /*
 return true if front and back are not NULL
