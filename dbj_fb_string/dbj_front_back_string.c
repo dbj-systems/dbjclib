@@ -13,23 +13,25 @@ Concept 2: minimize the use of the string.h
 
 */
 
-#include "../dbjclib_core.h"
 #include "dbj_front_back_string.h"
-
+#include "../dbjclib_core.h"
 
 #ifndef DBJ_MALLOC
-#define DBJ_MALLOC(N) calloc(1,N)
+#define DBJ_MALLOC(N) calloc(1, N)
 #endif
 
 /* private utils */
-static size_t private_strlen( char const * str_ ) {
-	assert( str_ );
-	char* walker_ = (char*)str_;
+static size_t private_strlen(char const *str_)
+{
+	assert(str_);
+	char *walker_ = (char *)str_;
 	size_t rezult_ = 0;
-	while (walker_ != '\0') {
+	while (walker_ != '\0')
+	{
 		rezult_ += 1;
 		walker_++;
-		if (rezult_ == DBJ_MAX_STRING_LENGTH) break;
+		if (rezult_ == DBJ_MAX_STRING_LENGTH)
+			break;
 	}
 	return rezult_;
 }
@@ -37,32 +39,37 @@ static size_t private_strlen( char const * str_ ) {
 /*
 allocate the new structure
 */
- dbj_string * dbj_string_make_empty()
+dbj_string *dbj_string_make_empty()
 {
-	dbj_string * pair_ = (dbj_string *)DBJ_MALLOC(sizeof(dbj_string));
+	dbj_string *pair_ = (dbj_string *)DBJ_MALLOC(sizeof(dbj_string));
 	assert(pair_);
-	pair_->front = 0; pair_->back = 0; pair_->full_free = false; return pair_;
+	pair_->front = 0;
+	pair_->back = 0;
+	pair_->full_free = false;
+	return pair_;
 }
 
 /*
 return true if front and back are not NULL
-and are not equal
 and size is in the allowed boundaries
 */
- bool dbj_valid_string(const dbj_string * str)
+bool dbj_valid_string(const dbj_string *str)
 {
-	if (!str) return false;
+	if (!str)
+		return false;
 	return (
-		str->front && str->back && ((str->back - str->front) > 0)
-		&& (DBJ_MAX_STRING_LENGTH > (str->back - str->front))
-		);
+		str->front && str->back && ((str->back - str->front) > 0) && (DBJ_MAX_STRING_LENGTH > (str->back - str->front)));
 }
 
-
- void dbj_string_free(dbj_string * str)
+void dbj_string_free(dbj_string *str)
 {
 	assert(str);
-	if (str->full_free) free((void*)str->front);
+
+	if (str->full_free)
+		free((void *)str->front);
+	else
+		str->front = NULL; /* must unlink so that free bellow does not try and free this too */
+
 	free(str);
 	str = 0;
 }
@@ -70,9 +77,9 @@ and size is in the allowed boundaries
 /*
 just a pointer distance
 */
- const size_t dbj_string_len(const dbj_string * str_)
+const size_t dbj_string_len(const dbj_string *str_)
 {
-	assert( dbj_valid_string(str_));
+	assert(dbj_valid_string(str_));
 	return (size_t)(str_->back - str_->front);
 }
 
@@ -81,13 +88,13 @@ effectively make a dbj_string from const char *
 if arg is longer then DBJ_MAX_STRING_LENGTH
 that is where the bacj wikk be
 */
- dbj_string *
-dbj_string_make_view(const char * string_)
+dbj_string *
+dbj_string_make_view(const char *string_)
 {
 	const size_t slen = private_strlen(string_);
 	assert(DBJ_MAX_STRING_LENGTH > slen);
 
-	dbj_string* pair_ = dbj_string_make_empty();
+	dbj_string *pair_ = dbj_string_make_empty();
 
 	/* front not to be freed */
 	pair_->full_free = false;
@@ -100,37 +107,40 @@ dbj_string_make_view(const char * string_)
 /*
 make and allocate for a size givent
 */
- dbj_string * dbj_string_alloc(size_t count)
+dbj_string *dbj_string_alloc(size_t count)
 {
-	dbj_string* rez = dbj_string_make_empty();
+	dbj_string *rez = dbj_string_make_empty();
 
 	assert(DBJ_MAX_STRING_LENGTH > count);
-	char* payload = (char*)calloc(count, 1);
+	char *payload = (char *)calloc(count, 1);
 	assert(payload);
-		rez->full_free = true;
-		rez->front = payload;
-		rez->back  = payload + count;
+	rez->full_free = true;
+	rez->front = payload;
+	rez->back = payload + count;
 	return rez;
 }
 
- dbj_string * dbj_string_append(
-	const dbj_string * left_,
-	const dbj_string * right_
-)
+dbj_string *dbj_string_append(
+	const dbj_string *left_,
+	const dbj_string *right_)
 {
 	assert(dbj_valid_string(left_));
 	assert(dbj_valid_string(right_));
 
-	dbj_string * rezult_ = dbj_string_alloc(dbj_string_len(left_) + dbj_string_len(right_));
-	char * w_ = 0;
-	char * r_ = rezult_->front;
+	dbj_string *rezult_ = dbj_string_alloc(dbj_string_len(left_) + dbj_string_len(right_));
+	char *w_ = 0;
+	char *r_ = rezult_->front;
 
-	for (w_ = left_->front; w_ != left_->back; ++w_) {
-		*r_ = *w_; ++r_;
+	for (w_ = left_->front; w_ != left_->back; ++w_)
+	{
+		*r_ = *w_;
+		++r_;
 	}
 
-	for (w_ = right_->front; w_ != right_->back; ++w_) {
-		*r_ = *w_; ++r_;
+	for (w_ = right_->front; w_ != right_->back; ++w_)
+	{
+		*r_ = *w_;
+		++r_;
 	}
 
 	assert((rezult_->back - rezult_->front) > 0);
@@ -142,21 +152,23 @@ make and allocate for a size givent
 compare the contents of two strings,
 return true if equal
 */
- bool dbj_string_compare(
-	const dbj_string * left_,
-	const dbj_string * right_
-)
+bool dbj_string_compare(
+	const dbj_string *left_,
+	const dbj_string *right_)
 {
 	assert(dbj_valid_string(left_));
 	assert(dbj_valid_string(right_));
 
-	if (dbj_string_len(left_) != dbj_string_len(right_)) return false;
+	if (dbj_string_len(left_) != dbj_string_len(right_))
+		return false;
 
-	char * l_ = left_->front;
-	char * r_ = right_->front;
+	char *l_ = left_->front;
+	char *r_ = right_->front;
 
-	for (l_ = left_->front; l_ != left_->back; ++l_) {
-		if (*l_ != *r_) return false;
+	for (l_ = left_->front; l_ != left_->back; ++l_)
+	{
+		if (*l_ != *r_)
+			return false;
 		++r_;
 	}
 	return true;
@@ -166,18 +178,20 @@ return true if equal
 take sub range as requested
 free the string struct eventually but not the front pointer
 */
- dbj_string * dbj_string_from(const char * str, size_t from_, size_t to_)
+dbj_string *dbj_string_view(const char *str, size_t from_, size_t to_)
 {
 	from_ -= 1;
-	// to_ -= 1; we do not move the 'to' left since the concept is 
+	// to_ -= 1; we do not move the 'to' left since the concept is
 	// back pointer is one beyond the last 'to'
-	if ((to_ - from_) > private_strlen(str)) {
-		errno = EINVAL; return NULL;
+	if ((to_ - from_) > private_strlen(str))
+	{
+		errno = EINVAL;
+		return NULL;
 	}
-	dbj_string * retval = dbj_string_make_empty();
+	dbj_string *retval = dbj_string_make_empty();
 	// full_free is false here already
-	retval->front = (char *)& str[from_];
-	retval->back = (char *)& str[to_];
+	retval->front = (char *)&str[from_];
+	retval->back = (char *)&str[to_];
 	return retval;
 }
 /*
@@ -186,35 +200,38 @@ is CONTENT of sub inside the CONTENT of str ?
 return the sub-range as dbj_string with pointers to the same buffer
 or NULL , with errno set to the the error
 */
- dbj_string *  dbj_to_subrange(dbj_string * str_, dbj_string * sub_)
+dbj_string *dbj_to_subrange(dbj_string *str_, dbj_string *sub_)
 {
 	assert(str_ && sub_);
 	assert(dbj_string_len(str_) > 0);
 	assert(dbj_string_len(sub_) > 0);
 	assert(dbj_string_len(sub_) < dbj_string_len(str_));
 
-	dbj_string * sub_range_ = 0;
+	dbj_string *sub_range_ = 0;
 
 	/* outer loop is walk along the string */
-	for (char * sp = str_->front; sp < str_->back; ++sp) {
+	for (char *sp = str_->front; sp < str_->back; ++sp)
+	{
 		/* potenial substr start */
 		if (*sp == *sub_->front)
 		{
-			char * sub_start_location = sp;
+			char *sub_start_location = sp;
 			bool sub_found_flag = false;
 			/* walk along the potential substring */
-			for (char * sw = sub_->front; sw != sub_->back; ++sw)
+			for (char *sw = sub_->front; sw != sub_->back; ++sw)
 			{
 				/* compare sub and str char's*/
 				sub_found_flag = (*sw == *sp);
 				/* and move the outer walker to */
 				++sp;
 				/* finish the loop */
-				if (!sub_found_flag) break;
+				if (!sub_found_flag)
+					break;
 			}
 			/* inner loop has finished    */
 			/* and there where no misses? */
-			if (sub_found_flag) {
+			if (sub_found_flag)
+			{
 				sub_range_ = dbj_string_make_empty();
 				sub_range_->front = sub_start_location;
 				sub_range_->back = sp;
@@ -224,20 +241,23 @@ or NULL , with errno set to the the error
 		}
 	}
 	/* none found */
-	errno = EINVAL;	return 0;
+	errno = EINVAL;
+	return 0;
 }
 
 /*
 	is pointer p pointing inside the string range?
 	return DBJ_NPOS if not found
 */
- const size_t dbj_p_is_in_range(const char * p_, dbj_string * str_) {
+const size_t dbj_p_is_in_range(const char *p_, dbj_string *str_)
+{
 
 	/* walk along the source */
-	char * char_p = (char *)p_;
-	for (char * walker = str_->front; *walker != *str_->back; ++walker)
+	char *char_p = (char *)p_;
+	for (char *walker = str_->front; *walker != *str_->back; ++walker)
 	{
-		if (char_p == walker) return (size_t)(walker - str_->front);
+		if (char_p == walker)
+			return (size_t)(walker - str_->front);
 	}
 	return DBJ_NPOS;
 }
@@ -246,12 +266,13 @@ or NULL , with errno set to the the error
 	the string content
 	return the location or DBJ_NPOS if not found
 */
- const size_t dbj_c_is_in_range(const char c_, dbj_string * str_)
+const size_t dbj_c_is_in_range(const char c_, dbj_string *str_)
 {
 	/* walk along the source */
-	for (char * walker = str_->front; *walker != *str_->back; ++walker)
+	for (char *walker = str_->front; *walker != *str_->back; ++walker)
 	{
-		if (c_ == *walker) return (size_t)(walker - str_->front);
+		if (c_ == *walker)
+			return (size_t)(walker - str_->front);
 	}
 	return DBJ_NPOS;
 }
@@ -259,28 +280,27 @@ or NULL , with errno set to the the error
 /*
 return append left and right of a sub_range
 */
- dbj_string * dbj_remove_substring
-(dbj_string * range, dbj_string * sub_range)
+dbj_string *dbj_remove_substring(dbj_string *range, dbj_string *sub_range)
 {
 	// the big sanity check first
 	if (!((range->front < sub_range->front) && (sub_range->back < range->back)))
 	{
-		errno = EINVAL; return 0;
+		errno = EINVAL;
+		return 0;
 	}
 
-	dbj_string * left = dbj_string_make_empty();
-	dbj_string * right = dbj_string_make_empty();
+	dbj_string *left = dbj_string_make_empty();
+	dbj_string *right = dbj_string_make_empty();
 
-	left->front = range->front; left->back = sub_range->front;
-	right->front = sub_range->back; right->back = range->back;
+	left->front = range->front;
+	left->back = sub_range->front;
+	right->front = sub_range->back;
+	right->back = range->back;
 
-	dbj_string * rez = dbj_string_append(left, right);
+	dbj_string *rez = dbj_string_append(left, right);
 
 	dbj_string_free(left);
 	dbj_string_free(right);
 
 	return rez;
 }
-
-
-

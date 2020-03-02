@@ -11,13 +11,13 @@
 // thus sub(5,7) is '567'
 #define SPECIMEN "1234567890"
 
-        dbj_string *sub = dbj_string_from("456", 1, 3);
+        dbj_string *sub = dbj_string_view("456", 1, 3);
 
         assert(
             /* "456" == "456" */
             dbj_string_compare(
-                dbj_string_from("12456", 3, 5),
-                dbj_string_from("45612", 1, 3)));
+                dbj_string_view("12456", 3, 5),
+                dbj_string_view("45612", 1, 3)));
 
         dbj_string *o2z = dbj_string_make_view(SPECIMEN);
         // this yields DBJ_NPOS since "3" is different memory chunk

@@ -22,28 +22,34 @@ dbj_front_back_string_test(const MunitParameter params[], void *data)
 // thus sub(5,7) is '567'
 #define SPECIMEN "1234567890"
 
-  dbj_string *dbj_str_1 = dbj_string_from("12456", 3, 5); /* should make "456" dbj_string */
-  dbj_string *dbj_str_2 = dbj_string_from("45612", 1, 3); /* should make "456" dbj_string */
+  // remember: no memory is allocated for the strings viewed
+  // thus be carefull to keep them arround
+  dbj_string *dbj_str_1 = dbj_string_view("12456", 3, 5); /* should make "456" dbj_string */
+  dbj_string *dbj_str_2 = dbj_string_view("45612", 1, 3); /* should make "456" dbj_string */
 
   munit_assert_true(
       dbj_string_compare(dbj_str_1, dbj_str_2));
 
-  munit_assert_string_equal(
+  /* remember: fronts are not zero terminated strings */
+  munit_assert_string_not_equal(
       dbj_str_1->front, dbj_str_2->front);
 
   dbj_string_free(dbj_str_1);
   dbj_string_free(dbj_str_2);
   return MUNIT_OK;
-  #undef SPECIMEN
+#undef SPECIMEN
 }
 
 /* Creating a test suite is pretty simple.  First, you'll need an
  * array of tests: */
 static MunitTest test_suite_tests[] = {
-    {(char *)"dbj_front_back_string_test", dbj_front_back_string_test, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}};
+    {(char *)"dbj_front_back_string_test", dbj_front_back_string_test, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    /* MUST! Mark the end of the array with an entry where the test
+   * function is NULL */
+    {NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}};
 
-static const MunitSuite test_suite = 
-{ (char *)"",    test_suite_tests,   NULL,    1,    MUNIT_SUITE_OPTION_NONE};
+static const MunitSuite test_suite =
+    {(char *)"", test_suite_tests, NULL, 1, MUNIT_SUITE_OPTION_NONE};
 
 /* This is only necessary for EXIT_SUCCESS and EXIT_FAILURE, which you
  * *should* be using but probably aren't (no, zero and non-zero don't
@@ -63,5 +69,5 @@ int main(int argc, char *argv[MUNIT_ARRAY_PARAM(argc + 1)])
   /* Finally, we'll actually run our test suite!  That second argument
    * is the user_data parameter which will be passed either to the
    * test or (if provided) the fixture setup function. */
-  return munit_suite_main(&test_suite, (void *)"µnit", argc, argv);
+  return munit_suite_main(&test_suite, (void *)NULL, argc, argv);
 }

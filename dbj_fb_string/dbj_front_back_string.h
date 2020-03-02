@@ -81,7 +81,7 @@ bool dbj_string_compare(
 take sub range as requested
 free the string struct eventually but not the front pointer
 */
-dbj_string* dbj_string_from(const char* str, size_t from_, size_t to_);
+dbj_string* dbj_string_view(const char* str, size_t from_, size_t to_);
 /*
 is CONTENT of sub inside the CONTENT of str ?
 
