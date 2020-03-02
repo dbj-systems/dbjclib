@@ -1,0 +1,54 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "clean",
+            "type": "shell",
+            "command": "del /s *.obj *.exe *.pdb *.ilk",
+            "problemMatcher": []
+        },
+        {
+            "label": "debug_build",
+            "type": "shell",
+            "command": "cl.exe",
+            "args": [
+                "/MDd",
+                "/I",
+                "${workspaceFolder}\\sampling",
+                "/Zi",
+                "/Fe:",
+                "${workspaceFolder}\\sampling\\munit_dbg.exe",
+                "${workspaceFolder}\\sampling\\example.c",
+                "${workspaceFolder}\\munit.c"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "msvc release build",
+            "type": "shell",
+            "command": "cl.exe",
+            "args": [
+                "/MDd",
+                "/Fe:",
+                "${workspaceFolder}\\sampling\\munit.exe",
+                "${workspaceFolder}\\sampling\\example.c",
+                "${workspaceFolder}\\munit.c"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}

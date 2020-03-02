@@ -1,4 +1,5 @@
-# dbjclib
+# dbjCLIB&trade;
+
 #### &copy; by [dusanjovanovic.org](mailto:dbj@dbj.org)
 
 ### Motivation
@@ -40,4 +41,3 @@ In case you hotly dislike or hotly like this work, or anything else on the long 
 #### [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 
 [![dbj();](https://dbj.org/wp-content/uploads/2015/12/cropped-dbj-icon-e1486129719897.jpg)](http://www.dbj.org "dbj")  
-
