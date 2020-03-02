@@ -1,49 +1,30 @@
 
-#ifdef DO_NOT_AVOID 
+#include "munit/munit.h"
+#include "../dbj_fb_string/dbj_front_back_string.h"
 
-#include "../dbj_string/dbj_front_back_string.h"
-#include <stdio.h>
-#include <assert.h>
-
-    int dbj_front_back_string_test(FILE *fp_)
-    {
+MunitResult
+dbj_fb_string_test(const MunitParameter params[], void *data)
+{
+  (void)params;
+  (void)data;
 // specimen starts from 1
 // thus sub(5,7) is '567'
 #define SPECIMEN "1234567890"
 
-        dbj_string *sub = dbj_string_view("456", 1, 3);
+  // remember: no memory is allocated for the strings viewed
+  // thus be carefull to keep them arround
+  dbj_string *dbj_str_1 = dbj_string_view("12456", 3, 5); /* should make "456" dbj_string */
+  dbj_string *dbj_str_2 = dbj_string_view("45612", 1, 3); /* should make "456" dbj_string */
 
-        assert(
-            /* "456" == "456" */
-            dbj_string_compare(
-                dbj_string_view("12456", 3, 5),
-                dbj_string_view("45612", 1, 3)));
+  munit_assert_true(
+      dbj_string_compare(dbj_str_1, dbj_str_2));
 
-        dbj_string *o2z = dbj_string_make_view(SPECIMEN);
-        // this yields DBJ_NPOS since "3" is different memory chunk
-        assert(DBJ_NPOS == dbj_p_is_in_range("3", o2z));
-        // this yields 2
-        assert(2 == dbj_p_is_in_range(o2z->front + 2, o2z));
-        // this yields 2
-        assert(2 == dbj_c_is_in_range('3', o2z));
-        /*
-	if subrange is made, that means sub is
-	found to be a substring  of the string
-	by comparing the *contents*
-	*/
-        dbj_string *sub_range = dbj_to_subrange(o2z, sub);
-        assert(sub_range);
+  /* remember: fronts are not zero terminated strings */
+  munit_assert_string_not_equal(
+      dbj_str_1->front, dbj_str_2->front);
 
-        /*
-	thus we can use it to remove the subrange
-	*/
-        dbj_string *rez = dbj_remove_substring(o2z, sub_range);
-
-        dbj_string_free(sub_range);
-        dbj_string_free(sub);
-        dbj_string_free(rez);
-
-		return 42;
-    }
-
-#endif // DO_NOT_AVOID 
+  dbj_string_free(dbj_str_1);
+  dbj_string_free(dbj_str_2);
+  return MUNIT_OK;
+#undef SPECIMEN
+}

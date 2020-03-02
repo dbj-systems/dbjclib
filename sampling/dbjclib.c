@@ -1,7 +1,5 @@
-/* µnit is MIT-licensed, but for this file and this file alone: */
+/* µnit is MIT-licensed */
 #include "munit/munit.h"
-
-#include "../dbj_fb_string/dbj_front_back_string.h"
 
 /* This is just to disable an MSVC warning about conditional
  * expressions being constant, which you shouldn't have to do for your
@@ -12,40 +10,23 @@
 #endif
 
 /* Tests are functions that return void, and take a single void*
- * parameter.  We'll get to what that parameter is later. */
-static MunitResult
-dbj_front_back_string_test(const MunitParameter params[], void *data)
-{
-  (void)params;
-  (void)data;
-// specimen starts from 1
-// thus sub(5,7) is '567'
-#define SPECIMEN "1234567890"
+ * parameter.  We'll get to what that params is later. 
+ */
+/**********************************************************************/
+extern MunitResult
+dbj_sll_test(const MunitParameter params[], void *data);
 
-  // remember: no memory is allocated for the strings viewed
-  // thus be carefull to keep them arround
-  dbj_string *dbj_str_1 = dbj_string_view("12456", 3, 5); /* should make "456" dbj_string */
-  dbj_string *dbj_str_2 = dbj_string_view("45612", 1, 3); /* should make "456" dbj_string */
+extern MunitResult
+dbj_fb_string_test(const MunitParameter params[], void *data);
 
-  munit_assert_true(
-      dbj_string_compare(dbj_str_1, dbj_str_2));
-
-  /* remember: fronts are not zero terminated strings */
-  munit_assert_string_not_equal(
-      dbj_str_1->front, dbj_str_2->front);
-
-  dbj_string_free(dbj_str_1);
-  dbj_string_free(dbj_str_2);
-  return MUNIT_OK;
-#undef SPECIMEN
-}
-
+/**********************************************************************/
 /* Creating a test suite is pretty simple.  First, you'll need an
  * array of tests: */
 static MunitTest test_suite_tests[] = {
-    {(char *)"dbj_front_back_string_test", dbj_front_back_string_test, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
-    /* MUST! Mark the end of the array with an entry where the test
-   * function is NULL */
+    {(char *)"dbj front back string test", dbj_fb_string_test, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char *)"dbj single linked lst test",       dbj_sll_test, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    
+    /* MUST! Mark the end of the array with an entry where the test function is NULL */
     {NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}};
 
 static const MunitSuite test_suite =
@@ -56,7 +37,7 @@ static const MunitSuite test_suite =
  * always mean success and failure).  I guess my point is that nothing
  * about µnit requires it. */
 #include <stdlib.h>
-
+/**********************************************************************/
 int main(int argc, char *argv[MUNIT_ARRAY_PARAM(argc + 1)])
 {
 /* DBJ added
@@ -66,7 +47,7 @@ int main(int argc, char *argv[MUNIT_ARRAY_PARAM(argc + 1)])
 #if defined(_MSC_VER)
   system("@chcp 65001 >NUL");
 #endif
-  /* Finally, we'll actually run our test suite!  That second argument
+  /* That second argument
    * is the user_data parameter which will be passed either to the
    * test or (if provided) the fixture setup function. */
   return munit_suite_main(&test_suite, (void *)NULL, argc, argv);

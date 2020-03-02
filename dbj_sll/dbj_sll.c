@@ -243,15 +243,18 @@ dbj_sll_append(dbj_sll_node * head_, const char * str_)
 /********************************************************/
 /* sll visitors                                         */
 /********************************************************/
+FILE * dbj_sll_output_target_ = 0 ;
 bool dbj_sll_node_dump_visitor(dbj_sll_node * node_)
 {
-
+	FILE * target_ = (dbj_sll_output_target_ ? dbj_sll_output_target_ : stderr  );
+	
 	assert(node_);
-	printf("\n\n%p", node_);
-	printf("\n--------------------------------------");
-	printf("\nKey: %ld", node_->key);
-	printf("\nStr: [%s]", (node_->data ? node_->data : "NULL"));
-	printf("\nNext: %p", (node_->next ? node_->next : 0x0));
+
+	fprintf( target_, "\n\n%p", node_);
+	fprintf( target_, "\n--------------------------------------");
+	fprintf( target_, "\nKey: %ld", node_->key);
+	fprintf( target_, "\nStr: [%s]", (node_->data ? node_->data : "NULL"));
+	fprintf( target_, "\nNext: %p", (node_->next ? node_->next : 0x0));
 	/* return false as a signal NOT to stop */
 	return false;
 }

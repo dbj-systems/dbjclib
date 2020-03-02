@@ -10,7 +10,7 @@ extern "C" {
 
 	int dbj_string_list_test(FILE*);
 
-	int dbj_front_back_string_test(FILE*);
+	int dbj_fb_string_test(FILE*);
 
 	int dbj_string_trim_test(FILE*);
 
