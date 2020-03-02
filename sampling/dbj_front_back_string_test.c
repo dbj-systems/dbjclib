@@ -1,4 +1,6 @@
 
+#ifdef DO_NOT_AVOID 
+
 #include "../dbj_string/dbj_front_back_string.h"
 #include <stdio.h>
 #include <assert.h>
@@ -43,3 +45,5 @@
 
 		return 42;
     }
+
+#endif // DO_NOT_AVOID 

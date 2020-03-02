@@ -43,8 +43,8 @@ namespace dbjclib {
 extern "C" {
 #endif
 
-#include "dbj_string/dbj_string_trim.h"
-#include "dbj_string/dbj_front_back_string.h"
+#include "dbj_str_trim/dbj_string_trim.h"
+#include "dbj_fb_string/dbj_front_back_string.h"
 #include "dbj_sll/dbj_sll.h" 
 #include "dbj_string_list/dbj_string_list.h"
 
@@ -57,23 +57,26 @@ extern "C" {
 #pragma clang diagnostic pop
 #endif
 
+#if 0
 /*
 for this to work add the dbjlib folder to addional directories 
 for linker, in project properties
 */
 #ifdef NDEBUG
 #if defined( _WIN32 ) 
-#pragma comment(lib, "dbjclib_x86_Release.lib")
+#pragma comment(lib, "lib/dbjclib_x86_Release.lib")
 #else // _WIN64
-#pragma comment(lib, "dbjclib_x64_Release.lib")
+#pragma comment(lib, "lib/dbjclib_x64_Release.lib")
 #endif
 #else /* DEBUG */
 #if defined( _WIN64 ) 
-#pragma comment(lib, "dbjclib_x64_Debug.lib")
+#pragma comment(lib, "lib/dbjclib_x64_Debug.lib")
 #else // _WIN32
-#pragma comment(lib, "dbjclib_86_Debug.lib")
+#pragma comment(lib, "lib/dbjclib_86_Debug.lib")
 #endif
 #endif
+
+#endif // 0
 
 #endif // ! _DBJ_CLIB_API_
 

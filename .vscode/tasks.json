@@ -13,13 +13,17 @@
             "command": "cl.exe",
             "args": [
                 "/MDd",
-                "/I",
-                "${workspaceFolder}\\sampling",
                 "/Zi",
                 "/Fe:",
                 "${workspaceFolder}\\sampling\\dbjclib_dbg.exe",
+                "${workspaceFolder}\\*.c",
                 "${workspaceFolder}\\sampling\\*.c",
-                "${workspaceFolder}\\sampling\\munit\\munit.c"
+                "${workspaceFolder}\\dbj_fb_string\\*.c",
+                "${workspaceFolder}\\dbj_sll\\*.c",
+                "${workspaceFolder}\\dbj_str_trim\\*.c",
+                "${workspaceFolder}\\dbj_string\\*.c",
+                "${workspaceFolder}\\dbj_string_list\\*.c",
+                "${workspaceFolder}\\sampling\\munit\\*.c"
             ],
             "group": {
                 "kind": "build",
@@ -37,9 +41,10 @@
             "args": [
                 "/MDd",
                 "/Fe:",
-                "${workspaceFolder}\\sampling\\munit.exe",
-                "${workspaceFolder}\\sampling\\example.c",
-                "${workspaceFolder}\\munit.c"
+                "${workspaceFolder}\\sampling\\dbjclib.exe",
+                "${workspaceFolder}\\*.c",
+                "${workspaceFolder}\\sampling\\*.c",
+                "${workspaceFolder}\\sampling\\munit\\*.c"
             ],
             "group": {
                 "kind": "build",
