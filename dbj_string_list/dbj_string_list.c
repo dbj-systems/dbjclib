@@ -70,7 +70,14 @@ dbj_string_list_type dbj_string_list_append (dbj_string_list_type head_, const d
 	// WARNING : the last slot is reserved for sentinel
 	// str_ can not be placed in the last slot
 	size_t current_count_ = (end_ - head_);
+	#ifdef  _DEBUG 
 	assert((1+ current_count_) < dbj_string_list_max_capacity);
+	#else
+	/* RELEASE */
+	if((1+ current_count_) > dbj_string_list_max_capacity){
+			errno = EINVAL; return NULL;
+	}
+	#endif
 
 	if (false == ((1+ current_count_) < dbj_string_list_max_capacity)) {
 		errno = ENOMEM; return NULL;
