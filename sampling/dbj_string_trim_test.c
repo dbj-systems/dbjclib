@@ -1,11 +1,9 @@
-#include "../dbjclib.h"
-#include <string.h>
-#include <assert.h>
+#include "../dbj_str_trim/dbj_string_trim.h"
+#include "munit/munit.h"
 
 	// DBJ proposal :
 	//
 	// void using namespace ::std;
-	//
 	// stop using namespace
 
 	// testing data
@@ -30,7 +28,7 @@
 		bool zero_limited_string 
 	)
 	{
-		assert(text != NULL);
+		munit_assert_true (text != NULL);
 
 		if (*text == '\0') {
 			char * rezbuf = calloc(1, 1);
@@ -73,7 +71,7 @@
 
 	// extern "C" void dbj_string_trim_test();
 
-	int dbj_string_trim_test( FILE * fp_ ) 
+	MunitResult dbj_string_trim_test(const MunitParameter params[], void *data)
 	{
 
 		// the classic use case is trimming spaces
@@ -83,11 +81,16 @@
 
 		// using zero delimited strings
 		// results are predictable
-		trim_assert(target, 0, true);
-		trim_assert(target, 1, true);
-		trim_assert(target, 2, true);
-		trim_assert(" ",	3, true);
-		trim_assert("",		4, true);
+		munit_assert_true(
+		trim_assert(target, 0, true));
+		munit_assert_true(
+		trim_assert(target, 1, true));
+		munit_assert_true(
+		trim_assert(target, 2, true));
+		munit_assert_true(
+		trim_assert(" ",	3, true));
+		munit_assert_true(
+		trim_assert("",		4, true));
 
 		// using the whole buffer
 		// that is: NON zero limited strings?
@@ -99,9 +102,12 @@
 		// locale resilient manner
 		current_dbj_string_trim_policy = dbj_move_if_not_alnum;
 
-		trim_assert(target, 0, false);
-		trim_assert(target, 1, false);
-		trim_assert(target, 2, false);
+		munit_assert_true(
+		trim_assert(target, 0, false));
+		munit_assert_true(
+		trim_assert(target, 1, false));
+		munit_assert_true(
+		trim_assert(target, 2, false));
 
 		// results are not that predictable
 		// when trimming char array vs strings 

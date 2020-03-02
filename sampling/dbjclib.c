@@ -13,6 +13,7 @@
  * parameter.  We'll get to what that params is later. 
  */
 /**********************************************************************/
+extern MunitResult dbj_string_trim_test(const MunitParameter params[], void *data);
 extern MunitResult dbj_string_list_performance(const MunitParameter params[], void *data);
 extern MunitResult dbj_string_list_precision(const MunitParameter params[], void *data);
 extern MunitResult dbj_sll_test(const MunitParameter params[], void *data);
@@ -22,6 +23,8 @@ extern MunitResult dbj_fb_string_test(const MunitParameter params[], void *data)
 /* Creating a test suite is pretty simple.  First, you'll need an
  * array of tests: */
 static MunitTest test_suite_tests[] = {
+    {(char *)"dbj string trim test", dbj_string_trim_test, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+
     {(char *)"dbj string list performance", dbj_string_list_performance, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
     {(char *)"dbj string list precision", dbj_string_list_precision, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
 
