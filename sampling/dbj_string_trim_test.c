@@ -47,12 +47,13 @@
 
 		dbj_string_trim(text, &front_, &back_);
 
-		// declare VLA
-		const __int64 rez_size_ = back_ - front_;
-		char * rezbuf = calloc(rez_size_,1);
-		// copy to VLA
-		memcpy(rezbuf, front_, back_ - front_);
-		// return the heap allocated copy of the VLA
+		const __int64 rez_size_ = (back_ + 1 - front_);
+		char * rezbuf = calloc(1 + rez_size_,sizeof(char));
+munit_assert_true(rezbuf);
+		memcpy(rezbuf, front_, rez_size_);
+		// we can add 1 since we are smaller than text
+		// bcause we are triming it
+		rezbuf[rez_size_] = '\0';
 		return rezbuf ;
 	}
 
@@ -122,7 +123,7 @@
 		free((void *)r_0);
 		free((void *)r_1);
 
-		return true;
+		return MUNIT_OK;
 	}
 
 

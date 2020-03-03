@@ -102,7 +102,7 @@ Special "TLS_HEAD" global per this thread
 sThread Local Storage (TLS) solution
  */
 dbj_sll_node * dbj_sll_tls_head() {
-	dbj_thread_local dbj_sll_node
+	static dbj_thread_local dbj_sll_node
 		dbj_sll_tls_head_ = { DBJ_SLL_HEAD_KEY, 0 , 0 };
 	return &dbj_sll_tls_head_;
 }
