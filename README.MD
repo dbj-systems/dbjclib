@@ -1,34 +1,28 @@
 # dbjCLIB&trade;
 
+> Disclaimer: Various working and usable Proofs Of Concepts (POC). Unless stated otherwise. Thus, I am affraid, no warranties of any kind, whatsoever.
+
 #### &copy; by [dusanjovanovic.org](mailto:dbj@dbj.org)
 
 ### Motivation
 
-C LIB to be used for R&D and/or for testing the DBJ C++ code.
-
 DBJ are an Imagined Company. They use C++, but very often with no exceptions, no `<iostream>` and no std lib.
 
+For the last interesting material on "Why C", perhaps one can observe the FUSHIA Zircon Kernel material.
 
-**Disclaimer: Various working and usable Proofs Of Concepts (POC). Unless stated otherwise. Thus, I am affraid, no warranties of any kind, whatsoever.**
+We do agree with the roles of [C and C++ described in there](https://fuchsia.dev/fuchsia-src/development/languages/c-cpp). And that is not the only team saying so.
 
 ### Testing
 
-There is/will be, separate `tests` folder. Files under that folder are not part of the library.
-To test this lib, link it in and also include files from under `tests` into your project.
+That part is in the `sampling` folder. Files under that folder are not part of the library.
 
-Test unit footprint is:
-
-```cpp
-typedef int (*) (FILE *) test_unit ;
-```
-
-Thus test output will go wherever you want it to go.
+Testing [README](sampling/readme.md) is available.
 
 ### Building
 
-This is LLVM C LIB made and used by Visual Studio 2019 solutions.
+This is CLANG 9.x, C LIB made and used by Visual Studio 2019 clang 9.x as packaged with it.
 
-Basically MSFT are denying any C involvment when talking about CL. Thus  LLVM + Visual Studio = the real C compiler.
+Last several years basically Visual Studio and UCRT teams, are almost denying any C involvement when talking about CL. Thus for us  CLANG + Visual Studio is the C compiler we use.
 
 -------------------------------------
 
