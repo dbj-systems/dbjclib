@@ -125,7 +125,13 @@
 #elif (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201102L)) || defined(_Thread_local)
 #  define MUNIT_THREAD_LOCAL _Thread_local
 #elif defined(_WIN32)
+/* DBJ ADDED! */
+#ifdef _KERNEL_MODE
+#  define MUNIT_THREAD_LOCAL 
+#else
 #  define MUNIT_THREAD_LOCAL __declspec(thread)
+#endif
+/* DBJ ADDED! */
 #endif
 
 /* MSVC 12.0 will emit a warning at /W4 for code like 'do { ... }

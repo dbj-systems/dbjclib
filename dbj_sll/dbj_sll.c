@@ -31,7 +31,15 @@ limitations under the License.
 
 /* apparently only *static extern* variables can use thread local storage */
 #ifdef _MSC_VER
-#define dbj_thread_local __declspec(thread) static
+
+/* DBJ ADDED! */
+#ifdef _KERNEL_MODE
+#  define dbj_thread_local 
+#else
+#  define dbj_thread_local __declspec(thread)
+#endif
+/* DBJ ADDED! */
+
 #define dbj_malloc(type, count) (type *)malloc( count * sizeof(type))
 #else
 #define dbj_thread_local static __thread 

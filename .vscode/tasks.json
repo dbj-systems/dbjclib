@@ -4,7 +4,7 @@
         {
             "label": "clean",
             "type": "shell",
-            "command": "del /s *.obj *.exe *.pdb *.ilk",
+            "command": "del /s *.obj *.exe *.pdb *.ilk *.user" ,
             "problemMatcher": []
         },
         {
@@ -13,6 +13,7 @@
             "command": "cl.exe",
             "args": [
                 "/MDd",
+                "/kernel",
                 "/Zi",
                 "/Fe:",
                 "${workspaceFolder}\\sampling\\dbjclib_dbg.exe",
