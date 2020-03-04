@@ -1,23 +1,64 @@
 #ifndef _DBJ_STRING_TRIM_INC_
 #define _DBJ_STRING_TRIM_INC_
+/*
+To "trim" is not the same as char replace. Triming means "cut off from left or right or both".
+What to trim is the question of trimming policy you can define for this trimmer. 
 
+  "   TEXT " --> "TEXT" // policy: dbj_is_space
+" \n  TEXT " --> "\n  TEXT" // same policy
+" \n  TEXT " --> "TEXT" // policy: dbj_is_white_space
+
+users need to trim eveything to the '*' char
+
+inline bool find_the_star ( uchar_t c_ ) {
+	if (c_ == '*') return false; // stop
+	return true; // proceed 
+}
+
+dbj_string_trim_policy = find_the_star ;
+
+" \t\n\n\f   *TEXT* \v  \n\n" ---> "*TEXT*"
+
+## Flexibility == Power == Complexity
+
+If user defines the trimming policy differently, the star chars will not
+be left in the result. Here is the ammended trimming policy
+
+// #define LEAVE_THE_STARS_IN
+inline bool find_the_star(uchar_t c_)
+{
+#ifdef LEAVE_THE_STARS_IN
+	if (c_ == '*')
+		return false; // stop
+	return true;	  // proceed
+#else
+	if (isalnum(c_))
+		return false; // stop
+	else
+		return true; // proceed
+#endif
+}
+
+" \t\n\n\f   *TEXT* \v  \n\n" ---> "TEXT"
+
+*/
 
 #include <stdbool.h>
+/*
+Advice: for ASCII escape sequence read https://en.wikipedia.org/wiki/Escape_sequences_in_C
+Advice: read + understand ctype.h
+*/
+#include <ctype.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #pragma region string triming with policies
+
 	typedef unsigned char	uchar_t;
 	typedef bool(*dbj_string_trim_policy)(unsigned char);
-	/*
-	#ifdef _WIN64
-			typedef unsigned __int64 size_t;
-	#else
-			typedef unsigned int	size_t;
-	#endif
-	*/
+
 	inline bool dbj_seek_alnum(uchar_t c)
 	{
 		if (c >= '0' && c <= '9') return false;
@@ -38,8 +79,10 @@ extern "C" {
 	// yes: move the pointer by returning true
 	inline bool dbj_is_white_space(uchar_t c)
 	{
-		return c == '\t' || c == '\r' || c == '\n' || c == '\v' || c == '\f';
+		return isspace(c); // true means proceed
+		// return c == '\t' || c == '\r' || c == '\n' || c == '\v' || c == '\f';
 		// add whatever else you consider white space
+		return false ;
 	}
 
 	/*
