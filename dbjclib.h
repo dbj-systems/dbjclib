@@ -3,7 +3,7 @@
 /*
 Copyright 2017,2018,2019,2020 by dbj@dbj.org
 
-before hotly disagreeing onsome details, and trying to reach me, please read
+before hotly disagreeing on some details, please read
  https://matt.sh/howto-c
 */
 #include <stdint.h>
@@ -20,10 +20,12 @@ http://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-in-system-he
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-function"
 #endif
-
+/*
+--------------------------------------------------------------------------------------------
+*/
 #define dbj_clib_MAJOR  0
 #define dbj_clib_MINOR  4
-#define dbj_clib_PATCH  0
+#define dbj_clib_PATCH  9
 
 #define dbj_clib_VERNUM (dbj_clib_MAJOR * 10000 + dbj_clib_MINOR * 100 + dbj_clib_PATCH)
 
@@ -32,14 +34,32 @@ http://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-in-system-he
 #define dbj_clib_STRINGIFY(  x )  dbj_clib_STRINGIFY_( x )
 #define dbj_clib_STRINGIFY_( x )  #x
 
+#ifdef STRINGIFY
+#error name 'STRINGIFY' already found, please rename in here or at your location if possible
+#else
+#define STRINGIFY dbj_clib_STRINGIFY
+#endif
+/*
+--------------------------------------------------------------------------------------------
+ What is perhaps unique about dbjCLIB? 
+
+ 1. using strong types -- https://dbj.org/c-strong-duck/
+ 2. using valstat -- https://github.com/DBJDBJ/dbj-valstat
+*/
+#ifdef STRONG
+#error STRONG already defined?
+#else
+#define dbj_clib_STRONG(N,T) struct N final { T v; }
+#define STRONG dbj_clib_STRONG
+#endif
+
+#include "valstat_interop.h"
 
 /*
+--------------------------------------------------------------------------------------------
 Note: it is a good idea, while inside c++ to have this inside a namespace
-namespace dbjclib {}
-seems like a good choice
 */
 #ifdef __cplusplus
-namespace dbjclib {
 extern "C" {
 #endif
 
@@ -50,7 +70,6 @@ extern "C" {
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace dbjclib 
 #endif
 
 #ifdef __clang__

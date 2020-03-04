@@ -26,6 +26,7 @@ extern MunitResult dbj_string_list_performance(const MunitParameter [], void *);
 extern MunitResult dbj_string_list_precision(const MunitParameter [], void *);
 extern MunitResult dbj_sll_test(const MunitParameter [], void *);
 extern MunitResult dbj_fb_string_test(const MunitParameter [], void *);
+extern MunitResult dbj_valstat_test(const MunitParameter [], void *);
 
 /**********************************************************************/
 #define DBJ_MUNIT_TEST_ADD( TITLE_, FP_) {(char *)TITLE_, FP_, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}
@@ -54,6 +55,10 @@ static MunitTest sll_tests[] = {
     DBJ_MUNIT_TEST_ADD("/basic", dbj_sll_test),
     DBJ_MUNIT_TEST_EOL};
 
+static MunitTest valstat_tests[] = {
+    DBJ_MUNIT_TEST_ADD("/basic", dbj_valstat_test),
+    DBJ_MUNIT_TEST_EOL};
+
 /* 
 now need to create array of suites
 */
@@ -61,7 +66,8 @@ static MunitSuite suites_array[] = {
   DBJ_MUNIT_SUITE_ADD("/string trim tests", string_trim_tests) ,
   DBJ_MUNIT_SUITE_ADD("/string list tests", string_list_tests),
   DBJ_MUNIT_SUITE_ADD("/fb string tests", fb_string_tests),
-  DBJ_MUNIT_SUITE_ADD("/single linked list tests", sll_tests),
+  DBJ_MUNIT_SUITE_ADD("/s.linked list tests", sll_tests),
+  DBJ_MUNIT_SUITE_ADD("/valstat tests", valstat_tests),
   DBJ_MUNIT_SUITE_EOL
   };
 

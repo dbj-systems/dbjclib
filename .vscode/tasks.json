@@ -22,7 +22,7 @@
                 "${workspaceFolder}\\dbj_fb_string\\*.c",
                 "${workspaceFolder}\\dbj_sll\\*.c",
                 "${workspaceFolder}\\dbj_str_trim\\*.c",
-                "${workspaceFolder}\\dbj_string\\*.c",
+                "${workspaceFolder}\\dbj_crt\\*.c",
                 "${workspaceFolder}\\dbj_string_list\\*.c",
                 "${workspaceFolder}\\sampling\\munit\\*.c"
             ],
@@ -36,15 +36,21 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "msvc release build",
+            "label": "release_build",
             "type": "shell",
             "command": "cl.exe",
             "args": [
                 "/MDd",
+                "/kernel",
                 "/Fe:",
-                "${workspaceFolder}\\sampling\\dbjclib.exe",
+                "${workspaceFolder}\\sampling\\dbjclib_dbg.exe",
                 "${workspaceFolder}\\*.c",
                 "${workspaceFolder}\\sampling\\*.c",
+                "${workspaceFolder}\\dbj_fb_string\\*.c",
+                "${workspaceFolder}\\dbj_sll\\*.c",
+                "${workspaceFolder}\\dbj_str_trim\\*.c",
+                "${workspaceFolder}\\dbj_crt\\*.c",
+                "${workspaceFolder}\\dbj_string_list\\*.c",
                 "${workspaceFolder}\\sampling\\munit\\*.c"
             ],
             "group": {
