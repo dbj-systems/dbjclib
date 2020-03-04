@@ -78,13 +78,13 @@ static bool trim_assert(
 	return outcome_;
 };
 
-MunitResult complex_dbj_string_trim_test(const MunitParameter params[], void *data)
+MunitResult complex_trim_test(const MunitParameter params[], void *data)
 {
 
 	// the classic use case is trimming spaces
 	// from zero delimited string literals
 	// using default triming policy ( char == ' ')
-	current_dbj_string_trim_policy = dbj_is_space;
+	dbj_current_string_trim_policy = dbj_is_space;
 
 	// using zero delimited strings
 	// results are predictable
@@ -107,7 +107,7 @@ MunitResult complex_dbj_string_trim_test(const MunitParameter params[], void *da
 	// this policy will also provoke moving over anything
 	// that is not alphanum but in a more
 	// locale resilient manner
-	current_dbj_string_trim_policy = dbj_move_if_not_alnum;
+	dbj_current_string_trim_policy = dbj_move_to_alnum;
 
 	munit_assert_true(
 		trim_assert(target, 0, false));
@@ -135,7 +135,7 @@ MunitResult complex_dbj_string_trim_test(const MunitParameter params[], void *da
 /* --------------------------------------------------------------------- */
 MunitResult simple_string_trim_test(const MunitParameter p[], void *d)
 {
-	current_dbj_string_trim_policy = dbj_move_if_not_alnum;
+	dbj_current_string_trim_policy = dbj_move_to_alnum;
 	static char *text = "   \n\r\v\t     TEXT   \n\r\v\t     ";
 	static char *trimmed_text = "TEXT";
 
@@ -169,11 +169,12 @@ inline bool stop_on_star_met(uchar_t c_)
 		return true; // proceed
 #endif
 }
-MunitResult user_defined_policy_trim_test(const MunitParameter p[], void *d)
+
+MunitResult user_defined_policy(const MunitParameter p[], void *d)
 {
 	char *front_ = 0;
 	char *back_ = 0;
-	current_dbj_string_trim_policy = stop_on_star_met;
+	dbj_current_string_trim_policy = stop_on_star_met;
 
 	dbj_string_trim("   \n\r\v\t     *TEXT*   \n\r\v\t     ", &front_, &back_);
 
@@ -184,6 +185,59 @@ MunitResult user_defined_policy_trim_test(const MunitParameter p[], void *d)
 #else
 	munit_assert_string_equal(str_, "TEXT");
 #endif
+
+	free(str_);
+	str_ = NULL;
+
+	return MUNIT_OK;
+}
+
+/* --------------------------------------------------------------------- */
+MunitResult trimings_and_errors(const MunitParameter p[], void *d)
+{
+	char *front_ = 0;
+	char *back_ = 0;
+	dbj_current_string_trim_policy = dbj_move_to_alnum;
+
+	// SINGULARITY: empty non NULL string
+	dbj_string_trim("", &front_, &back_);
+	// RESPONSE: front_ == back_ == NULL
+	munit_assert_null(front_);
+	munit_assert_null(back_);
+
+	// SINGULARITY: single alphanum char string
+	dbj_string_trim("*", &front_, &back_);
+	// RESPONSE: front_ == back_  == & input[0]
+	munit_assert_ptr_equal(front_, back_ );
+	munit_assert_uchar( *front_, == , '*');
+
+	front_ = back_ = 0;
+	// SINGULARITY: single whitespace char string
+	dbj_string_trim("\v", &front_, &back_);
+	// RESPONSE: same as if sigle char is alnum
+	munit_assert_ptr_equal(front_, back_ );
+	munit_assert_uchar( *front_, == , '\v');
+
+	front_ = back_ = 0;
+	// SINGULARITY: 2 space char string, both whitespace
+	dbj_string_trim("\v\r", &front_, &back_);
+	// RESPONSE: front == back == input[1]
+	munit_assert_ptr_equal(front_, back_ );
+
+	front_ = back_ = 0;
+	// SINGULARITY: input made of all to be trmed out chars
+	dbj_string_trim("\v\r \n\t  \f  ", &front_, &back_);
+	// RESPONSE: front == back == input[1]
+	munit_assert_ptr_equal(front_, back_ );
+
+	// WARNING: no required delimiters on both ends
+	// RESPONSE: seems to work as if there are
+	front_ = back_ = 0;
+	dbj_string_trim("TEXT", &front_, &back_);
+
+	char *str_ = to_string(front_, back_ + 1);
+
+	munit_assert_string_equal(str_, "TEXT");
 
 	free(str_);
 	str_ = NULL;

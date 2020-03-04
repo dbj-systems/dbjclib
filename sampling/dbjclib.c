@@ -22,9 +22,11 @@
  */
 /**********************************************************************/
 
-extern MunitResult user_defined_policy_trim_test(const MunitParameter [], void *);
+
+extern MunitResult trimings_and_errors(const MunitParameter [], void *);
+extern MunitResult user_defined_policy(const MunitParameter [], void *);
 extern MunitResult simple_string_trim_test(const MunitParameter [], void *);
-extern MunitResult complex_dbj_string_trim_test(const MunitParameter [], void *);
+extern MunitResult complex_trim_test(const MunitParameter [], void *);
 
 extern MunitResult dbj_string_list_performance(const MunitParameter [], void *);
 extern MunitResult dbj_string_list_precision(const MunitParameter [], void *);
@@ -43,9 +45,10 @@ extern MunitResult dbj_valstat_test(const MunitParameter [], void *);
 first need to create arrays of tests, or just one but that is not practical 
 */
 static MunitTest string_trim_tests[] = {
-    DBJ_MUNIT_TEST_ADD("/user defined", user_defined_policy_trim_test),
+    DBJ_MUNIT_TEST_ADD("/wrong input", trimings_and_errors),
+    DBJ_MUNIT_TEST_ADD("/user defined", user_defined_policy),
     DBJ_MUNIT_TEST_ADD("/simple   ", simple_string_trim_test),
-    DBJ_MUNIT_TEST_ADD("/basic test", complex_dbj_string_trim_test),
+    DBJ_MUNIT_TEST_ADD("/basic test", complex_trim_test),
     DBJ_MUNIT_TEST_EOL };
 
 static MunitTest string_list_tests[] = {

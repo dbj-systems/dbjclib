@@ -91,14 +91,12 @@ extern "C" {
 	not using locale but should be prety resilient to local chars
 	since whitespace, space and eos are not locale specific
 	*/
-	inline bool dbj_move_if_not_alnum(uchar_t c) {
+	inline bool dbj_move_to_alnum(uchar_t c) {
 		// positioned on EOS char
 		// thus move the pointer
 		if ((int)c == 0) return true;
-		//
-		if (dbj_is_white_space(c)) return true;
-		//
-		if (dbj_is_space(c)) return true;
+		// space + whitespaces
+		if (isspace(c)) return true;
 		// ask the driver to stop the movement
 		// since c is not any of the above
 		return false;
@@ -114,7 +112,8 @@ extern "C" {
 	by assigning to the global bellow
 	Note: while inside c++ this is all in the dbj::clib namespace
 	*/
-	extern dbj_string_trim_policy current_dbj_string_trim_policy;
+	#define  dbj_default_string_trim_policy  dbj_move_to_alnum
+	extern dbj_string_trim_policy dbj_current_string_trim_policy;
 
 	// if *back_ is NULL then text_
 	// must be zero limited string

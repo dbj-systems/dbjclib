@@ -11,21 +11,18 @@ Copyright 2018-2020 by dbj@dbj.org, CC BY SA 4.0
 	static const char * lowercase_letters[] = { "abcdefghijklmnopqrstuvwxyz" };
 	*/
 
-	// typedef bool(*dbj_string_trim_policy)(unsigned char);
-
-
-	dbj_string_trim_policy current_dbj_string_trim_policy = dbj_is_space ;
+	dbj_string_trim_policy dbj_current_string_trim_policy = dbj_default_string_trim_policy ;
 
 	/*
 	internal front/back driver
 	this is the policy user
 	*/
-	inline void string_trim_front_back_driver(char ** begin_, char ** end_)
+	static void string_trim_front_back_driver(char ** begin_, char ** end_)
 	{
 		// empty string case
 		if (*begin_ == *end_) return;
 
-		while (current_dbj_string_trim_policy(**begin_)) {
+		while (dbj_current_string_trim_policy(**begin_)) {
 			(*begin_)++;
 			// depending on the policy
 			// trim result has collapsed into empty string
@@ -33,7 +30,7 @@ Copyright 2018-2020 by dbj@dbj.org, CC BY SA 4.0
 		};
 
 		// the right trim
-		while (current_dbj_string_trim_policy(**end_)) {
+		while (dbj_current_string_trim_policy(**end_)) {
 			(*end_)--;
 		};
 	}
@@ -48,7 +45,15 @@ Copyright 2018-2020 by dbj@dbj.org, CC BY SA 4.0
 	void dbj_string_trim( const char * text_,	char ** front_, char ** back_	)
 	{
 		assert(text_);
-		assert(current_dbj_string_trim_policy);
+		/* function pointer */
+		assert(dbj_current_string_trim_policy);
+
+		/* singularity: empty not-a-null string */
+		if ( text_[0] == '\0') 
+		{
+			*front_ = *back_ = NULL; 
+			return ;
+		}
 		
 		// do not assume front points to slot [0]
 		// of the input string
