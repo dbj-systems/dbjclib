@@ -42,7 +42,7 @@ char * dbj_strdup(const char *source_)
 
 	size_t destination_size = strlen(source_);
 	// Space for length plus null
-	uchar_t *destination_  = (uchar_t *)DBJ_MALLOC(destination_size + 1);
+	uchar_t *destination_  =  DBJ_CALLOC(uchar_t, destination_size );
 	if (destination_  == NULL) {
 		errno = ENOMEM;
 		return NULL;
@@ -59,7 +59,7 @@ char * dbj_strndup(const char *s, size_t n)
 
 	if (n < len) len = n;
 
-	result = (char *)DBJ_MALLOC(len + 1);
+	result = DBJ_CALLOC( char, len + 1);
 	if (result == NULL) {
 		errno = ENOMEM;
 		return NULL;
@@ -68,25 +68,7 @@ char * dbj_strndup(const char *s, size_t n)
 	result[len] = '\0';
 	return (char *)memcpy(result, s, len);
 }
-/*
-last arg *must* be NULL
-*/
-// already defined in dbjclib_utils.c
-// void free_free_set_them_free(void * vp, ...)
-// {
-// 	const size_t max_args = 255; size_t arg_count = 0;
-// 	va_list marker;
-// 	va_start(marker, vp); /* Initialize variable arguments. */
-// 	while (vp != NULL)
-// 	{
-// 		free(vp);
-// 		vp = NULL;
-// 		vp = va_arg(marker, void*);
-// 		/* feeble attempt to make it safer  */
-// 		if (++arg_count == max_args) break;
-// 	}
-// 	va_end(marker);   /* Reset variable argument list. */
-// }
+
 
 // remove *all* chars given in the string arg
 // return the new string
@@ -99,7 +81,8 @@ char * dbj_str_remove( const char * str_, const char * chars_to_remove_ )
 
 	size_t str_size = strlen(str_);
 	// VLA actually ;)
-	char * vla_buff_ = calloc(str_size, sizeof(char) ); assert( vla_buff_ );
+	char * vla_buff_ = DBJ_CALLOC(char, str_size ); 
+	assert( vla_buff_ );
 	char * vla_buff_first = & vla_buff_[0] ;
 	char * vla_buff_last  = & vla_buff_[str_size - 1] ;
 	char * buff_p = vla_buff_first;

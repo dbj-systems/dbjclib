@@ -97,7 +97,11 @@ extern "C" {
 #endif
 
 
-#define DBJ_MALLOC(N) calloc(1,N)
+#undef DBJ_MALLOC
+#define DBJ_MALLOC(T) (T*)calloc(1, sizeof(T))
+
+#undef DBJ_CALLOC
+#define DBJ_CALLOC(T,S) (T*)calloc(S, sizeof(T))
 
 #define DBJ_FREE(p) do{  if (p) free((void *)p); p = 0;}while(0)
 

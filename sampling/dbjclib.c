@@ -31,7 +31,7 @@ extern MunitResult complex_trim_test(const MunitParameter [], void *);
 extern MunitResult dbj_string_list_performance(const MunitParameter [], void *);
 extern MunitResult dbj_string_list_precision(const MunitParameter [], void *);
 extern MunitResult dbj_sll_test(const MunitParameter [], void *);
-extern MunitResult dbj_fb_string_test(const MunitParameter [], void *);
+extern MunitResult sv_test(const MunitParameter [], void *);
 extern MunitResult dbj_valstat_test(const MunitParameter [], void *);
 
 /**********************************************************************/
@@ -57,7 +57,7 @@ static MunitTest string_list_tests[] = {
     DBJ_MUNIT_TEST_EOL};
 
 static MunitTest fb_string_tests[] = {
-    DBJ_MUNIT_TEST_ADD("/basic", dbj_fb_string_test),
+    DBJ_MUNIT_TEST_ADD("/basic", sv_test),
     DBJ_MUNIT_TEST_EOL};
 
 static MunitTest sll_tests[] = {

@@ -16,9 +16,7 @@ Concept 2: minimize the use of the string.h
 #include "dbj_front_back_string.h"
 #include "../dbjclib_core.h"
 
-#ifndef DBJ_MALLOC
-#define DBJ_MALLOC(N) calloc(1, N)
-#endif
+
 
 /* private utils */
 static size_t private_strlen(char const *str_)
@@ -41,11 +39,10 @@ allocate the new structure
 */
 dbj_string *dbj_string_make_empty()
 {
-	dbj_string *pair_ = (dbj_string *)DBJ_MALLOC(sizeof(dbj_string));
+	dbj_string *pair_ = DBJ_MALLOC(dbj_string);
 	assert(pair_);
 	pair_->front = 0;
 	pair_->back = 0;
-	pair_->full_free = false;
 	return pair_;
 }
 
@@ -65,10 +62,8 @@ void dbj_string_free(dbj_string *str)
 {
 	assert(str);
 
-	if (str->full_free)
-		free((void *)str->front);
-	else
-		str->front = NULL; /* must unlink so that free bellow does not try and free this too */
+	free((void *)str->front);
+	str->front = NULL; /* must unlink */
 
 	free(str);
 	str = 0;
@@ -84,27 +79,6 @@ const size_t dbj_string_len(const dbj_string *str_)
 }
 
 /*
-effectively make a dbj_string from const char *
-if arg is longer then DBJ_MAX_STRING_LENGTH
-that is where the bacj wikk be
-*/
-dbj_string *
-dbj_string_make_view(const char *string_)
-{
-	const size_t slen = private_strlen(string_);
-	assert(DBJ_MAX_STRING_LENGTH > slen);
-
-	dbj_string *pair_ = dbj_string_make_empty();
-
-	/* front not to be freed */
-	pair_->full_free = false;
-	pair_->front = (char *)string_;
-	/* NOTE! if string_ is empty, back == front */
-	pair_->back = (char *)string_ + slen;
-	assert((size_t)(pair_->back - pair_->front) == slen);
-	return pair_;
-}
-/*
 make and allocate for a size givent
 */
 dbj_string *dbj_string_alloc(size_t count)
@@ -112,9 +86,8 @@ dbj_string *dbj_string_alloc(size_t count)
 	dbj_string *rez = dbj_string_make_empty();
 
 	assert(DBJ_MAX_STRING_LENGTH > count);
-	char *payload = (char *)calloc(count, 1);
+	char *payload = DBJ_CALLOC( char, count );
 	assert(payload);
-	rez->full_free = true;
 	rez->front = payload;
 	rez->back = payload + count;
 	return rez;
@@ -174,26 +147,6 @@ bool dbj_string_compare(
 	return true;
 }
 
-/*
-take sub range as requested
-free the string struct eventually but not the front pointer
-*/
-dbj_string *dbj_string_view(const char *str, size_t from_, size_t to_)
-{
-	from_ -= 1;
-	// to_ -= 1; we do not move the 'to' left since the concept is
-	// back pointer is one beyond the last 'to'
-	if ((to_ - from_) > private_strlen(str))
-	{
-		errno = EINVAL;
-		return NULL;
-	}
-	dbj_string *retval = dbj_string_make_empty();
-	// full_free is false here already
-	retval->front = (char *)&str[from_];
-	retval->back = (char *)&str[to_];
-	return retval;
-}
 /*
 is CONTENT of sub inside the CONTENT of str ?
 
@@ -303,4 +256,66 @@ dbj_string *dbj_remove_substring(dbj_string *range, dbj_string *sub_range)
 	dbj_string_free(right);
 
 	return rez;
+}
+
+/*
+ *********************************************************************************
+ * DBJ STRING VIEW
+ *********************************************************************************
+ */
+
+/*
+effectively make a dbj_string from const char *
+if arg is longer then DBJ_MAX_STRING_LENGTH
+that is where the back will be
+*/
+dbj_string_view *dbj_make_sv(const char *string_)
+{
+	const size_t slen = private_strlen(string_);
+	assert(DBJ_MAX_STRING_LENGTH > slen);
+
+	dbj_string_view *sv_ = DBJ_MALLOC(dbj_string_view) ;
+
+	sv_->front = (char *)string_;
+	/* NOTE! if string_ is empty, back == front */
+	sv_->back = (char *)string_ + slen;
+	assert((size_t)(sv_->back - sv_->front) == slen);
+	return sv_;
+}
+
+/*
+take sub range as requested
+*/
+dbj_string_view *dbj_sv_make(const char *str, size_t from_, size_t to_)
+{
+	from_ -= 1;
+	// to_ -= 1; we do not move the 'to' left since the concept is
+	// back pointer is one beyond the last 'to'
+	if ((to_ - from_) > private_strlen(str))
+	{
+		errno = EINVAL;
+		return NULL;
+	}
+	dbj_string_view *retval = DBJ_MALLOC(dbj_string_view);
+	// full_free is false here already
+	retval->front = (char *)&str[from_];
+	retval->back = (char *)&str[to_];
+	return retval;
+}
+
+bool dbj_sv_compare(dbj_string_view* left_, dbj_string_view* right_)
+{
+	if (dbj_sv_len(left_) != dbj_sv_len(right_))
+		return false;
+
+	char *l_ = left_->front;
+	char *r_ = right_->front;
+
+	for (l_ = left_->front; l_ != left_->back; ++l_)
+	{
+		if (*l_ != *r_)
+			return false;
+		++r_;
+	}
+	return true;
 }
