@@ -3,7 +3,20 @@
 
 /*
 Copyright 2018-2020 by dbj@dbj.org, CC BY SA 4.0
+
+call with b + 1 aka  to_string( front, back + 1);
 */
+static char *to_string(char *f, char *b)
+{
+	assert(f, !=, NULL);
+	assert(b, !=, NULL);
+
+	const int size = b - f;
+	char *rez = DBJ_CALLOC(char, size + 1);
+	memcpy(rez, f, size);
+	rez[size] = '\0';
+	return rez;
+}
 	// static const int		EOS = (int)'\0';
 	/*
 	static const char * digits[] = { "0123456789" };
@@ -42,17 +55,26 @@ Copyright 2018-2020 by dbj@dbj.org, CC BY SA 4.0
 // to conform to the STL meaning of "end"
 // user has to move the back_ result
 // one to the right
-	void dbj_string_trim( const char * text_,	char ** front_, char ** back_	)
+	valstat_char dbj_string_trim( const char * text_,	char ** front_, char ** back_	)
 	{
-		assert(text_);
-		/* function pointer */
-		assert(dbj_current_string_trim_policy);
+
+		if ( dbj_current_string_trim_policy == NULL ) 
+		{
+			*front_ = *back_ = NULL; 
+			return valstat_error( valstat_char, valstat_status("dbj_current_string_trim_policy is null?") );
+		}
+		/* singularity: empty not-a-null string */
+		if ( text_ == NULL ) 
+		{
+			*front_ = *back_ = NULL; 
+			return valstat_error( valstat_char, valstat_status("bad input: null input string") );
+		}
 
 		/* singularity: empty not-a-null string */
 		if ( text_[0] == '\0') 
 		{
 			*front_ = *back_ = NULL; 
-			return ;
+			return valstat_error( valstat_char, valstat_status("bad input: empty not-a-null input string") );
 		}
 		
 		// do not assume front points to slot [0]
@@ -70,9 +92,21 @@ Copyright 2018-2020 by dbj@dbj.org, CC BY SA 4.0
 		assert(*back_);
 
 		// return on empty text
-		if (*front_ == *back_ ) return;
+		if (*front_ == *back_ ) {
+			return
+			valstat_error( valstat_char, valstat_status("bad input:front and back walkers are pointing to the same address") );
+		}
+
 		// move the pointers according to policy
 		string_trim_front_back_driver(front_, back_);
+
+				// return on empty text
+		if (*front_ == *back_ ) {
+			return
+			valstat_error( valstat_char, valstat_status("bad input:front and back walkers are pointing to the same address") );
+		}
+		// OK valstat
+        return ( valstat_char ){ to_string(front_, back_ + 1) , NULL } ;
 	}
 
 // EOF
