@@ -7,7 +7,7 @@
 // means: stop using namespace
 /* --------------------------------------------------------------------- */
 // testing data
-static char target[] = {"LINE O FF\n\rTE\v\tXT"};
+static char target[] = "LINE O FF\n\rTE\v\tXT";
 static char *text_test_data[] = {
 	"   LINE O FF\n\rTE\v\tXT    ",
 	"   LINE O FF\n\rTE\v\tXT",
@@ -16,67 +16,22 @@ static char *text_test_data[] = {
 	"     ",
 	// empty string singularity
 	""};
+
 /* --------------------------------------------------------------------- */
-static char *to_string(char *front_, char *back_)
-{
-	munit_assert_ptr(front_, !=, NULL);
-	munit_assert_ptr(back_, !=, NULL);
 
-	const size_t size = back_ - front_;
-	char *rez = munit_newa(char, size + 1);
-	munit_assert_ptr( rez, != , NULL);
-	memcpy(rez, front_, size);
-	rez[size] = '\0';
-	return rez;
-}
-/* --------------------------------------------------------------------- */
-// trim the string view buffer
-// return the result in a char array given
-// caller is responsible to free()
-static char *trimmer(
-	const char text[0xFF],
-	size_t text_size,
-	// if false send the whole buffer
-	bool zero_limited_string)
+static void trim_proc(	char required_outcome[],	size_t test_data_index)
 {
-	munit_assert_true(text != NULL);
+	char* front_ = 0, * back_ = 0;
+	valstat_char trim_rezult = dbj_string_trim(text_test_data[test_data_index], &front_, &back_);
 
-	if (*text == '\0')
-	{
-		char *rezbuf = calloc(1, 1);
-				munit_assert_true( rezbuf );
-		rezbuf[0] = '\0';
-		return rezbuf;
+	if (is_valstat_error(trim_rezult)) {
+		munit_logf(MUNIT_LOG_DEBUG, "%s", trim_rezult.stat);
 	}
-
-	// const int text_size = _countof(text);
-	char *front_ = 0, *back_ = 0;
-
-	// if requested set back_ pointer
-	// to the end of the buffer position
-	if (!zero_limited_string)
-	{
-		back_ = (char *)&text[text_size - 1];
+	else {
+		munit_assert_ptr_not_null(trim_rezult.val);
+		munit_assert_string_equal(required_outcome, trim_rezult.val);
+		free(trim_rezult.val);
 	}
-
-	valstat_char vstat_returned = dbj_string_trim(text, &front_, &back_);
-	munit_assert_true(is_valstat_ok(vstat_returned));
-	return vstat_returned.val ;
-}
-
-// return true on success
-static bool trim_assert(
-	char required_outcome[],
-	size_t test_data_index,
-	bool zero_delimited_strings)
-{
-	const char *trim_rezult = trimmer(
-		text_test_data[test_data_index],
-		strlen(text_test_data[test_data_index]),
-		zero_delimited_strings);
-	bool outcome_ = (0 == strcmp(required_outcome, trim_rezult));
-	free((void *)trim_rezult);
-	return outcome_;
 };
 
 MunitResult complex_trim_test(const MunitParameter params[], void *data)
@@ -89,16 +44,11 @@ MunitResult complex_trim_test(const MunitParameter params[], void *data)
 
 	// using zero delimited strings
 	// results are predictable
-	munit_assert_true(
-		trim_assert(target, 0, true));
-	munit_assert_true(
-		trim_assert(target, 1, true));
-	munit_assert_true(
-		trim_assert(target, 2, true));
-	munit_assert_true(
-		trim_assert(" ", 3, true));
-	munit_assert_true(
-		trim_assert("", 4, true));
+		trim_proc(target, 0);
+		trim_proc(target, 1);
+		trim_proc(target, 2);
+		trim_proc(" ", 3);
+		trim_proc("", 4);
 
 	// using the whole buffer
 	// that is: NON zero limited strings?
@@ -110,25 +60,9 @@ MunitResult complex_trim_test(const MunitParameter params[], void *data)
 	// locale resilient manner
 	dbj_current_string_trim_policy = dbj_move_to_alnum;
 
-	munit_assert_true(
-		trim_assert(target, 0, false));
-	munit_assert_true(
-		trim_assert(target, 1, false));
-	munit_assert_true(
-		trim_assert(target, 2, false));
-
-	// results are not that predictable
-	// when trimming char array vs strings
-	// with user defined policies
-	// in here for example
-	// all spaces input will collapse to
-	// char[1]{0} not char * to ""
-	const char *r_0 = trimmer(text_test_data[3], strlen(text_test_data[3]), false);
-	// same is for empty string input
-	const char *r_1 = trimmer(text_test_data[4], strlen(text_test_data[3]), false);
-
-	free((void *)r_0);
-	free((void *)r_1);
+		trim_proc(target, 0);
+		trim_proc(target, 1);
+		trim_proc(target, 2);
 
 	return MUNIT_OK;
 }

@@ -30,28 +30,28 @@ http://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-in-system-he
 #endif
 
 
-#if defined (_MSC_VER)
+#if defined (_WIN32)
 #define PLATFORM "Windows"
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 #endif
+#elif defined (_WIN64)
+#define PLATFORM "Windows64"
 // we do the above since we use MSVC UCRT *from* the clang c code
-#elif defined (__linux)
+#elif defined (__linux__)
 #define PLATFORM "Linux"
 #else
 #error Unknown platform?
 #endif
 
 
-#if ! defined( __cplusplus )
-
-#ifndef _MSC_VER
-# if !defined(__STDC_VERSION__) ||  (__STDC_VERSION__ < 199901L)
-#error    Your compiler is not conforming to C99
-#error    this requires the macro __STDC_VERSION__ to be set to the
-#error    indicated value (or larger).
-#error    NOTE: For C11, __STDC_VERSION__ == 201112L
-#endif
+#ifdef __clang__
+	# if (__STDC_VERSION__ < 199901L)
+		#error    Your compiler is not conforming to C99
+	#endif
+	# if (__STDC_VERSION__ < 201112L)
+		#error    Your compiler is not conforming to C11
+	#endif
 #endif
 
 #ifdef _MSC_VER
@@ -74,7 +74,7 @@ http://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-in-system-he
 #error Need _WIN32 or _WIN64
 #endif
 
-#endif
+
 /*
 Note: while inside c++ all is in the dbj::clib namespace
 */

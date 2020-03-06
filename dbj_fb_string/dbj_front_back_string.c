@@ -24,13 +24,16 @@ static size_t private_strlen(char const *str_)
 	assert(str_);
 	char *walker_ = (char *)str_;
 	size_t rezult_ = 0;
-	while (walker_ != '\0')
+	while (walker_[0] != '\0')
 	{
 		rezult_ += 1;
 		walker_++;
-		if (rezult_ == DBJ_MAX_STRING_LENGTH)
+		if (rezult_ > DBJ_MAX_STRING_LENGTH)
 			break;
 	}
+
+	assert(rezult_ < DBJ_MAX_STRING_LENGTH);
+
 	return rezult_;
 }
 
@@ -83,13 +86,24 @@ make and allocate for a size givent
 */
 dbj_string *dbj_string_alloc(size_t count)
 {
-	dbj_string *rez = dbj_string_make_empty();
-
 	assert(DBJ_MAX_STRING_LENGTH > count);
+	dbj_string *rez = dbj_string_make_empty();
 	char *payload = DBJ_CALLOC( char, count );
 	assert(payload);
 	rez->front = payload;
 	rez->back = payload + count;
+	return rez;
+}
+
+dbj_string* dbj_string_assign(const char * str_ )
+{
+	// asserts on size overflow
+	const size_t str_len = private_strlen(str_);
+	dbj_string* rez = dbj_string_alloc(str_len);
+
+	// https://pubs.opengroup.org/onlinepubs/9699919799/
+	rez->front = memcpy(rez->front, str_, str_len);
+	rez->front[str_len] = '\0' ;
 	return rez;
 }
 

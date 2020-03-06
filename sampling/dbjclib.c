@@ -10,7 +10,7 @@
 #endif
 
 /*
- DBJ: This is a lot of code for 5 unit tests 
+ DBJ: This is a lot of code for unit tests 
  test unit functions are in separate C files
  they are collected here and the whole MUNIT API 
  shenanigans are done so we can have them
@@ -18,7 +18,7 @@
 
  The outcome is a single console executable with non 
  trivial set of CLI arguments that can be used
- or has to be used; it depends on the user requirements
+ or have to be used; it depends on the user requirements
  */
 /**********************************************************************/
 
@@ -31,7 +31,10 @@ extern MunitResult complex_trim_test(const MunitParameter [], void *);
 extern MunitResult dbj_string_list_performance(const MunitParameter [], void *);
 extern MunitResult dbj_string_list_precision(const MunitParameter [], void *);
 extern MunitResult dbj_sll_test(const MunitParameter [], void *);
+
+extern MunitResult core_tests(const MunitParameter [], void *);
 extern MunitResult sv_test(const MunitParameter [], void *);
+
 extern MunitResult dbj_valstat_test(const MunitParameter [], void *);
 
 /**********************************************************************/
@@ -57,6 +60,7 @@ static MunitTest string_list_tests[] = {
     DBJ_MUNIT_TEST_EOL};
 
 static MunitTest fb_string_tests[] = {
+    DBJ_MUNIT_TEST_ADD("/core", core_tests),
     DBJ_MUNIT_TEST_ADD("/basic", sv_test),
     DBJ_MUNIT_TEST_EOL};
 

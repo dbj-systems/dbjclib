@@ -48,6 +48,11 @@ front of the allocated dbj_string has to be freed
 */
 dbj_string* dbj_string_alloc(size_t count);
 
+/*
+ copy a string literal to dbj_string
+*/
+dbj_string* dbj_string_assign( const char *);
+
 void dbj_string_free(dbj_string* str);
 
 const size_t dbj_string_len(const dbj_string* str_);
