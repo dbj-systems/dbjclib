@@ -17,14 +17,15 @@ static char *text_test_data[] = {
 	// empty string singularity
 	""};
 /* --------------------------------------------------------------------- */
-static char *to_string(char *f, char *b)
+static char *to_string(char *front_, char *back_)
 {
-	munit_assert_ptr(f, !=, NULL);
-	munit_assert_ptr(b, !=, NULL);
+	munit_assert_ptr(front_, !=, NULL);
+	munit_assert_ptr(back_, !=, NULL);
 
-	const int size = b - f;
+	const size_t size = back_ - front_;
 	char *rez = munit_newa(char, size + 1);
-	memcpy(rez, f, size);
+	munit_assert_ptr( rez, != , NULL);
+	memcpy(rez, front_, size);
 	rez[size] = '\0';
 	return rez;
 }
@@ -43,6 +44,7 @@ static char *trimmer(
 	if (*text == '\0')
 	{
 		char *rezbuf = calloc(1, 1);
+				munit_assert_true( rezbuf );
 		rezbuf[0] = '\0';
 		return rezbuf;
 	}
@@ -57,10 +59,9 @@ static char *trimmer(
 		back_ = (char *)&text[text_size - 1];
 	}
 
-	dbj_string_trim(text, &front_, &back_);
-
-	char *rezbuf = to_string(front_, back_ + 1);
-	return rezbuf;
+	valstat_char vstat_returned = dbj_string_trim(text, &front_, &back_);
+	munit_assert_true(is_valstat_ok(vstat_returned));
+	return vstat_returned.val ;
 }
 
 // return true on success
@@ -143,10 +144,14 @@ MunitResult simple_string_trim_test(const MunitParameter p[], void *d)
 	char *front_ = 0;
 	char *back_ = 0;
 
-	dbj_string_trim(text, &front_, &back_);
+
+	valstat_char vstat_returned = dbj_string_trim(text, &front_, &back_);
+
+	munit_assert_true(is_valstat_ok(vstat_returned));
+
 	// back_ is now pointing to the last char inside the trimmed area
 	// not to the 'one after' as is the STL concept
-	str_ = to_string(front_, back_ + 1);
+	str_ = vstat_returned.val;
 
 	munit_assert_string_equal(str_, trimmed_text);
 	free(str_);
@@ -176,9 +181,12 @@ MunitResult user_defined_policy(const MunitParameter p[], void *d)
 	char *back_ = 0;
 	dbj_current_string_trim_policy = stop_on_star_met;
 
-	dbj_string_trim("   \n\r\v\t     *TEXT*   \n\r\v\t     ", &front_, &back_);
+	valstat_char vstat_returned 
+		=  dbj_string_trim("   \n\r\v\t     *TEXT*   \n\r\v\t     ", &front_, &back_);
 
-	char *str_ = to_string(front_, back_ + 1);
+	munit_assert_true(is_valstat_ok(vstat_returned));
+
+	char* str_ = vstat_returned.val;
 
 #ifdef LEAVE_THE_STARS_IN
 	munit_assert_string_equal(str_, "*TEXT*");
@@ -192,7 +200,18 @@ MunitResult user_defined_policy(const MunitParameter p[], void *d)
 	return MUNIT_OK;
 }
 
-/* --------------------------------------------------------------------- */
+/* --------------------------------------------------------------------- 
+
+    struct valstat_char {
+	    char * val ; char * stat ;
+	};
+
+	valstat_char is returned from dbj_string_trim
+	the val pointer is a pointer to newly allocated 
+	trimmed result
+	we have the responsibility to free it...
+
+*/
 MunitResult trimings_and_errors(const MunitParameter p[], void *d)
 {
 	char *front_ = 0;
@@ -200,42 +219,50 @@ MunitResult trimings_and_errors(const MunitParameter p[], void *d)
 	dbj_current_string_trim_policy = dbj_move_to_alnum;
 
 	// SINGULARITY: empty non NULL string
-	dbj_string_trim("", &front_, &back_);
+	valstat_char vstat_returned = dbj_string_trim("", &front_, &back_);
 	// RESPONSE: front_ == back_ == NULL
 	munit_assert_null(front_);
 	munit_assert_null(back_);
+	munit_assert_true( is_valstat_error( vstat_returned)  );
 
+	front_ = back_ = 0;
 	// SINGULARITY: single alphanum char string
-	dbj_string_trim("*", &front_, &back_);
+	vstat_returned = dbj_string_trim("*", &front_, &back_);
 	// RESPONSE: front_ == back_  == & input[0]
 	munit_assert_ptr_equal(front_, back_ );
 	munit_assert_uchar( *front_, == , '*');
+	munit_assert_true(is_valstat_error(vstat_returned));
 
 	front_ = back_ = 0;
 	// SINGULARITY: single whitespace char string
-	dbj_string_trim("\v", &front_, &back_);
+	vstat_returned = dbj_string_trim("\v", &front_, &back_);
 	// RESPONSE: same as if sigle char is alnum
 	munit_assert_ptr_equal(front_, back_ );
 	munit_assert_uchar( *front_, == , '\v');
+	munit_assert_true(is_valstat_error(vstat_returned));
 
 	front_ = back_ = 0;
 	// SINGULARITY: 2 space char string, both whitespace
-	dbj_string_trim("\v\r", &front_, &back_);
+	vstat_returned = dbj_string_trim("\v\r", &front_, &back_);
 	// RESPONSE: front == back == input[1]
 	munit_assert_ptr_equal(front_, back_ );
+	munit_assert_true(is_valstat_error(vstat_returned));
 
 	front_ = back_ = 0;
 	// SINGULARITY: input made of all to be trmed out chars
-	dbj_string_trim("\v\r \n\t  \f  ", &front_, &back_);
+	vstat_returned = dbj_string_trim("\v\r \n\t  \f  ", &front_, &back_);
 	// RESPONSE: front == back == input[1]
 	munit_assert_ptr_equal(front_, back_ );
+	munit_assert_true(is_valstat_error(vstat_returned));
 
 	// WARNING: no required delimiters on both ends
 	// RESPONSE: seems to work as if there are
 	front_ = back_ = 0;
-	dbj_string_trim("TEXT", &front_, &back_);
+	vstat_returned = dbj_string_trim("TEXT", &front_, &back_);
+	munit_assert_true(is_valstat_ok(vstat_returned));
 
-	char *str_ = to_string(front_, back_ + 1);
+	// OK means vstat_returned.vstat is pointing to a newly allocated string
+	char *str_ = vstat_returned.val ;
 
 	munit_assert_string_equal(str_, "TEXT");
 

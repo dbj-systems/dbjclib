@@ -161,19 +161,15 @@
     <None Include="README.MD" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="dbj_crt\dbj_string.c" />
+    <ClCompile Include="dbj_fb_string\dbj_front_back_string.c" />
     <ClCompile Include="dbj_sll\dbj_sll.c" />
-    <ClCompile Include="dbj_string\dbj_front_back_string.c" />
-    <ClCompile Include="dbj_string\dbj_string.c" />
-    <ClCompile Include="dbj_string\dbj_string_trim.c" />
     <ClCompile Include="dbj_string_list\dbj_string_list.c" />
+    <ClCompile Include="dbj_str_trim\dbj_string_trim.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dbjclib.h" />
     <ClInclude Include="dbj_sll\dbj_sll.h" />
-    <ClInclude Include="dbj_string\dbj_front_back_string.h" />
-    <ClInclude Include="dbj_string\dbj_string_trim.h" />
-    <ClInclude Include="dbj_string_list\dbj_string_list.h" />
-    <ClInclude Include="tests\tests.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

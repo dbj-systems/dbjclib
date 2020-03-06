@@ -123,7 +123,7 @@ inline bool dbj_valid_sv(const dbj_string_view *str)
 		str->front 
 		&& str->back 
 		&& ((str->back - str->front) > 0) 
-		&& (DBJ_MAX_STRING_LENGTH > (str->back - str->front)));
+		&& (DBJ_MAX_STRING_LENGTH > (size_t)(str->back - str->front)));
 }
 
 /*

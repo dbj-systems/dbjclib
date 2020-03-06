@@ -76,7 +76,7 @@ extern "C" {
 #pragma clang diagnostic pop
 #endif
 
-#if 0
+#ifndef DBJ_CLIB_INTERNAL_TESTING_
 /*
 for this to work add the dbjlib folder to addional directories 
 for linker, in project properties
