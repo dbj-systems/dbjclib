@@ -21,7 +21,7 @@ Concept 2: minimize the use of the string.h
 /* private utils */
 static size_t private_strlen(char const *str_)
 {
-	assert(str_);
+	DBJ_ASSERT(str_);
 	char *walker_ = (char *)str_;
 	size_t rezult_ = 0;
 	while (walker_[0] != '\0')
@@ -32,7 +32,7 @@ static size_t private_strlen(char const *str_)
 			break;
 	}
 
-	assert(rezult_ < DBJ_MAX_STRING_LENGTH);
+	DBJ_ASSERT(rezult_ < DBJ_MAX_STRING_LENGTH);
 
 	return rezult_;
 }
@@ -43,7 +43,7 @@ allocate the new structure
 dbj_string *dbj_string_make_empty()
 {
 	dbj_string *pair_ = DBJ_MALLOC(dbj_string);
-	assert(pair_);
+	DBJ_ASSERT(pair_);
 	pair_->front = 0;
 	pair_->back = 0;
 	return pair_;
@@ -61,15 +61,16 @@ bool dbj_valid_string(const dbj_string *str)
 		str->front && str->back && ((str->back - str->front) > 0) && (DBJ_MAX_STRING_LENGTH > (str->back - str->front)));
 }
 
-void dbj_string_free(dbj_string *str)
+void dbj_string_free(dbj_string **str)
 {
-	assert(str);
+	DBJ_ASSERT(*str);
 
-	free((void *)str->front);
-	str->front = NULL; /* must unlink */
+	free((*str)->front);
+	(*str)->front = NULL; /* must unlink */
+	(*str)->back  = NULL; 
 
-	free(str);
-	str = 0;
+	free(*str);
+	*str = 0;
 }
 
 /*
@@ -77,7 +78,7 @@ just a pointer distance
 */
 const size_t dbj_string_len(const dbj_string *str_)
 {
-	assert(dbj_valid_string(str_));
+	DBJ_ASSERT(dbj_valid_string(str_));
 	return (size_t)(str_->back - str_->front);
 }
 
@@ -86,10 +87,10 @@ make and allocate for a size givent
 */
 dbj_string *dbj_string_alloc(size_t count)
 {
-	assert(DBJ_MAX_STRING_LENGTH > count);
+	DBJ_ASSERT(DBJ_MAX_STRING_LENGTH > count);
 	dbj_string *rez = dbj_string_make_empty();
 	char *payload = DBJ_CALLOC( char, count );
-	assert(payload);
+	DBJ_ASSERT(payload);
 	rez->front = payload;
 	rez->back = payload + count;
 	return rez;
@@ -99,11 +100,11 @@ dbj_string* dbj_string_assign(const char * str_ )
 {
 	// asserts on size overflow
 	const size_t str_len = private_strlen(str_);
-	dbj_string* rez = dbj_string_alloc(str_len);
+	dbj_string* rez = dbj_string_make_empty();
 
-	// https://pubs.opengroup.org/onlinepubs/9699919799/
-	rez->front = memcpy(rez->front, str_, str_len);
-	rez->front[str_len] = '\0' ;
+	rez->front = _strdup( str_ );
+	DBJ_ASSERT(rez->front);
+	rez->back = rez->front + str_len;
 	return rez;
 }
 
@@ -111,8 +112,8 @@ dbj_string *dbj_string_append(
 	const dbj_string *left_,
 	const dbj_string *right_)
 {
-	assert(dbj_valid_string(left_));
-	assert(dbj_valid_string(right_));
+	DBJ_ASSERT(dbj_valid_string(left_));
+	DBJ_ASSERT(dbj_valid_string(right_));
 
 	dbj_string *rezult_ = dbj_string_alloc(dbj_string_len(left_) + dbj_string_len(right_));
 	char *w_ = 0;
@@ -130,7 +131,7 @@ dbj_string *dbj_string_append(
 		++r_;
 	}
 
-	assert((rezult_->back - rezult_->front) > 0);
+	DBJ_ASSERT((rezult_->back - rezult_->front) > 0);
 
 	return rezult_;
 }
@@ -143,8 +144,8 @@ bool dbj_string_compare(
 	const dbj_string *left_,
 	const dbj_string *right_)
 {
-	assert(dbj_valid_string(left_));
-	assert(dbj_valid_string(right_));
+	DBJ_ASSERT(dbj_valid_string(left_));
+	DBJ_ASSERT(dbj_valid_string(right_));
 
 	if (dbj_string_len(left_) != dbj_string_len(right_))
 		return false;
@@ -169,10 +170,10 @@ or NULL , with errno set to the the error
 */
 dbj_string *dbj_to_subrange(dbj_string *str_, dbj_string *sub_)
 {
-	assert(str_ && sub_);
-	assert(dbj_string_len(str_) > 0);
-	assert(dbj_string_len(sub_) > 0);
-	assert(dbj_string_len(sub_) < dbj_string_len(str_));
+	DBJ_ASSERT(str_ && sub_);
+	DBJ_ASSERT(dbj_string_len(str_) > 0);
+	DBJ_ASSERT(dbj_string_len(sub_) > 0);
+	DBJ_ASSERT(dbj_string_len(sub_) < dbj_string_len(str_));
 
 	dbj_string *sub_range_ = 0;
 
@@ -266,8 +267,8 @@ dbj_string *dbj_remove_substring(dbj_string *range, dbj_string *sub_range)
 
 	dbj_string *rez = dbj_string_append(left, right);
 
-	dbj_string_free(left);
-	dbj_string_free(right);
+	dbj_string_free(&left);
+	dbj_string_free(&right);
 
 	return rez;
 }
@@ -286,14 +287,14 @@ that is where the back will be
 dbj_string_view *dbj_make_sv(const char *string_)
 {
 	const size_t slen = private_strlen(string_);
-	assert(DBJ_MAX_STRING_LENGTH > slen);
+	DBJ_ASSERT(DBJ_MAX_STRING_LENGTH > slen);
 
 	dbj_string_view *sv_ = DBJ_MALLOC(dbj_string_view) ;
 
 	sv_->front = (char *)string_;
 	/* NOTE! if string_ is empty, back == front */
 	sv_->back = (char *)string_ + slen;
-	assert((size_t)(sv_->back - sv_->front) == slen);
+	DBJ_ASSERT((size_t)(sv_->back - sv_->front) == slen);
 	return sv_;
 }
 

@@ -46,28 +46,28 @@ dbj_string* dbj_string_make_empty();
 make empty payload of a given count chars
 front of the allocated dbj_string has to be freed
 */
-dbj_string* dbj_string_alloc(size_t count);
+dbj_string* dbj_string_alloc(size_t );
 
 /*
  copy a string literal to dbj_string
 */
 dbj_string* dbj_string_assign( const char *);
 
-void dbj_string_free(dbj_string* str);
+void dbj_string_free(dbj_string** );
 
-const size_t dbj_string_len(const dbj_string* str_);
+const size_t dbj_string_len(const dbj_string* );
 
 /*
 return true if front and back are not NULL
 and are not equal
 and size is in the allowed boundaries
 */
-bool dbj_valid_string(const dbj_string* str);
+bool dbj_valid_string(const dbj_string* );
 
 /* ------------------------------------------------------------------ */
 dbj_string* dbj_string_append(
-	const dbj_string* left_,
-	const dbj_string* right_
+	const dbj_string* ,
+	const dbj_string* 
 );
 
 /*
@@ -75,8 +75,8 @@ compare the contents of two strings,
 return true if equal
 */
 bool dbj_string_compare(
-	const dbj_string* left_,
-	const dbj_string* right_
+	const dbj_string* ,
+	const dbj_string* 
 );
 
 /*
@@ -85,25 +85,25 @@ is CONTENT of sub inside the CONTENT of str ?
 return the sub-range as dbj_string with pointers to the same buffer
 or NULL , with errno set to the the error
 */
-dbj_string* dbj_to_subrange(dbj_string* str_, dbj_string* sub_);
+dbj_string* dbj_to_subrange(dbj_string* , dbj_string* );
 
 /*
 	is pointer p pointing inside the string range?
 	return DBJ_NPOS if not found
 */
-const size_t dbj_p_is_in_range(const char* p_, dbj_string* str_);
+const size_t dbj_p_is_in_range(const char* , dbj_string* );
 /*
 	is character c inside
 	the string content
 	return the location or DBJ_NPOS if not found
 */
-const size_t dbj_c_is_in_range(const char c_, dbj_string* str_);
+const size_t dbj_c_is_in_range(const char , dbj_string* );
 
 /*
 return append left and right of a sub_range
 */
 dbj_string* dbj_remove_substring
-(dbj_string* range, dbj_string* sub_range);
+(dbj_string* , dbj_string* );
 
 /*
  *********************************************************************************
@@ -144,12 +144,12 @@ effectively make a view from const char
 warning: this is a view not a copy, keep the source arroud long enough
 */
 dbj_string_view*
-dbj_make_sv(const char* string_);
+dbj_make_sv(const char* );
 /*
 take sub range as requested
 warning: this is a view not a copy, keep the source arroud long enough
 */
-dbj_string_view* dbj_sv_make(const char* str, size_t from_, size_t to_);
+dbj_string_view* dbj_sv_make(const char* , size_t , size_t );
 
 bool dbj_sv_compare(dbj_string_view*, dbj_string_view*);
 
