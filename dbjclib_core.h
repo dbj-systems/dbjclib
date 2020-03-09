@@ -45,7 +45,7 @@ http://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-in-system-he
 #endif
 
 
-#ifdef __clang__
+#ifdef __STDC_VERSION__
 	# if (__STDC_VERSION__ < 199901L)
 		#error    Your compiler is not conforming to C99
 	#endif

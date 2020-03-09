@@ -15,7 +15,7 @@ limitations under the License.
 
 
 #include "../dbjclib_core.h"
-#include "dbj_sll.h"
+#include "dbj_hsl.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,40 +29,8 @@ limitations under the License.
 #pragma warning( disable : 4505 )
 #endif
 
-/* apparently only *static extern* variables can use thread local storage */
-#ifdef _MSC_VER
-
-/* DBJ ADDED! */
-#ifdef _KERNEL_MODE
-#  define dbj_thread_local 
-#else
-#  define dbj_thread_local __declspec(thread)
-#endif
-/* DBJ ADDED! */
-
-#define dbj_malloc(type, count) (type *)malloc( count * sizeof(type))
-#else
-#define dbj_thread_local static __thread 
-#define dbj_malloc(type, count) malloc( count * sizeof(type))
-#endif
-
-#if 0
 /*already in this lib*/
-/*
-strdup and strndup are defined in POSIX compliant systems as :
-char *strdup(const char *str);
-char *strndup(const char *str, size_t len);
-*/
-char * dbj_strdup(const char *s) {
-	char *d = malloc(strlen(s) + 1);   // Space for length plus nul
-	if (d == NULL) {
-		errno = ENOMEM;
-		return NULL;
-	}         // No memory
-	strcpy(d, s);                        // Copy the characters
-	return d;                            // Return the new string
-}
-#endif 
+/* char* dbj_strdup(const char* s); */
 
 /* for the DBJ SLL key making */
 /* the djb2 from: http://www.cse.yorku.ca/~oz/hash.html */
@@ -77,15 +45,11 @@ static unsigned long dbj_hash(unsigned char *str)
 	return hash;
 }
 
-
-
-
-
 /********************************************************/
-dbj_sll_node * dbj_sll_node_new()
+dbj_hsl_node * dbj_hsl_node_new()
 {
-	dbj_sll_node * new_
-		= (dbj_sll_node *)malloc(sizeof(dbj_sll_node));
+	dbj_hsl_node * new_
+		= (dbj_hsl_node *)malloc(sizeof(dbj_hsl_node));
 	if (new_) {
 		new_->key = 0;
 		new_->data = 0;
@@ -97,18 +61,8 @@ dbj_sll_node * dbj_sll_node_new()
 	return new_;
 }
 /********************************************************/
-/*
-Special "TLS_HEAD" global per this thread
-sThread Local Storage (TLS) solution
- */
-dbj_sll_node * dbj_sll_tls_head() {
-	static dbj_thread_local dbj_sll_node
-		dbj_sll_tls_head_ = { DBJ_SLL_HEAD_KEY, 0 , 0 };
-	return &dbj_sll_tls_head_;
-}
-
-dbj_sll_node * dbj_sll_make_head() {
-	dbj_sll_node * _head_ = dbj_sll_node_new();
+dbj_hsl_node * dbj_hsl_make_head() {
+	dbj_hsl_node * _head_ = dbj_hsl_node_new();
 	if (_head_) {
 		_head_->key = DBJ_SLL_HEAD_KEY;
 		_head_->data = 0;
@@ -119,39 +73,10 @@ dbj_sll_node * dbj_sll_make_head() {
 	/* ENOMEM has been set if NULL */
 }
 /********************************************************/
-bool is_dbj_sll_head(dbj_sll_node * head_) {
-	assert(head_);
-	if (head_) {
-		return ((head_->next == 0) && (head_->key == DBJ_SLL_HEAD_KEY));
-	}
-	return false;
-}
-bool is_dbj_sll_tls_empty() 
-{ return (dbj_sll_tls_head()->next == 0); }
-
-bool is_dbj_sll_empty(dbj_sll_node * head_) 
-{ return head_->next == 0; }
-
-dbj_sll_node * dbj_sll_next(dbj_sll_node * current_)
-{
-	assert(current_);
-	return current_->next;
-}
-char const * dbj_sll_data(dbj_sll_node * current_)
-{
-	assert(current_);
-	return current_->data;
-}
-unsigned long dbj_sll_key(dbj_sll_node * current_)
-{
-	assert(current_);
-	return current_->key;
-}
-/********************************************************/
-dbj_sll_node * dbj_sll_tail(dbj_sll_node * head_)
+dbj_hsl_node * dbj_hsl_tail(dbj_hsl_node * head_)
 {
 	/* get the head */
-	dbj_sll_node * walker_ = head_;
+	dbj_hsl_node * walker_ = head_;
 	while (walker_) {
 		if (!walker_->next) break;
 		walker_ = walker_->next;
@@ -159,11 +84,13 @@ dbj_sll_node * dbj_sll_tail(dbj_sll_node * head_)
 	return walker_;
 }
 /********************************************************/
-/*  erase the whole list */
-void dbj_sll_erase(dbj_sll_node * head_)
+/*  erase the whole list
+    keep the head
+*/
+void dbj_hsl_erase(dbj_hsl_node * head_)
 {
-	dbj_sll_node * current_ = head_->next;
-	dbj_sll_node * temp_ = 0;
+	dbj_hsl_node * current_ = head_->next;
+	dbj_hsl_node * temp_ = 0;
 	while (current_) {
 		temp_ = current_->next;
 		if (current_->data) { free(current_->data); current_->data = 0; }
@@ -173,56 +100,28 @@ void dbj_sll_erase(dbj_sll_node * head_)
 	/* make the head aware there are no nodes left  */
 	head_->next = 0;
 }
-void dbj_sll_erase_with_head(dbj_sll_node * head_)
-{
-	dbj_sll_erase(head_);
-	free(head_); /* head has no data */
-	head_ = 0;
-}
+
 /********************************************************/
 /*
-	Find by key is the deafult
+	Find by key is the default
 	to find by string one can implement the visitor
 */
-dbj_sll_node * dbj_sll_find(dbj_sll_node * head_, unsigned long k_)
+dbj_hsl_node * dbj_hsl_find(dbj_hsl_node * head_, unsigned long k_)
 {
-	dbj_sll_node * walker_ = head_->next;
+	dbj_hsl_node * walker_ = head_->next;
 	while (walker_) {
 		if (walker_->key == k_) return walker_;
 		walker_ = walker_->next;
 	}
 	return NULL;
 }
-/********************************************************/
-/*
- visitor function to each node
- visitation is stopped when visitor returns true
- remember: head is never used it is just an anchor
- return the pointer to the last node visited
- visitor function signature:
 
- bool (*visitor)(dbj_sll_node *)
-
-NOTE: most (if not all) SLL operations
-can be implemented as visitors
-*/
-dbj_sll_node * dbj_sll_foreach
-(dbj_sll_node * head_, bool(*visitor)(dbj_sll_node *))
-{
-	dbj_sll_node * walker_ = head_->next;
-	while (walker_) {
-		if (visitor(walker_)) return walker_;
-		walker_ = walker_->next;
-	}
-	/* not found */
-	return walker_;
-}
 /********************************************************/
-size_t dbj_sll_count(dbj_sll_node * head_)
+size_t dbj_hsl_count(dbj_hsl_node * head_)
 {
 	size_t count_ = 0;
 	/* get and skip the head */
-	dbj_sll_node * walker_ = head_->next;
+	dbj_hsl_node * walker_ = head_->next;
 	while (walker_) {
 		++count_;
 		walker_ = walker_->next;
@@ -236,14 +135,18 @@ str argument is copied and thus has to
 be freed sometimes later
 key is generated as the hash() of the str_argument
 */
-dbj_sll_node *
-dbj_sll_append(dbj_sll_node * head_, const char * str_)
+dbj_hsl_node *
+dbj_hsl_append(dbj_hsl_node * head_, const char * str_)
 {
-	dbj_sll_node * new_node = dbj_sll_node_new();
+	assert(head_);
+
+	/* make new node */
+	dbj_hsl_node * new_node = dbj_hsl_node_new();
 	new_node->data = _strdup(str_);
 	new_node->key = dbj_hash((unsigned char *)str_);
 
-	dbj_sll_node * tail_node = dbj_sll_tail(head_);
+	/* append it as new tail */
+	dbj_hsl_node * tail_node = dbj_hsl_tail(head_);
 	tail_node->next = new_node;
 	return new_node;
 }
@@ -251,10 +154,20 @@ dbj_sll_append(dbj_sll_node * head_, const char * str_)
 /********************************************************/
 /* sll visitors                                         */
 /********************************************************/
-FILE * dbj_sll_output_target_ = 0 ;
-bool dbj_sll_node_dump_visitor(dbj_sll_node * node_)
+static FILE * dbj_hsl_output_target_ = (FILE*)0 ;
+/* if no other target then stderr will be used */
+#define default_output_target stderr
+
+void set_dbj_hsl_output_target(FILE* file_ )
 {
-	FILE * target_ = (dbj_sll_output_target_ ? dbj_sll_output_target_ : stderr  );
+	dbj_hsl_output_target_ = file_;
+}
+
+
+bool dbj_hsl_node_dump_visitor(dbj_hsl_node * node_)
+{
+
+	FILE* target_ = (dbj_hsl_output_target_ ? dbj_hsl_output_target_ : default_output_target );
 	
 	assert(node_);
 
@@ -266,6 +179,7 @@ bool dbj_sll_node_dump_visitor(dbj_sll_node * node_)
 	/* return false as a signal NOT to stop */
 	return false;
 }
+
 /*
 this is where we can clearly see the disdvantage of singly linked lists
 vs doubly linked lists.
@@ -274,7 +188,7 @@ but SLL's simplicity more than compesates for this
 SLL lists are short and todays machines are fast
 so the algorithms like the one bellow are OK in normal situations
 */
-bool dbj_sll_remove_tail_visitor(dbj_sll_node * node_)
+static bool dbj_hsl_remove_tail_visitor(dbj_hsl_node * node_)
 {
 	if (!node_->next) return true; /* stop */
 
@@ -290,10 +204,11 @@ bool dbj_sll_remove_tail_visitor(dbj_sll_node * node_)
 }
 
 /* return the new tail or 0 if list is empty */
-dbj_sll_node * dbj_sll_remove_tail(dbj_sll_node * head_)
+dbj_hsl_node * dbj_hsl_remove_tail(dbj_hsl_node * head_)
 {
-	if (is_dbj_sll_empty(head_)) return 0;
-	return dbj_sll_foreach(head_, dbj_sll_remove_tail_visitor);
+	assert(head_);
+	if (is_dbj_hsl_empty(head_)) return 0;
+	return dbj_hsl_foreach(head_, dbj_hsl_remove_tail_visitor);
 }
 
 /********************************************************/

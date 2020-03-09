@@ -2,52 +2,62 @@
 #include "munit/munit.h"
 
 #include "../dbjclib_core.h"
-#include "../dbj_sll/dbj_sll.h"
+#include "../dbj_hsl/dbj_hsl.h"
 
 
-static void test_dbj_sll(const char* what_to_append, size_t how_many_times )
+static void test_dbj_hsl( const int input_size_, const char* input_[] )
 {
-	dbj_sll_node* head_ = dbj_sll_make_head();
+	dbj_hsl_node* head_ = dbj_hsl_make_head();
 
-	while (1 < how_many_times--) dbj_sll_append(head_, what_to_append);
+	int walker_ = 0;
+	while (walker_ != input_size_) 
+		dbj_hsl_append( head_, input_[walker_++]);
 
-/*
-Debugging messages, are hidden by default (see the --log-visible option).
-https://nemequ.github.io/munit/#--log-visible
+	/*
+	Debugging messages, are hidden by default (see the --log-visible option).
+	https://nemequ.github.io/munit/#--log-visible
 
-dbj_sll_node_dump_visitor default stream is stderr
-*/
-		munit_logf(MUNIT_LOG_DEBUG,"DBJ SLL dump");
-		dbj_sll_foreach(head_, dbj_sll_node_dump_visitor);
+	dbj_hsl_node_dump_visitor default stream is stderr
+	*/
+	munit_logf(MUNIT_LOG_DEBUG, "DBJ SLL dump");
+	dbj_hsl_foreach(head_, dbj_hsl_node_dump_visitor);
 
-	munit_assert_true(0 == strcmp(dbj_sll_remove_tail(head_)->data, what_to_append));
-	dbj_sll_erase(head_);
+	// remove tail returns pointer to the new tail
+	dbj_hsl_node* new_tail_ = dbj_hsl_remove_tail(head_);
 
-		munit_logf(MUNIT_LOG_DEBUG,"Head after SLL erasure");
-		dbj_sll_node_dump_visitor( head_);
+	// head stays
+	dbj_hsl_erase(head_);
+	munit_logf(MUNIT_LOG_DEBUG, "Head after SLL erasure");
+	dbj_hsl_node_dump_visitor(head_);
 
-	munit_assert_true(true == is_dbj_sll_empty(head_));
+	// start from the head of the empty list
+	munit_assert_true(true == is_dbj_hsl_empty(head_));
 
-	unsigned long k1 = dbj_sll_append(head_, "Abra")->key;
-	unsigned long k2 = dbj_sll_append(head_, "Ka")->key;
-	unsigned long k3 = dbj_sll_append(head_, "Dabra")->key;
+	unsigned long k1 = dbj_hsl_append(head_, "Abra")->key;
+	unsigned long k2 = dbj_hsl_append(head_, "Ka")->key;
+	unsigned long k3 = dbj_hsl_append(head_, "Dabra")->key;
 
-	DBJ_UNUSED(k1);
-	DBJ_UNUSED(k2);
-	DBJ_UNUSED(k3);
+	dbj_hsl_node* node_1 = dbj_hsl_find(head_, k1);
+	munit_assert_true(0 == strcmp(node_1->data, "Abra"));
 
-	dbj_sll_node* node_ = dbj_sll_find(head_, k2);
-	munit_assert_true(0 == strcmp(node_->data, "Ka"));
-	munit_assert_true(false == is_dbj_sll_empty(head_));
-	dbj_sll_erase_with_head(head_);
+	dbj_hsl_node* node_2 = dbj_hsl_find(head_, k2);
+	munit_assert_true(0 == strcmp(node_2->data, "Ka"));
+
+	dbj_hsl_node* node_3 = dbj_hsl_find(head_, k3);
+	munit_assert_true(0 == strcmp(node_3->data, "Dabra"));
+
+	munit_assert_true(false == is_dbj_hsl_empty(head_));
+
+	dbj_hsl_erase_with_head(&head_);
+	munit_assert_ptr_null(head_);
 }
 
 MunitResult
-dbj_sll_test(const MunitParameter params[], void *data)
+dbj_hsl_test(const MunitParameter params[], void* data)
 {
-  (void)params;
-  (void)data;
-	
-	test_dbj_sll("BIMBILI BAMBILI BUMBILI", 0xF );
-  return MUNIT_OK;
+	(void)params;
+	(void)data;
+
+	test_dbj_hsl(3, (const char * []){ "BIMBILI", "BAMBILI","BUMBILI"  } );
+	return MUNIT_OK;
 }

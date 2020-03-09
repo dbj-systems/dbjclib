@@ -163,13 +163,13 @@
   <ItemGroup>
     <ClCompile Include="dbj_crt\dbj_string.c" />
     <ClCompile Include="dbj_fb_string\dbj_front_back_string.c" />
-    <ClCompile Include="dbj_sll\dbj_sll.c" />
+    <ClCompile Include="dbj_hsl\dbj_hsl.c" />
     <ClCompile Include="dbj_string_list\dbj_string_list.c" />
     <ClCompile Include="dbj_str_trim\dbj_string_trim.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dbjclib.h" />
-    <ClInclude Include="dbj_sll\dbj_sll.h" />
+    <ClInclude Include="dbj_hsl\dbj_hsl.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
