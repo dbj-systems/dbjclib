@@ -25,6 +25,10 @@
 #if !defined(MUNIT_H)
 #define MUNIT_H
 
+ // see the eof
+#define DBJ_MUNIT_EXTENSION
+
+
 #include <stdarg.h>
 #include <stdlib.h>
 
@@ -169,12 +173,12 @@ extern "C" {
 #  define MUNIT__POP_DISABLE_MSVC_C4127
 #endif
 
-typedef enum {
-  MUNIT_LOG_DEBUG,
-  MUNIT_LOG_INFO,
-  MUNIT_LOG_WARNING,
-  MUNIT_LOG_ERROR
-} MunitLogLevel;
+	typedef enum {
+		MUNIT_LOG_DEBUG,
+		MUNIT_LOG_INFO,
+		MUNIT_LOG_WARNING,
+		MUNIT_LOG_ERROR
+	} MunitLogLevel;
 
 #if defined(__GNUC__) && !defined(__MINGW32__)
 #  define MUNIT_PRINTF(string_index, first_to_check) __attribute__((format (printf, string_index, first_to_check)))
@@ -182,8 +186,8 @@ typedef enum {
 #  define MUNIT_PRINTF(string_index, first_to_check)
 #endif
 
-MUNIT_PRINTF(4, 5)
-void munit_logf_ex(MunitLogLevel level, const char* filename, int line, const char* format, ...);
+	MUNIT_PRINTF(4, 5)
+		void munit_logf_ex(MunitLogLevel level, const char* filename, int line, const char* format, ...);
 
 #define munit_logf(level, format, ...) \
   munit_logf_ex(level, __FILE__, __LINE__, format, __VA_ARGS__)
@@ -191,9 +195,9 @@ void munit_logf_ex(MunitLogLevel level, const char* filename, int line, const ch
 #define munit_log(level, msg) \
   munit_logf(level, "%s", msg)
 
-MUNIT_NO_RETURN
-MUNIT_PRINTF(3, 4)
-void munit_errorf_ex(const char* filename, int line, const char* format, ...);
+	MUNIT_NO_RETURN
+		MUNIT_PRINTF(3, 4)
+		void munit_errorf_ex(const char* filename, int line, const char* format, ...);
 
 #define munit_errorf(format, ...) \
   munit_errorf_ex(__FILE__, __LINE__, format, __VA_ARGS__)
@@ -376,9 +380,9 @@ void munit_errorf_ex(const char* filename, int line, const char* format, ...);
 #define munit_assert_ptr_not_null(ptr) \
   munit_assert_ptr(ptr, !=, NULL)
 
-/*** Memory allocation ***/
+	/*** Memory allocation ***/
 
-void* munit_malloc_ex(const char* filename, int line, size_t size);
+	void* munit_malloc_ex(const char* filename, int line, size_t size);
 
 #define munit_malloc(size) \
   munit_malloc_ex(__FILE__, __LINE__, (size))
@@ -392,91 +396,91 @@ void* munit_malloc_ex(const char* filename, int line, size_t size);
 #define munit_newa(type, nmemb) \
   ((type*) munit_calloc((nmemb), sizeof(type)))
 
-/*** Random number generation ***/
+	/*** Random number generation ***/
 
-void munit_rand_seed(munit_uint32_t seed);
-munit_uint32_t munit_rand_uint32(void);
-int munit_rand_int_range(int min, int max);
-double munit_rand_double(void);
-void munit_rand_memory(size_t size, munit_uint8_t buffer[MUNIT_ARRAY_PARAM(size)]);
+	void munit_rand_seed(munit_uint32_t seed);
+	munit_uint32_t munit_rand_uint32(void);
+	int munit_rand_int_range(int min, int max);
+	double munit_rand_double(void);
+	void munit_rand_memory(size_t size, munit_uint8_t buffer[MUNIT_ARRAY_PARAM(size)]);
 
-/*** Tests and Suites ***/
+	/*** Tests and Suites ***/
 
-typedef enum {
-  /* Test successful */
-  MUNIT_OK,
-  /* Test failed */
-  MUNIT_FAIL,
-  /* Test was skipped */
-  MUNIT_SKIP,
-  /* Test failed due to circumstances not intended to be tested
-   * (things like network errors, invalid parameter value, failure to
-   * allocate memory in the test harness, etc.). */
-  MUNIT_ERROR
-} MunitResult;
+	typedef enum {
+		/* Test successful */
+		MUNIT_OK,
+		/* Test failed */
+		MUNIT_FAIL,
+		/* Test was skipped */
+		MUNIT_SKIP,
+		/* Test failed due to circumstances not intended to be tested
+		 * (things like network errors, invalid parameter value, failure to
+		 * allocate memory in the test harness, etc.). */
+		 MUNIT_ERROR
+	} MunitResult;
 
-typedef struct {
-  char*  name;
-  char** values;
-} MunitParameterEnum;
+	typedef struct {
+		char* name;
+		char** values;
+	} MunitParameterEnum;
 
-typedef struct {
-  char* name;
-  char* value;
-} MunitParameter;
+	typedef struct {
+		char* name;
+		char* value;
+	} MunitParameter;
 
-const char* munit_parameters_get(const MunitParameter params[], const char* key);
+	const char* munit_parameters_get(const MunitParameter params[], const char* key);
 
-typedef enum {
-  MUNIT_TEST_OPTION_NONE             = 0,
-  MUNIT_TEST_OPTION_SINGLE_ITERATION = 1 << 0,
-  MUNIT_TEST_OPTION_TODO             = 1 << 1
-} MunitTestOptions;
+	typedef enum {
+		MUNIT_TEST_OPTION_NONE = 0,
+		MUNIT_TEST_OPTION_SINGLE_ITERATION = 1 << 0,
+		MUNIT_TEST_OPTION_TODO = 1 << 1
+	} MunitTestOptions;
 
-typedef MunitResult (* MunitTestFunc)(const MunitParameter params[], void* user_data_or_fixture);
-typedef void*       (* MunitTestSetup)(const MunitParameter params[], void* user_data);
-typedef void        (* MunitTestTearDown)(void* fixture);
+	typedef MunitResult(*MunitTestFunc)(const MunitParameter params[], void* user_data_or_fixture);
+	typedef void* (*MunitTestSetup)(const MunitParameter params[], void* user_data);
+	typedef void        (*MunitTestTearDown)(void* fixture);
 
-typedef struct {
-  char*               name;
-  MunitTestFunc       test;
-  MunitTestSetup      setup;
-  MunitTestTearDown   tear_down;
-  MunitTestOptions    options;
-  MunitParameterEnum* parameters;
-} MunitTest;
+	typedef struct {
+		char* name;
+		MunitTestFunc       test;
+		MunitTestSetup      setup;
+		MunitTestTearDown   tear_down;
+		MunitTestOptions    options;
+		MunitParameterEnum* parameters;
+	} MunitTest;
 
-typedef enum {
-  MUNIT_SUITE_OPTION_NONE = 0
-} MunitSuiteOptions;
+	typedef enum {
+		MUNIT_SUITE_OPTION_NONE = 0
+	} MunitSuiteOptions;
 
-typedef struct MunitSuite_ MunitSuite;
+	typedef struct MunitSuite_ MunitSuite;
 
-struct MunitSuite_ {
-  char*             prefix;
-  MunitTest*        tests;
-  MunitSuite*       suites;
-  unsigned int      iterations;
-  MunitSuiteOptions options;
-};
+	struct MunitSuite_ {
+		char* prefix;
+		MunitTest* tests;
+		MunitSuite* suites;
+		unsigned int      iterations;
+		MunitSuiteOptions options;
+	};
 
-int munit_suite_main(const MunitSuite* suite, void* user_data, int argc, char* const argv[MUNIT_ARRAY_PARAM(argc + 1)]);
+	int munit_suite_main(const MunitSuite* suite, void* user_data, int argc, char* const argv[MUNIT_ARRAY_PARAM(argc + 1)]);
 
-/* Note: I'm not very happy with this API; it's likely to change if I
- * figure out something better.  Suggestions welcome. */
+	/* Note: I'm not very happy with this API; it's likely to change if I
+	 * figure out something better.  Suggestions welcome. */
 
-typedef struct MunitArgument_ MunitArgument;
+	typedef struct MunitArgument_ MunitArgument;
 
-struct MunitArgument_ {
-  char* name;
-  bool (* parse_argument)(const MunitSuite* suite, void* user_data, int* arg, int argc, char* const argv[MUNIT_ARRAY_PARAM(argc + 1)]);
-  void (* write_help)(const MunitArgument* argument, void* user_data);
-};
+	struct MunitArgument_ {
+		char* name;
+		bool (*parse_argument)(const MunitSuite* suite, void* user_data, int* arg, int argc, char* const argv[MUNIT_ARRAY_PARAM(argc + 1)]);
+		void (*write_help)(const MunitArgument* argument, void* user_data);
+	};
 
-int munit_suite_main_custom(const MunitSuite* suite,
-                            void* user_data,
-                            int argc, char* const argv[MUNIT_ARRAY_PARAM(argc + 1)],
-                            const MunitArgument arguments[]);
+	int munit_suite_main_custom(const MunitSuite* suite,
+		void* user_data,
+		int argc, char* const argv[MUNIT_ARRAY_PARAM(argc + 1)],
+		const MunitArgument arguments[]);
 
 #if defined(MUNIT_ENABLE_ASSERT_ALIASES)
 
@@ -533,3 +537,36 @@ int munit_suite_main_custom(const MunitSuite* suite,
 #  endif
 #  define assert(expr) munit_assert(expr)
 #endif
+
+#ifdef DBJ_MUNIT_EXTENSION
+/**********************************************************************/
+/* usage:
+
+	 extern MunitResult dbj_valstat_test(const MunitParameter [], void *);
+
+	 static MunitTest valstat_tests[] = {
+	    DBJ_MUNIT_TEST_ADD("/basic", dbj_valstat_test),
+	    DBJ_MUNIT_TEST_EOL
+     };
+
+	static MunitSuite suites_array[] = {
+      DBJ_MUNIT_SUITE_ADD("/valstat tests", valstat_tests),
+        DBJ_MUNIT_SUITE_EOL } ;
+    
+    static MunitSuite top_collection =
+    {(char *)"dbjCLIB", NULL, suites_array , 1, MUNIT_SUITE_OPTION_NONE
+    };
+
+    int main(int argc, char *argv[MUNIT_ARRAY_PARAM(argc + 1)])
+    {
+        return munit_suite_main(&top_collection, (void*)NULL, argc, argv);
+    }
+
+*/
+#define DBJ_MUNIT_TEST_ADD( TITLE_, FP_) {(char *)TITLE_, FP_, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}
+#define DBJ_MUNIT_TEST_EOL  {NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}
+
+#define DBJ_MUNIT_SUITE_EOL { NULL, NULL, 0, 0, MUNIT_SUITE_OPTION_NONE }
+#define DBJ_MUNIT_SUITE_ADD( TITLE_, AP_) {(char *)TITLE_, AP_, NULL, 1, MUNIT_SUITE_OPTION_NONE} 
+/**********************************************************************/
+#endif // DBJ_MUNIT_EXTENSION

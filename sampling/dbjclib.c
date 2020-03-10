@@ -1,3 +1,10 @@
+
+#ifdef _DEBUG
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
+
 /* µnit is MIT-licensed */
 #include "munit/munit.h"
 
@@ -37,13 +44,7 @@ extern MunitResult sv_test(const MunitParameter [], void *);
 
 extern MunitResult dbj_valstat_test(const MunitParameter [], void *);
 
-/**********************************************************************/
-#define DBJ_MUNIT_TEST_ADD( TITLE_, FP_) {(char *)TITLE_, FP_, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}
-#define DBJ_MUNIT_TEST_EOL  {NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL}
 
-#define DBJ_MUNIT_SUITE_EOL { NULL, NULL, 0, 0, MUNIT_SUITE_OPTION_NONE }
-#define DBJ_MUNIT_SUITE_ADD( TITLE_, AP_) {(char *)TITLE_, AP_, NULL, 1, MUNIT_SUITE_OPTION_NONE} 
-/**********************************************************************/
 /* 
 first need to create arrays of tests, or just one but that is not practical 
 */
@@ -72,10 +73,14 @@ static MunitTest valstat_tests[] = {
     DBJ_MUNIT_TEST_ADD("/basic", dbj_valstat_test),
     DBJ_MUNIT_TEST_EOL};
 
+
+/* define elsewhere */
+extern MunitTest playground_tests[]; 
 /* 
-now need to create array of suites
+no need to create array of suites
 */
 static MunitSuite suites_array[] = { 
+  DBJ_MUNIT_SUITE_ADD("/munit playground", playground_tests) ,
   DBJ_MUNIT_SUITE_ADD("/string trim tests", string_trim_tests) ,
   DBJ_MUNIT_SUITE_ADD("/string list tests", string_list_tests),
   DBJ_MUNIT_SUITE_ADD("/fb string tests", fb_string_tests),
@@ -104,5 +109,7 @@ int main(int argc, char *argv[MUNIT_ARRAY_PARAM(argc + 1)])
    * is the user_ parameter which will be passed either to the
    * test or (if provided) the fixture setup function. */
   return munit_suite_main(&top_collection, (void *)NULL, argc, argv);
+
+  _CrtDumpMemoryLeaks();
 } 
 

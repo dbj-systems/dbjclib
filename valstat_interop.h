@@ -5,6 +5,18 @@
 #define dbj_clib_STRINGIFY(  x )  dbj_clib_STRINGIFY_( x )
 #define dbj_clib_STRINGIFY_( x )  #x
 #endif // dbj_clib_STRINGIFY
+
+/*
+--------------------------------------------------------------------------------------------
+The stron type macro
+*/
+#ifdef STRONG
+#error STRONG already defined?
+#else
+#define dbj_clib_STRONG(N,T) typedef struct N final { T v; } N
+#define STRONG dbj_clib_STRONG
+#endif
+
 /*
 --------------------------------------------------------------------------------------------
 The whole of valstat C interop is in the two macros bellow

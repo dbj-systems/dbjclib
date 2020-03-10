@@ -46,12 +46,6 @@ http://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-in-system-he
  1. using strong types -- https://dbj.org/c-strong-duck/
  2. using valstat -- https://github.com/DBJDBJ/dbj-valstat
 */
-#ifdef STRONG
-#error STRONG already defined?
-#else
-#define dbj_clib_STRONG(N,T) struct N final { T v; }
-#define STRONG dbj_clib_STRONG
-#endif
 
 #include "valstat_interop.h"
 
