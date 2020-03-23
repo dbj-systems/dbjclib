@@ -8,7 +8,7 @@
 
 /*
 --------------------------------------------------------------------------------------------
-The stron type macro
+The strong type macro
 */
 #ifdef STRONG
 #error STRONG already defined?
@@ -40,7 +40,7 @@ use this to declare (not define) valstat  type name
 #define valstat_type( T ) valstat_##T 
 
 /*
-it will become a custom very qucikly but please do know the valstat type names created
+they will become a custom very qucikly but please do know the valstat type names created
 
 examples:
 
@@ -66,8 +66,8 @@ here is the simplest possible form
 "{ \"file\": \"" __FILE__  "\", " \
  " \"line\": \""  dbj_clib_STRINGIFY(__LINE__) "\", "  "\"message\": \"" M "\", \"timestamp\": \"" __TIMESTAMP__  "\" }" 
 
-
 /* 
+---------------------------------------------------------------------------------------
 use the following macros to create valstat instance for four possible states of valstat
 */
 #ifdef valstat_info
@@ -112,8 +112,11 @@ use the following macros to check valstat instance for four possible states of v
 #define is_valstat_ok(vstat_) ( (vstat_.val) && ( ! vstat_.stat)  ) 
 #define is_valstat_empty(vstat_) ( (! vstat_.val) && ( ! vstat_.stat)  ) 
 
-/* the full example in a comment
+/* the full example in a comment; now:
 
+valstat(uint64_t); -- creates --> typedef struct valstat_uint64_t { int * val, const char * stat } valstat_uint64_t;
+
+typename created: valstat_uint64_t
 valstat used is: valstat_uint64_t
 
 valstat_type(uint64_t)
@@ -135,7 +138,7 @@ valstat_type(uint64_t)
 	return valstat_ok( valstat_uint64_t, & rezult_anchor );
 }
 
-consuming site:
+consuming site: ---------------------------------------------------
 
 valstat_uint64_t rez = divider( d, r );
 

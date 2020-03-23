@@ -6,10 +6,10 @@
     <ClCompile Include="..\dbj_sll_test.c" />
     <ClCompile Include="..\dbj_string_list_test.c" />
     <ClCompile Include="..\dbj_string_trim_test.c" />
-    <ClCompile Include="..\valstat_test.c" />
     <ClCompile Include="..\munit\munit.c">
       <Filter>munit</Filter>
     </ClCompile>
+    <ClCompile Include="..\valstat_sample_and_test.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\readme.md" />
