@@ -1,6 +1,49 @@
 #ifndef VALSTAT_INTEROP_H_
 #define VALSTAT_INTEROP_H_
 
+/*  (c) 2018 - 2021 by dbj at dbj dot org, https://dbj.org/license_dbj
+
+the full example in a comment:
+
+valstat(uint64_t); -- creates --> typedef struct valstat_uint64_t { int * val, const char * stat } valstat_uint64_t;
+
+typename created: valstat_uint64_t
+valstat used is: valstat_uint64_t
+
+valsat producer :
+
+valstat_type(uint64_t)
+  divider (uint64_t	dividend, uint64_t	divisor)
+{
+	if (0 == divisor)
+		return	valstat_error(valstat_uint64_t, "invalid_argument: zero divisor") ;
+
+	if ((dividend) >= UINT16_MAX)
+		return 	valstat_error(valstat_uint64_t,"dividend too large");
+
+	if ((divisor) >= UINT16_MAX)
+		return 	valstat_error(valstat_uint64_t,"divisor too large");
+
+	// valstat value is a pointer 
+    // quick and dirty solution
+	static uint64_t rezult_anchor = (dividend / divisor);
+
+	return valstat_ok( valstat_uint64_t, & rezult_anchor );
+}
+
+consuming site: ---------------------------------------------------
+
+valstat_uint64_t rez = divider( d, r );
+
+     if ( is_valstat_ok( rez ) ) 
+         printf("rezult is: %d\n", rez.val );
+     else          
+         printf("error status: %d\n", rez.stat );
+
+prety usable solution to: the "Semi Predicate Problem"  (https://en.wikipedia.org/wiki/Semipredicate_problem#References)
+
+*/
+
 #ifndef dbj_clib_STRINGIFY
 #define dbj_clib_STRINGIFY(  x )  dbj_clib_STRINGIFY_( x )
 #define dbj_clib_STRINGIFY_( x )  #x
@@ -112,43 +155,6 @@ use the following macros to check valstat instance for four possible states of v
 #define is_valstat_ok(vstat_) ( (vstat_.val) && ( ! vstat_.stat)  ) 
 #define is_valstat_empty(vstat_) ( (! vstat_.val) && ( ! vstat_.stat)  ) 
 
-/* the full example in a comment; now:
 
-valstat(uint64_t); -- creates --> typedef struct valstat_uint64_t { int * val, const char * stat } valstat_uint64_t;
-
-typename created: valstat_uint64_t
-valstat used is: valstat_uint64_t
-
-valstat_type(uint64_t)
-  divider (uint64_t	dividend, uint64_t	divisor)
-{
-	if (0 == divisor)
-		return	valstat_error(valstat_uint64_t, "invalid_argument: zero divisor") ;
-
-	if ((dividend) >= UINT16_MAX)
-		return 	valstat_error(valstat_uint64_t,"dividend too large");
-
-	if ((divisor) >= UINT16_MAX)
-		return 	valstat_error(valstat_uint64_t,"divisor too large");
-
-	// valstat value is a pointer 
-    // quick and dirty solution
-	static uint64_t rezult_anchor = (dividend / divisor);
-
-	return valstat_ok( valstat_uint64_t, & rezult_anchor );
-}
-
-consuming site: ---------------------------------------------------
-
-valstat_uint64_t rez = divider( d, r );
-
-     if ( is_valstat_ok( rez ) ) 
-         printf("rezult is: %d\n", rez.val );
-     else          
-         printf("error status: %d\n", rez.stat );
-
-prety usable solution to: the "Semi Predicate Problem"  (https://en.wikipedia.org/wiki/Semipredicate_problem#References)
-
-*/
 
 #endif // VALSTAT_INTEROP_H_

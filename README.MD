@@ -1,3 +1,11 @@
+
+# NOTE: this is superseded with  the [dbj_capi](https://github.com/dbj-data/dbj_capi) project
+## Currently parts are being transformed into better C and are moved over there.
+
+Original readme begins here
+
+--------------------------------------
+
 # dbjCLIB&trade;
 
 > Disclaimer: Various working and usable Proofs Of Concepts (POC). Unless stated otherwise. Thus, I am affraid, no warranties of any kind, whatsoever.
@@ -8,9 +16,9 @@
 
 DBJ are an Imagined Company. They use C++, but very often with no exceptions, no `<iostream>` and no std lib.
 
-For the last interesting material on "Why C", perhaps one can observe the FUSHIA Zircon Kernel material.
+For the latest & interesting material on "Why C", perhaps one can observe the FUSHIA Zircon Kernel material.
 
-We do agree with the roles of [C and C++ described in there](https://fuchsia.dev/fuchsia-src/development/languages/c-cpp). And that is not the only team saying so.
+We do (mainly) agree with the roles of [C and C++ described in there](https://fuchsia.dev/fuchsia-src/development/languages/c-cpp/cxx). And that is not the only team saying so.
 
 ### Testing
 

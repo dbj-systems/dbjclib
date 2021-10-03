@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\dbjclib.c" />
+    <ClCompile Include="..\dbjclib_test_main.c" />
     <ClCompile Include="..\dbj_front_back_string_test.c" />
     <ClCompile Include="..\dbj_sll_test.c" />
     <ClCompile Include="..\dbj_string_list_test.c" />

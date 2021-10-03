@@ -6,7 +6,7 @@ manage the 'char **' structure
 it is said to be "self contained" because of the sentinel
 at the end, it does not need a structure above it, trick,
 to keep it's size for example, which is instead computed 
-when needed.
+whenever needed.
 
  empty:
 		  char  ** --------->[ char * ] ----------> SENTINEL
@@ -77,6 +77,8 @@ extern "C" {
 
 	/*
 	WARNING! Argument to this function is a list head. Afterwards it is invalid. It is NULL.
+	WARNING! This is of course valid for heap allocated strings only
+	         which allways applies in here as we heap allocated inside append
 	*/
 	void dbj_string_list_free(dbj_string_list_type);
 

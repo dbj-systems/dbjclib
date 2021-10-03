@@ -32,7 +32,7 @@ dbj_string_list_type dbj_string_list_new()
 /***************************************************************************
 where is the sentinel currently?
 Here is the secret sauce no 2 ... we do not keep it, we find it each time
-why? because this is very fast on moden machines, and because that simplifies
+why? because this is very fast on modern machines, and because that simplifies
 the design AND the implementation
 
 return the pointer to the sentinel element
@@ -110,9 +110,10 @@ uint16_t dbj_string_list_size(dbj_string_list_type head_) {
 
 /**
 get by index
-last arg is list size, if 0 will be computed
+last arg is list size, but only if it is 0; it will be computed
 thus you can optimize:
 
+    // get the size only here and only once
     const size_t size_ = dbj_string_list_size( head ) ;
     
 	// for k from 0 to size_
