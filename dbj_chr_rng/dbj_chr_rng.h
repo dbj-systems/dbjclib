@@ -75,10 +75,7 @@ dbj_chr_rng dbj_chr_rng_append(
 compare the contents of two strings,
 return true if equal
 */
-bool dbj_chr_rng_compare(
-	const dbj_chr_rng*,
-	const dbj_chr_rng*
-);
+bool dbj_chr_rng_compare(const dbj_chr_rng*, const dbj_chr_rng*);
 
 /*
 is CONTENT of sub inside the CONTENT of str ?
@@ -106,52 +103,18 @@ return append left and right of a sub_range
 dbj_chr_rng dbj_remove_substring(dbj_chr_rng*, dbj_chr_rng*);
 
 /*
- *********************************************************************************
- * DBJ STRING VIEW
- *********************************************************************************
- */
- /* do not free */
-typedef struct dbj_chr_rng_view {
-	char* front;
-	char* back;
-} dbj_chr_rng_view;
-
-/*
-return true if front and back are not NULL
-and size is in the allowed boundaries
-*/
-inline bool dbj_valid_sv(const dbj_chr_rng_view* str)
-{
-	if (!str)
-		return false;
-	return (
-		str->front
-		&& str->back
-		&& ((str->back - str->front) > 0)
-		&& (DBJ_CHAR_RANGE_MAX_ > (size_t)(str->back - str->front)));
-}
-
-/*
-just a pointer distance
-*/
-inline const size_t dbj_sv_len(const dbj_chr_rng_view* str_)
-{
-	assert(dbj_valid_sv(str_));
-	return (size_t)(str_->back - str_->front);
-}
-/*
 effectively make a view from const char
 warning: this is a view not a copy, keep the source arroud long enough
 */
-dbj_chr_rng_view*
-dbj_make_sv(const char*);
+dbj_chr_rng*
+dbj_make_chr_rng(const char*);
 /*
 take sub range as requested
 warning: this is a view not a copy, keep the source arroud long enough
 */
-dbj_chr_rng_view* dbj_sv_make(const char*, size_t, size_t);
-
-bool dbj_sv_compare(dbj_chr_rng_view*, dbj_chr_rng_view*);
+dbj_chr_rng*
+make_chr_rng_one_ptr_two_markes
+(const char*, size_t, size_t);
 
 /* ---------------------------------------------------------------------------- */
 #if (DBJ_CHAR_RANGE_IMPLEMENTATION == 1)
@@ -214,7 +177,7 @@ bool dbj_valid_chr_range(const dbj_chr_rng* str)
 		str->front && str->back && ((str->back - str->front) > 0) && (DBJ_CHAR_RANGE_MAX_ > (str->back - str->front)));
 }
 
-void dbj_chr_range_free(dbj_chr_rng* str)
+void dbj_chr_rng_free(dbj_chr_rng* str)
 {
 	DBJ_ASSERT(dbj_valid_chr_range(str));
 
@@ -226,7 +189,7 @@ void dbj_chr_range_free(dbj_chr_rng* str)
 /*
 just a pointer distance
 */
-const size_t dbj_chr_range_len(const dbj_chr_rng* str_)
+const size_t dbj_chr_rng_len(const dbj_chr_rng* str_)
 {
 	DBJ_ASSERT(dbj_valid_chr_range(str_));
 	return (size_t)(str_->back - str_->front);
@@ -246,7 +209,7 @@ dbj_chr_rng dbj_chr_range_alloc(size_t count)
 	return rez;
 }
 
-dbj_chr_rng dbj_chr_range_assign(const char* str_)
+dbj_chr_rng dbj_chr_rng_assign(const char* str_)
 {
 	// asserts on size overflow
 	const size_t str_len = private_strlen(str_);
@@ -267,7 +230,7 @@ dbj_chr_rng dbj_chr_range_append(
 	DBJ_ASSERT(dbj_valid_chr_range(left_));
 	DBJ_ASSERT(dbj_valid_chr_range(right_));
 
-	dbj_chr_rng rezult_ = dbj_chr_range_alloc(dbj_chr_range_len(left_) + dbj_chr_range_len(right_));
+	dbj_chr_rng rezult_ = dbj_chr_range_alloc(dbj_chr_rng_len(left_) + dbj_chr_rng_len(right_));
 	char* w_ = 0;
 	char* r_ = rezult_.front;
 
@@ -289,17 +252,17 @@ dbj_chr_rng dbj_chr_range_append(
 }
 
 /*
-compare the contents of two strings,
+compare the contents of two char ranges,
 return true if equal
 */
-bool dbj_chr_range_compare(
+bool dbj_chr_rng_compare(
 	const dbj_chr_rng* left_,
 	const dbj_chr_rng* right_)
 {
 	DBJ_ASSERT(dbj_valid_chr_range(left_));
 	DBJ_ASSERT(dbj_valid_chr_range(right_));
 
-	if (dbj_chr_range_len(left_) != dbj_chr_range_len(right_))
+	if (dbj_chr_rng_len(left_) != dbj_chr_rng_len(right_))
 		return false;
 
 	char* l_ = left_->front;
@@ -323,9 +286,9 @@ or NULL , with errno set to the the error
 dbj_chr_rng dbj_to_subrange(dbj_chr_rng* str_, dbj_chr_rng* sub_)
 {
 	DBJ_ASSERT(str_ && sub_);
-	DBJ_ASSERT(dbj_chr_range_len(str_) > 0);
-	DBJ_ASSERT(dbj_chr_range_len(sub_) > 0);
-	DBJ_ASSERT(dbj_chr_range_len(sub_) < dbj_chr_range_len(str_));
+	DBJ_ASSERT(dbj_chr_rng_len(str_) > 0);
+	DBJ_ASSERT(dbj_chr_rng_len(sub_) > 0);
+	DBJ_ASSERT(dbj_chr_rng_len(sub_) < dbj_chr_rng_len(str_));
 
 	dbj_chr_rng sub_range_ = {};
 
@@ -427,8 +390,8 @@ dbj_chr_rng dbj_remove_substring(dbj_chr_rng* range, dbj_chr_rng* sub_range)
 
 	dbj_chr_rng rez = dbj_chr_range_append(&left, &right);
 
-	dbj_chr_range_free(&left);
-	dbj_chr_range_free(&right);
+	dbj_chr_rng_free(&left);
+	dbj_chr_rng_free(&right);
 
 	return rez;
 }
@@ -444,12 +407,12 @@ dbj_chr_rng dbj_remove_substring(dbj_chr_rng* range, dbj_chr_rng* sub_range)
  if arg is longer then DBJ_CHAR_RANGE_MAX_
  that is where the back will be
  */
-dbj_chr_rng_view* dbj_make_sv(const char* string_)
+dbj_chr_rng* dbj_make_chr_rng(const char* string_)
 {
 	const size_t slen = private_strlen(string_);
 	DBJ_ASSERT(DBJ_CHAR_RANGE_MAX_ > slen);
 
-	dbj_chr_rng_view* sv_ = DBJ_MALLOC(dbj_chr_rng_view);
+	dbj_chr_rng* sv_ = DBJ_MALLOC(dbj_chr_rng);
 
 	sv_->front = (char*)string_;
 	/* NOTE! if string_ is empty, back == front */
@@ -461,7 +424,7 @@ dbj_chr_rng_view* dbj_make_sv(const char* string_)
 /*
 take sub range as requested
 */
-dbj_chr_rng_view* dbj_sv_make(const char* str, size_t from_, size_t to_)
+dbj_chr_rng* make_chr_rng_one_ptr_two_markes(const char* str, size_t from_, size_t to_)
 {
 	from_ -= 1;
 	// to_ -= 1; we do not move the 'to' left since the concept is
@@ -471,28 +434,11 @@ dbj_chr_rng_view* dbj_sv_make(const char* str, size_t from_, size_t to_)
 		errno = EINVAL;
 		return NULL;
 	}
-	dbj_chr_rng_view* retval = DBJ_MALLOC(dbj_chr_rng_view);
+	dbj_chr_rng* retval = DBJ_MALLOC(dbj_chr_rng);
 	// full_free is false here already
 	retval->front = (char*)&str[from_];
 	retval->back = (char*)&str[to_];
 	return retval;
-}
-
-bool dbj_sv_compare(dbj_chr_rng_view* left_, dbj_chr_rng_view* right_)
-{
-	if (dbj_sv_len(left_) != dbj_sv_len(right_))
-		return false;
-
-	char* l_ = left_->front;
-	char* r_ = right_->front;
-
-	for (l_ = left_->front; l_ != left_->back; ++l_)
-	{
-		if (*l_ != *r_)
-			return false;
-		++r_;
-	}
-	return true;
 }
 
 /* ---------------------------------------------------------------------------- */

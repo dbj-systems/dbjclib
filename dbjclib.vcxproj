@@ -24,6 +24,9 @@
     <ClCompile Include="dbj_string_list\dbj_string_list.c" />
     <ClCompile Include="dbj_str_trim\dbj_string_trim.c" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dbj_chr_rng\dbj_chr_rng.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
