@@ -69,23 +69,23 @@ http://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-in-system-he
 //#include "dbj_hsl/dbj_hsl.h"
 //#include "dbj_string_list/dbj_string_list.h"
 
-//
-//for this to work add the dbjlib folder to addional directories
-//for linker, in project properties
-//*/
-//#ifdef NDEBUG
-//#if defined( _WIN32 ) 
-//#pragma comment(lib, "lib/dbjclib_x86_Release.lib")
-//#else // _WIN64
-//#pragma comment(lib, "lib/dbjclib_x64_Release.lib")
-//#endif
-//#else /* DEBUG */
-//#if defined( _WIN64 ) 
-//#pragma comment(lib, "lib/dbjclib_x64_Debug.lib")
-//#else // _WIN32
-//#pragma comment(lib, "lib/dbjclib_86_Debug.lib")
-//#endif
-//#endif
+/*
+for this to work add the dbjlib folder to addional directories
+for linker, in project properties
+*/
+#ifdef NDEBUG
+#if defined( _WIN32 )
+#pragma comment(lib, "dbjclib_x86_Release.lib")
+#else // _WIN64
+#pragma comment(lib, "dbjclib_x64_Release.lib")
+#endif
+#else /* DEBUG */
+#if defined( _WIN64 ) 
+#pragma comment(lib, "dbjclib_x64_Debug.lib")
+#else // _WIN32
+#pragma comment(lib, "dbjclib_86_Debug.lib")
+#endif
+#endif
 
 
 
