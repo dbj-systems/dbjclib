@@ -9,8 +9,25 @@ before hotly disagreeing and trying to reach me, please read
 #ifndef _DBJ_CLIB_CORE_INC_
 #define _DBJ_CLIB_CORE_INC_
 
+/* -------------------------------------------------------------------------------------------- */
+#undef DBJ_CLIB_BEGIN
+#undef DBJ_CLIB_END
+
+#ifdef __cplusplus
+#define DBJ_CLIB_BEGIN namespace dbjclib { extern "C" {
+#define DBJ_CLIB_END  } }
+#else
+#define DBJ_CLIB_BEGIN
+#define DBJ_CLIB_END
+#endif
+/* -------------------------------------------------------------------------------------------- */
+
 #if !defined( _WIN32 ) && !defined(_WIN64)
-#error Need _WIN32 or _WIN64
+#error __FILE__ needs _WIN32 or _WIN64
+#endif
+
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #include <malloc.h>
@@ -21,30 +38,22 @@ before hotly disagreeing and trying to reach me, please read
 #include <assert.h>
 #include <stdbool.h>
 #include <time.h>
+#include <stdarg.h>
 
 #include "valstat_interop.h"
 
 #ifdef __clang__
-/*
-http://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-in-system-headers
-*/
 #pragma clang system_header
-#endif /* __clang__ */
 
-#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-function"
-#endif
+#endif // __clang__
 
 
 #if defined (_WIN32)
 #define PLATFORM "Windows"
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
 #elif defined (_WIN64)
 #define PLATFORM "Windows64"
-// we do the above since we use MSVC UCRT *from* the clang c code
 #elif defined (__linux__)
 #define PLATFORM "Linux"
 #else
@@ -53,12 +62,12 @@ http://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-in-system-he
 
 
 #ifdef __STDC_VERSION__
-	# if (__STDC_VERSION__ < 199901L)
-		#error    Your compiler is not conforming to C99
-	#endif
-	# if (__STDC_VERSION__ < 201112L)
-		#error    Your compiler is not conforming to C11
-	#endif
+# if (__STDC_VERSION__ < 199901L)
+#error    Your compiler is not conforming to C99
+#endif
+# if (__STDC_VERSION__ < 201112L)
+#error    Your compiler is not conforming to C11
+#endif
 #endif
 
 #ifdef _MSC_VER
@@ -72,18 +81,9 @@ http://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-in-system-he
 /* use this to remove unused code */
 /* this verion does not evaluate the expression at runtime or compile time even */
 #undef DBJ_UNUSED
-#ifdef __clang__
-	#pragma clang diagnostic push
-	#pragma clang diagnostic ignored "-Wincompatible-pointer-types"
-	#pragma clang diagnostic ignored "-Wsizeof-array-argument"
-#endif // __clang__
-// #define DBJ_UNUSED(expr) (void)((void*)(expr))
 
-#if defined(__cplusplus)
-# define DBJ_UNUSED(x)
-#else
-# define DBJ_UNUSED(x) (void)(x)
-#endif
+#undef DBJ_UNUSED
+# define DBJ_UNUSED(...) ((void)(0))
 
 #ifdef __clang__
 #	if ! defined(_MSC_EXTENSIONS)
@@ -91,24 +91,23 @@ http://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-in-system-he
 #	endif
 #endif // __clang__
 
+
 /*
 Note: while inside c++ all is in the dbj::clib namespace
 */
-#ifdef __cplusplus
-extern "C" {
-#endif
+DBJ_CLIB_BEGIN
 
 #ifndef uchar_t
-	typedef uint8_t 	uchar_t;
-#endif  uchar_t
+typedef uint8_t 	uchar_t;
+#endif  // uchar_t
 
 #ifndef size_t
 #if defined(_WIN64)
-	typedef uint_fast64_t  size_t;
+typedef uint_fast64_t  size_t;
 #elif defined(_WIN32)
-	typedef uint_fast32_t  size_t;
+typedef uint_fast32_t  size_t;
 #else
-	/* nothing */
+/* nothing */
 #endif
 #endif
 
@@ -127,66 +126,44 @@ extern "C" {
 #else
 #error compiles only with MSVC or clang packaged with VStudio
 #endif
-/* 
-----------------------------------------------------------------
-c 2darray is organize in row-major-order
-https://en.wikipedia.org/wiki/Row-_and_column-major_order
 
-reminder on C 2d array orinteering: matrix[width][height];
-this is pure non VLA version 
-
-1. always draw a diagram if in doubt what and why is bellow 
-2. arr[i][j] is same as *(*(arr+i)+j)
-
-WARNIG! _malloca might resort to heap! _freea() should be used to free
-        the result of _malloca
-*/
-
-	/**/
-#define DBJ_STACKMAT_ALLOX(height, width, type, name ) \
-type ** name ; \
-do {\
-if ( (size_t)( height * width * sizeof(type) ) > (size_t)_ALLOCA_S_THRESHOLD ) \
-{ \
-	perror("too greedy for stack"); \
-	exit( EXIT_FAILURE ) ; \
-} \
-name = (type**)_malloca(height * sizeof(type *)) ; \
-assert(name); \
-	size_t k; \
-     for (k = 0; k < height; ++k) \
-       name[k] = (type*)_malloca(width * sizeof(type)); \
-}\
- while(0)
 
 #define DBJ_FREE(p) do{  if (p) free((void *)p); p = 0;}while(0)
 
-	/*
-	NOTE: must place NULL as the last arg!
-		  max args is 255
-	*/
-	void free_free_set_them_free(void* vp, ...);
+/*
+NOTE: must place NULL as the last arg!
+	  max args is 255
+*/
+static inline void free_free_set_them_free(void* vp, ...)
+{
+	const size_t max_args = 255; size_t arg_count = 0;
+	va_list marker;
+	va_start(marker, vp); /* Initialize variable arguments. */
+	while (vp != NULL)
+	{
+		free(vp);
+		vp = NULL;
+		vp = va_arg(marker, void*);
+		/* feeble attempt to make it safer  */
+		if (++arg_count == max_args) break;
+	}
+	va_end(marker);   /* Reset variable argument list. */
+}
+
 /* yes that is a NULL as the last arg */
 #define DBJ_MULTI_FREE(...) free_free_set_them_free((void *)__VA_ARGS__, NULL)
 
-#ifdef __cplusplus
-} // extern "C"
-#endif
 
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
 
-/*
----------------------------------------------------------------------------
-for 2d arrays we do not use pointer pointer and static allocator
-*/
-#define DBJ_MATRIX(width,height,type, name)\
-typedef struct matrix_##name {\
-	int width; \
-	int height;\
-	type * data;\
-} matrix_##name ;
+//#ifdef __clang__
+//#pragma clang diagnostic push
+//#pragma clang diagnostic ignored "-Wincompatible-pointer-types"
+//#pragma clang diagnostic ignored "-Wsizeof-array-argument"
+//#endif // __clang__
+
+//#ifdef __clang__
+//#pragma clang diagnostic pop
+//#endif
 
 #endif // ! _DBJ_CLIB_CORE_INC_
 

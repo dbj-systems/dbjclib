@@ -3,6 +3,7 @@
 
 #include "munit/munit.h"
 #include "../dbjclib_core.h"
+#include "../valstat_interop.h"
 
 /* https://rosettacode.org/wiki/Levenshtein_distance#C.2B.2B */
 /* s, t: two strings; ls, lt: their respective length */
@@ -45,9 +46,9 @@ MunitResult munit_playground(const MunitParameter p[], void* d)
 
 #define call_lvstn(a,b) (levenshtein(a, strlen(a), b, strlen(b)) )
 
-    munit_assert_true(call_lvstn("ISLANDER", "SLANDER" ) == 1);
+	munit_assert_true(call_lvstn("ISLANDER", "SLANDER") == 1);
 	munit_assert_true(call_lvstn("MART", "KARMA") == 3);
-	munit_assert_true(call_lvstn("KITTEN", "SITTING") == 3 );
+	munit_assert_true(call_lvstn("KITTEN", "SITTING") == 3);
 	munit_assert_true(call_lvstn("INTENTION", "EXECUTION") == 5);
 
 #undef call_lvstn
@@ -69,14 +70,10 @@ MunitResult stack_allocated_matrix(const MunitParameter p[], void* d)
 	*/
 
 	/* rows, cols */
-	#define HEIGHT 3
-	#define WIDTH 2
+#define HEIGHT 3
+#define WIDTH 2
 
-	int specimen[HEIGHT][WIDTH] = { {0,1}, {2,3}, {4,5} }; /* 6 int's */
-	size_t specimen_size = sizeof(specimen); 	
-	DBJ_UNUSED(specimen_size);
-
-	DBJ_STACKMAT_ALLOX(HEIGHT, WIDTH,int,m);
+	int m[HEIGHT][WIDTH];
 
 	int k;
 
@@ -92,7 +89,7 @@ MunitResult stack_allocated_matrix(const MunitParameter p[], void* d)
 MunitTest playground_tests[] = {
 	DBJ_MUNIT_TEST_ADD("/basic", munit_playground),
 	DBJ_MUNIT_TEST_ADD("/stack alloc", stack_allocated_matrix),
-	DBJ_MUNIT_TEST_EOL 
+	DBJ_MUNIT_TEST_EOL
 };
 
 #ifdef __clang__
