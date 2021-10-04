@@ -1,5 +1,9 @@
+#pragma once
 #ifndef DBJ_CHAR_RANGE_H_
 #define DBJ_CHAR_RANGE_H_
+#ifdef __clang__
+#pragma clang system_header
+#endif /* __clang__ */
 
 /*
 Copyright 2018, 2019, 2020, 2021 by dbj@dbj.org, CC BY SA 4.0
@@ -7,10 +11,7 @@ Copyright 2018, 2019, 2020, 2021 by dbj@dbj.org, CC BY SA 4.0
 In 2020 this was DBJ_FBS == dbj Front Back String
 */
 #include "../dbjclib.h"
-
-#ifdef __clang__
-#pragma clang system_header
-#endif /* __clang__ */
+#include "../dbjclib_core.h"
 
 #include <stdbool.h>
 #include <assert.h>
@@ -152,15 +153,8 @@ dbj_chr_rng_view* dbj_sv_make(const char*, size_t, size_t);
 
 bool dbj_sv_compare(dbj_chr_rng_view*, dbj_chr_rng_view*);
 
-DBJ_CLIB_END
 /* ---------------------------------------------------------------------------- */
-#define DBJ_CHAR_RANGE_IMPLEMENTATION 1
-
-#if ! defined(DBJ_CHAR_RANGE_IMPLEMENTATION)
-#error WTF?!
-#endif
-
-#if DBJ_CHAR_RANGE_IMPLEMENTATION
+#if (DBJ_CHAR_RANGE_IMPLEMENTATION == 1)
 /* ----------------------------------------------------------------------------
 
 Copyright 2018 by dbj@dbj.org
@@ -177,16 +171,12 @@ Concept 2: minimize the use of the string.h
 
 */
 
-#include "../dbjclib_core.h"
-
-DBJ_CLIB_BEGIN
-
-const size_t		DBJ_NPOS = (size_t)-1;
-const size_t		DBJ_CHAR_RANGE_MAX_ = 0xFFFF;
+const size_t DBJ_NPOS = (size_t)-1;
+const size_t DBJ_CHAR_RANGE_MAX_ = 0xFFFF;
 
 
 /* private utils */
-size_t private_strlen(char const* str_)
+static inline size_t private_strlen(char const* str_)
 {
 	DBJ_ASSERT(str_);
 	char* walker_ = (char*)str_;

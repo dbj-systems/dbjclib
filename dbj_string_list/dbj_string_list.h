@@ -27,7 +27,7 @@ sentinel		   --------->[ char * ] ----------> SENTINEL  (size == 3)
   Maximum size of this structure is 0xFFFFui8 aka UINT16_MAX aka 65535
 */
 
-#include "../dbjclib.h"
+#include "../dbjclib_core.h"
 
 DBJ_CLIB_BEGIN
 
@@ -36,7 +36,7 @@ typedef char* dbj_string_list_value_type;
 typedef dbj_string_list_value_type* dbj_string_list_value_type_ptr;
 
 /* last slot is reserved for sentinel */
-static uint16_t dbj_string_list_max_capacity = UINT16_MAX - 1;
+extern const uint16_t dbj_string_list_max_capacity; //  = UINT16_MAX - 1;
 /*
 returns the head of an new empty list
 

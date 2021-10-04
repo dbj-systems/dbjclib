@@ -4,6 +4,8 @@
 #include <errno.h>
 #include <stdbool.h>
 
+/*extern*/ const uint16_t dbj_string_list_max_capacity = UINT16_MAX - 1;
+
 static const char dbj_string_list_sentinel_char = '\033'; // ESC aka ((char)127);
 
 static const dbj_string_list_value_type dbj_string_list_sentinel_
