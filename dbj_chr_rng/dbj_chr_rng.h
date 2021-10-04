@@ -117,7 +117,7 @@ make_chr_rng_one_ptr_two_markes
 (const char*, size_t, size_t);
 
 /* ---------------------------------------------------------------------------- */
-#if (DBJ_CHAR_RANGE_IMPLEMENTATION == 1)
+#ifdef DBJ_CHAR_RANGE_IMPLEMENTATION
 /* ----------------------------------------------------------------------------
 
 Copyright 2018 by dbj@dbj.org
@@ -160,7 +160,7 @@ static inline size_t private_strlen(char const* str_)
 /*
 allocate the new structure
 */
-dbj_chr_rng dbj_chr_range_make_empty()
+dbj_chr_rng dbj_chr_rng_make_empty()
 {
 	return (dbj_chr_rng) { 0, 0 };
 }
@@ -198,10 +198,10 @@ const size_t dbj_chr_rng_len(const dbj_chr_rng* str_)
 /*
 make and allocate for a size givent
 */
-dbj_chr_rng dbj_chr_range_alloc(size_t count)
+dbj_chr_rng dbj_chr_rng_alloc(size_t count)
 {
 	DBJ_ASSERT(DBJ_CHAR_RANGE_MAX_ > count);
-	dbj_chr_rng rez = dbj_chr_range_make_empty();
+	dbj_chr_rng rez = dbj_chr_rng_make_empty();
 	char* payload = DBJ_CALLOC(char, count);
 	DBJ_ASSERT(payload);
 	rez.front = payload;
@@ -215,7 +215,7 @@ dbj_chr_rng dbj_chr_rng_assign(const char* str_)
 	const size_t str_len = private_strlen(str_);
 	DBJ_ASSERT(DBJ_CHAR_RANGE_MAX_ > str_len);
 
-	dbj_chr_rng rez = dbj_chr_range_make_empty();
+	dbj_chr_rng rez = dbj_chr_rng_make_empty();
 
 	rez.front = _strdup(str_);
 	DBJ_ASSERT(rez.front);
@@ -223,14 +223,14 @@ dbj_chr_rng dbj_chr_rng_assign(const char* str_)
 	return rez;
 }
 
-dbj_chr_rng dbj_chr_range_append(
+dbj_chr_rng dbj_chr_rng_append(
 	const dbj_chr_rng* left_,
 	const dbj_chr_rng* right_)
 {
 	DBJ_ASSERT(dbj_valid_chr_range(left_));
 	DBJ_ASSERT(dbj_valid_chr_range(right_));
 
-	dbj_chr_rng rezult_ = dbj_chr_range_alloc(dbj_chr_rng_len(left_) + dbj_chr_rng_len(right_));
+	dbj_chr_rng rezult_ = dbj_chr_rng_alloc(dbj_chr_rng_len(left_) + dbj_chr_rng_len(right_));
 	char* w_ = 0;
 	char* r_ = rezult_.front;
 
@@ -290,7 +290,7 @@ dbj_chr_rng dbj_to_subrange(dbj_chr_rng* str_, dbj_chr_rng* sub_)
 	DBJ_ASSERT(dbj_chr_rng_len(sub_) > 0);
 	DBJ_ASSERT(dbj_chr_rng_len(sub_) < dbj_chr_rng_len(str_));
 
-	dbj_chr_rng sub_range_ = {};
+	dbj_chr_rng sub_rng_ = {};
 
 	/* outer loop is walk along the string */
 	for (char* sp = str_->front; sp != str_->back; ++sp)
@@ -315,17 +315,17 @@ dbj_chr_rng dbj_to_subrange(dbj_chr_rng* str_, dbj_chr_rng* sub_)
 			/* and there where no misses? */
 			if (sub_found_flag)
 			{
-				sub_range_ = dbj_chr_range_make_empty();
-				sub_range_.front = sub_start_location;
-				sub_range_.back = sp;
-				return sub_range_;
+				sub_rng_ = dbj_chr_rng_make_empty();
+				sub_rng_.front = sub_start_location;
+				sub_rng_.back = sp;
+				return sub_rng_;
 				// marked for partial free-ing
 			}
 		}
 	}
 	/* none found */
 	errno = EINVAL;
-	return sub_range_; // empty means error
+	return sub_rng_; // empty means error
 }
 
 /*
@@ -374,8 +374,8 @@ dbj_chr_rng dbj_remove_substring(dbj_chr_rng* range, dbj_chr_rng* sub_range)
 		return (dbj_chr_rng) { 0, 0 };
 	}
 
-	dbj_chr_rng left = dbj_chr_range_make_empty();
-	dbj_chr_rng right = dbj_chr_range_make_empty();
+	dbj_chr_rng left = dbj_chr_rng_make_empty();
+	dbj_chr_rng right = dbj_chr_rng_make_empty();
 
 	left.front = range->front;
 	left.back = check_.front;
@@ -388,7 +388,7 @@ dbj_chr_rng dbj_remove_substring(dbj_chr_rng* range, dbj_chr_rng* sub_range)
 	//	return (dbj_chr_rng) { 0, 0 };
 	//}
 
-	dbj_chr_rng rez = dbj_chr_range_append(&left, &right);
+	dbj_chr_rng rez = dbj_chr_rng_append(&left, &right);
 
 	dbj_chr_rng_free(&left);
 	dbj_chr_rng_free(&right);
