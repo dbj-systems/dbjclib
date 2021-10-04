@@ -1,3 +1,0 @@
-[submodule "munit"]
-	path = sampling/munit
-	url = https://github.com/dbj-data/munit.git
