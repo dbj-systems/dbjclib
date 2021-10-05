@@ -9,6 +9,47 @@
 Copyright 2018, 2019, 2020, 2021 by dbj@dbj.org, CC BY SA 4.0
 
 In 2020 this was DBJ_FBS == dbj Front Back String
+
+In 2021 this is a 'range of chars'.
+
+Meaning and terminology is this:
+
+	1         2         3         4         5     <-- 5 slots
+
++---------+---------+---------+---------+---------+
+|         |         |         |         |         |
+|   0     |   1     |   2     |   3     |   4     | <-- C nomenklature
+|         |         |         |         |         |
++---------+---------+---------+---------+---------+
+	 ^                                      ^
+	 |                                      |
+	 +                                      +
+  Front                                    Back
+
+IMPORTANT! string literal has invisible zero terminator added!
+size of the  "01234" is 6!
+There is no '\0' at slot 6 on that diagram. ie. that is not a zero delimited string
+
+front and back are pointers
+
+const range_type specimen[] = {'A','B','C','D','E'}; // IMPORTANT! that is array not a string!
+ size_t size = sizeof( specimen) / sizeof(specimen[0]) ; // 5
+front = specimen ;
+back  = specimen + size - 1; // specimen[4]
+
+// pointer arithmetics to find a count
+(back - front)  == 4      <-- that is not number of slots aka "count"
+back - front + 1          <-- that is a count
+
+IMPORTANT: pointer arithmetics on non-initiated pointers is UB!
+
+char *p1, *p2; p2 - p1 ; <-- UB!
+char *p1 = 0 , *p2 = 0 ; (p2 - p1) == 0; <-- OK
+
+IMPORTANT: pointer arithmetics on pointers pointing to different blocks/arrays is UB!
+
+https://godbolt.org/z/nqc1jzGan
+
 */
 #include "../dbjclib.h"
 #include "../dbjclib_core.h"
@@ -42,7 +83,11 @@ typedef struct dbj_chr_rng {
 /*
 allocate the new structure
 */
-dbj_chr_rng dbj_chr_rng_make_empty();
+// dbj_chr_rng dbj_chr_rng_make_empty();
+
+#define dbj_chr_rng_make_empty(...) ((dbj_chr_rng) { 0, 0 })
+
+
 /*
 make empty payload of a given count chars
 front of the allocated dbj_chr_rng has to be freed
@@ -112,9 +157,7 @@ dbj_make_chr_rng(const char*);
 take sub range as requested
 warning: this is a view not a copy, keep the source arroud long enough
 */
-dbj_chr_rng*
-make_chr_rng_one_ptr_two_markes
-(const char*, size_t, size_t);
+dbj_chr_rng chr_rng_ptr_two_marks(const char*, size_t, size_t);
 
 /* ---------------------------------------------------------------------------- */
 #ifdef DBJ_CHAR_RANGE_IMPLEMENTATION
@@ -158,12 +201,14 @@ static inline size_t private_strlen(char const* str_)
 }
 
 /*
-allocate the new structure
+the new structure i empty
 */
+#if 0
 dbj_chr_rng dbj_chr_rng_make_empty()
 {
 	return (dbj_chr_rng) { 0, 0 };
 }
+#endif  // 0
 
 /*
 return true if front and back are not NULL
@@ -181,18 +226,35 @@ void dbj_chr_rng_free(dbj_chr_rng* str)
 {
 	DBJ_ASSERT(dbj_valid_chr_range(str));
 
+	char* temp_ = str->front;
 	free(str->front);
-	str->front = NULL; /* must unlink */
+	temp_ = NULL; /* must unlink */
 	str->back = NULL;
 }
 
 /*
-just a pointer distance
+just a pointer distance  + 1
+
+	1         2         3         4         5     <-- 5 slots = Back - Front
+
++---------+---------+---------+---------+---------+
+|         |         |         |         |         |
+|   0     |   1     |   2     |   3     |   4     | <-- C nomenklature
+|         |         |         |         |         |
++---------+---------+---------+---------+---------+
+	 ^                                      ^
+	 |                                      |
+	 +                                      +
+  Front                                    Back
 */
 const size_t dbj_chr_rng_len(const dbj_chr_rng* str_)
 {
-	DBJ_ASSERT(dbj_valid_chr_range(str_));
-	return (size_t)(str_->back - str_->front);
+	size_t count_ = 0 + (size_t)(str_->back - str_->front);
+	// in case of using non init pointers negative result can creep in
+	DBJ_ASSERT(count_ >= 0);
+	DBJ_ASSERT(DBJ_CHAR_RANGE_MAX_ > count_);
+
+	return count_;
 }
 
 /*
@@ -205,7 +267,10 @@ dbj_chr_rng dbj_chr_rng_alloc(size_t count)
 	char* payload = DBJ_CALLOC(char, count);
 	DBJ_ASSERT(payload);
 	rez.front = payload;
-	rez.back = payload + count;
+	// IMPORTANT: this mathematics means back is "one behid the last"
+	//            but that is a terminology problem. `end` is one behind the last
+	//            back it the last
+	rez.back = payload + count - 1;
 	return rez;
 }
 
@@ -219,7 +284,7 @@ dbj_chr_rng dbj_chr_rng_assign(const char* str_)
 
 	rez.front = _strdup(str_);
 	DBJ_ASSERT(rez.front);
-	rez.back = rez.front + str_len;
+	rez.back = rez.front + str_len - 1;
 	return rez;
 }
 
@@ -424,20 +489,25 @@ dbj_chr_rng* dbj_make_chr_rng(const char* string_)
 /*
 take sub range as requested
 */
-dbj_chr_rng* make_chr_rng_one_ptr_two_markes(const char* str, size_t from_, size_t to_)
+dbj_chr_rng chr_rng_ptr_two_marks(const char str[static 1], size_t from_, size_t to_)
 {
-	from_ -= 1;
+	size_t new_len_ = to_ - from_ + 1;
 	// to_ -= 1; we do not move the 'to' left since the concept is
 	// back pointer is one beyond the last 'to'
-	if ((to_ - from_) > private_strlen(str))
+	if (new_len_ > private_strlen(str))
 	{
 		errno = EINVAL;
-		return NULL;
+		return (dbj_chr_rng) { 0, 0 };
 	}
-	dbj_chr_rng* retval = DBJ_MALLOC(dbj_chr_rng);
-	// full_free is false here already
-	retval->front = (char*)&str[from_];
-	retval->back = (char*)&str[to_];
+
+	dbj_chr_rng retval = dbj_chr_rng_alloc(new_len_);
+
+	errno_t memcpy_rez = memcpy_s(retval.front, new_len_,
+		str + from_, new_len_);
+
+	DBJ_ASSERT(memcpy_rez == 0);
+
+	retval.back = retval.front + new_len_ - 1;
 	return retval;
 }
 
