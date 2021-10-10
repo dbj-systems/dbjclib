@@ -3,6 +3,14 @@
         "*.go": "go",
         "*.hta": "html",
         "strlib.h": "c",
-        "slab.h": "c"
+        "slab.h": "c",
+        "dbj_common.h": "c",
+        "bus_server.h": "c",
+        "fdutils.h": "c",
+        "hashmap.h": "c",
+        "filo.h": "c",
+        "utils.h": "c",
+        "serial.h": "c",
+        "test.h": "c"
     }
 }

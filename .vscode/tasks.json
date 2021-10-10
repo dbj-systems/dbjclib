@@ -1,0 +1,88 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "C-UTILS GCC",
+			"command": "D:\\PROD\\TDM-GCC-64\\bin\\gcc.exe",
+			"args": [
+				"-Wall",
+				"-std=c11",
+				"-g",
+				"${workspaceFolder}\\c-utils\\src\\circbuf.c",
+				"${workspaceFolder}\\c-utils\\src\\hashmap.c",
+				"${workspaceFolder}\\c-utils\\src\\list.c",
+				"${workspaceFolder}\\c-utils\\src\\logger.c",
+				"${workspaceFolder}\\c-utils\\src\\memory.c",
+				"${workspaceFolder}\\c-utils\\src\\queue.c",
+				"${workspaceFolder}\\c-utils\\src\\slab.c",
+				"${workspaceFolder}\\c-utils\\src\\stack.c",
+				"${workspaceFolder}\\c-utils\\src\\strlib.c",
+				"${workspaceFolder}\\c-utils\\src\\strutils.c",
+				"${workspaceFolder}\\c-utils\\src\\utils.c",
+				"${workspaceFolder}\\c-utils\\tests\\test-circbuf.c",
+				"${workspaceFolder}\\c-utils\\tests\\test-hashmap.c",
+				"${workspaceFolder}\\c-utils\\tests\\test-slab.c",
+				"${workspaceFolder}\\c-utils\\tests\\test-strlib.c",
+				"${workspaceFolder}\\c-utils\\tests\\test-strutils.c",
+				"${workspaceFolder}\\c-utils\\tests\\path-join.c",
+				"${workspaceFolder}\\c-utils\\tests\\test.c",
+				"-o",
+				"${workspaceFolder}\\c-utils\\tests\\test.exe",
+				"-Xlinker",
+				"-L D:/vcpkg/installed/x86-windows/lib"
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "compiler: D:\\PROD\\TDM-GCC-64\\bin\\gcc.exe"
+		},
+		{
+			"type": "cppbuild",
+			"label": "C/C++: cl.exe build active file",
+			"command": "cl.exe",
+			"args": [
+				"/std:c17",
+				"/Zi",
+				"/W2",
+				"/TC",
+				"/nologo",
+				"/Fe:",
+				"${fileDirname}\\${fileBasenameNoExtension}.exe",
+				"${workspaceFolder}\\c-utils\\src\\circbuf.c",
+				"${workspaceFolder}\\c-utils\\src\\hashmap.c",
+				"${workspaceFolder}\\c-utils\\src\\list.c",
+				// "${workspaceFolder}\\c-utils\\src\\logger.c",
+				"${workspaceFolder}\\c-utils\\src\\memory.c",
+				"${workspaceFolder}\\c-utils\\src\\queue.c",
+				"${workspaceFolder}\\c-utils\\src\\slab.c",
+				"${workspaceFolder}\\c-utils\\src\\stack.c",
+				"${workspaceFolder}\\c-utils\\src\\strlib.c",
+				"${workspaceFolder}\\c-utils\\src\\strutils.c",
+				"${workspaceFolder}\\c-utils\\src\\utils.c",
+				"${workspaceFolder}\\c-utils\\tests\\test-circbuf.c",
+				"${workspaceFolder}\\c-utils\\tests\\test-hashmap.c",
+				"${workspaceFolder}\\c-utils\\tests\\test-slab.c",
+				"${workspaceFolder}\\c-utils\\tests\\test-strlib.c",
+				"${workspaceFolder}\\c-utils\\tests\\test-strutils.c",
+				"${workspaceFolder}\\c-utils\\tests\\path-join.c",
+				"${workspaceFolder}\\c-utils\\tests\\test.c"			
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build",
+			"detail": "compiler: cl.exe"
+		}
+	]
+}
