@@ -10,24 +10,24 @@
 #include <string.h>
 #include <assert.h>
 
-static void die_oom(const char *msg, size_t count, size_t size)
+static void die_oom(const char* msg, size_t count, size_t size)
 {
 	fprintf(stderr, "fatal: %s() out of memory during alloc for %zu*%zu\n",
 		msg, count, size);
 	exit(-1);
 }
 
-void safe_free(void *p)
+void safe_free(void* p)
 {
 	if (p != NULL) {
 		free(p);
 	}
 }
 
-void *safe_malloc(size_t size)
+void* safe_malloc(size_t size)
 
 {
-	void *p;
+	void* p;
 
 	p = malloc(size);
 
@@ -37,9 +37,9 @@ void *safe_malloc(size_t size)
 	return p;
 }
 
-void *safe_calloc(size_t count, size_t size)
+void* safe_calloc(size_t count, size_t size)
 {
-	void *p;
+	void* p;
 
 	p = calloc(count, size);
 
@@ -49,11 +49,11 @@ void *safe_calloc(size_t count, size_t size)
 	return p;
 }
 
-void *safe_strdup(const char *s)
+void* safe_strdup(const char* s)
 {
-	char *p;
+	char* p;
 
-	p = strdup(s);
+	p = _strdup(s);
 
 	if (p == NULL)
 		die_oom("strdup", 1, strlen(s));
@@ -61,9 +61,9 @@ void *safe_strdup(const char *s)
 	return p;
 }
 
-void *safe_realloc(void *data, size_t size)
+void* safe_realloc(void* data, size_t size)
 {
-	void *p;
+	void* p;
 
 	p = realloc(data, size);
 	if (p == NULL)
@@ -72,15 +72,15 @@ void *safe_realloc(void *data, size_t size)
 	return p;
 }
 
-void *safe_realloc_zero(void *data, size_t old_size, size_t new_size)
+void* safe_realloc_zero(void* data, size_t old_size, size_t new_size)
 {
-	void *p;
+	void* p;
 
 	assert(old_size != new_size);
 
 	p = safe_realloc(data, new_size);
 	if (new_size > old_size) {
-		memset((unsigned char *)p + old_size, 0, new_size - old_size);
+		memset((unsigned char*)p + old_size, 0, new_size - old_size);
 	}
 	return p;
 }

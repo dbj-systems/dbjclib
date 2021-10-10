@@ -7,10 +7,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-// #include <utils/strutils.h>
-// #include <utils/memory.h>
+ // #include <utils/strutils.h>
+ // #include <utils/memory.h>
 #include "../dbj_common.h"
-
 
 static inline int hex2int(char ch)
 {
@@ -28,7 +27,7 @@ static inline char int2hex(int v)
 	return (v >= 0 && v <= 9) ? '0' + v : 'A' + (v - 10);
 }
 
-int atohstr(char *hstr, const uint8_t *arr, const int arr_len)
+int atohstr(char* hstr, const uint8_t* arr, const int arr_len)
 {
 	int i;
 
@@ -41,7 +40,7 @@ int atohstr(char *hstr, const uint8_t *arr, const int arr_len)
 	return 0;
 }
 
-int hstrtoa(uint8_t *arr, const char *hstr)
+int hstrtoa(uint8_t* arr, const char* hstr)
 {
 	int i, len, nib1, nib2;
 
@@ -60,7 +59,7 @@ int hstrtoa(uint8_t *arr, const char *hstr)
 	return len;
 }
 
-int safe_atoi(const char *a, int *i)
+int safe_atoi(const char* a, int* i)
 {
 	int val;
 
@@ -73,14 +72,14 @@ int safe_atoi(const char *a, int *i)
 	return 0;
 }
 
-char *safe_strncpy(char* dest, const char* src, size_t size)
+char* safe_strncpy(char* dest, const char* src, size_t size)
 {
-    strncpy(dest, src, size - 1);
-    dest[size - 1] = '\0';
-    return dest;
+	strncpy(dest, src, size - 1);
+	dest[size - 1] = '\0';
+	return dest;
 }
 
-int trim_suffix(char *str, const char *suffix)
+int trim_suffix(char* str, const char* suffix)
 {
 	int i, j;
 
@@ -93,14 +92,14 @@ int trim_suffix(char *str, const char *suffix)
 	if (j > i)
 		return -1;
 
-	while (j > 0 && str[i-1] == suffix[j-1]) {
+	while (j > 0 && str[i - 1] == suffix[j - 1]) {
 		i--; j--;
 	}
 
 	return str[i] = '\0';
 }
 
-int rstrip(char *str)
+int rstrip(char* str)
 {
 	int i;
 
@@ -113,7 +112,7 @@ int rstrip(char *str)
 }
 
 /* Note: can return -ve */
-int lstrip(char *str)
+int lstrip(char* str)
 {
 	int i = 0, j = 0;
 
@@ -129,7 +128,7 @@ int lstrip(char *str)
 	return (j > 0) ? j - 1 : 0;
 }
 
-int strip(char *str)
+int strip(char* str)
 {
 	int rs_len, ls_len;
 
@@ -138,7 +137,7 @@ int strip(char *str)
 	return (ls_len > 0) ? ls_len : rs_len;
 }
 
-void remove_all(char *str, char c)
+void remove_all(char* str, char c)
 {
 	int i, j = 0;
 
@@ -149,16 +148,16 @@ void remove_all(char *str, char c)
 	str[j] = '\0';
 }
 
-int split_string(char *buf, char *sep, char ***tokens)
+int split_string(char* buf, char* sep, char*** tokens)
 {
-	char *tok, *rest, **toks = NULL;
+	char* tok, * rest, ** toks = NULL;
 	size_t length = 0, size = 0;
 	int chunk = 16;
 
 	tok = strtok_r(buf, sep, &rest);
 	while (tok != NULL) {
 		if (length >= size) {
-			toks = safe_realloc(toks, sizeof(char *) * (size + chunk));
+			toks = safe_realloc(toks, sizeof(char*) * (size + chunk));
 			size += chunk;
 			chunk <<= 2;
 		}
@@ -169,13 +168,13 @@ int split_string(char *buf, char *sep, char ***tokens)
 	if (toks == NULL) {
 		return -1;
 	}
-	toks = safe_realloc(toks, sizeof(char *) * (length + 1));
+	toks = safe_realloc(toks, sizeof(char*) * (length + 1));
 	toks[length] = NULL;
 	*tokens = toks;
 	return 0;
 }
 
-int strcntchr(char *s, char c)
+int strcntchr(char* s, char c)
 {
 	int i = 0, count = 0;
 
@@ -187,7 +186,7 @@ int strcntchr(char *s, char c)
 	return count;
 }
 
-int strisempty(char *s)
+int strisempty(char* s)
 {
 	while (s && *s != '\0' && isspace(*s))
 		s++;
@@ -195,7 +194,7 @@ int strisempty(char *s)
 	return s == NULL || *s == '\0';
 }
 
-uint32_t hash32_djb2(const char *str, int len)
+uint32_t hash32_djb2(const char* str, int len)
 {
 	int c;
 	uint32_t hash = 5381;
@@ -206,21 +205,21 @@ uint32_t hash32_djb2(const char *str, int len)
 	return hash;
 }
 
-uint32_t hash32_fnv(const char *str, int len)
+uint32_t hash32_fnv(const char* str, int len)
 {
 	uint32_t hval = 0;
-	unsigned char *s = (unsigned char *)str; /* unsigned string */
+	unsigned char* s = (unsigned char*)str; /* unsigned string */
 
 	/* FNV-1 hash */
 	while (*s && len-- != 0) {
 		/* multiply by the 32 bit FNV magic prime mod 2^32 */
-		hval += (hval<<1) + (hval<<4) + (hval<<7) + (hval<<8) + (hval<<24);
+		hval += (hval << 1) + (hval << 4) + (hval << 7) + (hval << 8) + (hval << 24);
 		hval ^= (uint32_t)*s++;
 	}
 	return hval;
 }
 
-uint64_t poly_hash(const char *str, int len)
+uint64_t poly_hash(const char* str, int len)
 {
 	int c;
 	const int p = 31;
@@ -235,9 +234,9 @@ uint64_t poly_hash(const char *str, int len)
 	return hash;
 }
 
-char *str_sep(char **str, const char *sep)
+char* str_sep(char** str, const char* sep)
 {
-	char *start, *end;
+	char* start, * end;
 
 	if (*str == NULL || *str[0] == '\0')
 		return *str;
@@ -254,10 +253,10 @@ char *str_sep(char **str, const char *sep)
 	return start;
 }
 
-size_t str_sep_count(const char *str, const char *sep)
+size_t str_sep_count(const char* str, const char* sep)
 {
 	size_t count = 0;
-	const char *p;
+	const char* p;
 
 	if (str == NULL || str[0] == '\0')
 		return 0;
@@ -271,13 +270,13 @@ size_t str_sep_count(const char *str, const char *sep)
 		if (*p == '\0')
 			break;
 		count++;
-		while(*p && !strchr(sep, *p))
+		while (*p && !strchr(sep, *p))
 			p++;
 	}
 	return count;
 }
 
-void to_upper(char *s)
+void to_upper(char* s)
 {
 	while (*s) {
 		if (isalpha(*s))
@@ -286,7 +285,7 @@ void to_upper(char *s)
 	}
 }
 
-void to_lower(char *s)
+void to_lower(char* s)
 {
 	while (*s) {
 		if (isalpha(*s))

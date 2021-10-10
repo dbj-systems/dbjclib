@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="external\getopt.c" />
     <ClCompile Include="src\circbuf.c" />
     <ClCompile Include="src\hashmap.c" />
     <ClCompile Include="src\list.c" />
@@ -29,7 +30,6 @@
     <ClCompile Include="src\strlib.c" />
     <ClCompile Include="src\strutils.c" />
     <ClCompile Include="src\utils.c" />
-    <ClCompile Include="tests\path-join.c" />
     <ClCompile Include="tests\test-circbuf.c" />
     <ClCompile Include="tests\test-hashmap.c" />
     <ClCompile Include="tests\test-slab.c" />
@@ -91,24 +91,26 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\vcpkg\installed\x86-windows\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\vcpkg\installed\x86-windows\debug\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\MACHINE_WIDE\external\x86-windows\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\MACHINE_WIDE\external\x86-windows\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\vcpkg\installed\x86-windows\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\vcpkg\installed\x86-windows\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\MACHINE_WIDE\external\x86-windows\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\MACHINE_WIDE\external\x86-windows\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\vcpkg\installed\x86-windows\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\MACHINE_WIDE\external\x86-windows\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\MACHINE_WIDE\external\x86-windows\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\vcpkg\installed\x86-windows\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\MACHINE_WIDE\external\x86-windows\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\MACHINE_WIDE\external\x86-windows\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
-    <VcpkgEnabled>true</VcpkgEnabled>
+    <VcpkgEnabled>false</VcpkgEnabled>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

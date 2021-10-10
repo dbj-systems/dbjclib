@@ -10,8 +10,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <getopt.h> // from vcpkg 
-
 #include "../dbj_common.h"
 
 #include "test.h"
@@ -22,7 +20,7 @@
 
 #define DATE_TIME_STR_LEN 64
 
-static char date_time[DATE_TIME_STR_LEN] = {0};
+static char date_time[DATE_TIME_STR_LEN] = { 0 };
 
 TEST_DEF(circular_buffer);
 TEST_DEF(strlib);
@@ -47,33 +45,33 @@ static test_module_t c_utils_test_modules[] = {
 	TEST_MOD_SENTINEL,
 };
 
-static void test_execute(test_t *t, test_module_t *tm)
+static void test_execute(test_t* t, test_module_t* tm)
 {
 	test_result_t result;
 
 	printf("Testing '%s'\n", tm->name);
 	tm->runner(t, &result);
 	mod_printf("Result: name:'%s' total:%d pass:%d\n",
-		   tm->name, result.total, result.pass);
+		tm->name, result.total, result.pass);
 	t->pass += result.pass;
 	t->total += result.total;
 }
 
-static char *time_string(time_t *t)
+static char* time_string(time_t* t)
 {
 	strftime(date_time, DATE_TIME_STR_LEN, "%d/%m/%y-%H:%M:%S %z", localtime(t));
 	return date_time;
 }
 
-static const char *TEST_HELP_TEXT =
-	"test-bin [OPTIONS]\n"
-	"\n"
-	"OPTIONS:\n"
-	"  -i   Input files directory\n"
-	"  -h   Print this help text\n"
-	"\n";
+static const char* TEST_HELP_TEXT =
+"test-bin [OPTIONS]\n"
+"\n"
+"OPTIONS:\n"
+"  -i   Input files directory\n"
+"  -h   Print this help text\n"
+"\n";
 
-static void process_cli_opts(test_t *ctx, int argc, char *argv[])
+static void process_cli_opts(test_t* ctx, int argc, char* argv[])
 {
 	int c;
 	int opt_ndx;
@@ -82,7 +80,7 @@ static void process_cli_opts(test_t *ctx, int argc, char *argv[])
 		{ "help",       no_argument,       NULL,                   'h' },
 		{ NULL,         0,                 NULL,                    0  }
 	};
-	const char *opt_str =
+	const char* opt_str =
 		/* no_argument       */ "h"
 		/* required_argument */ "i:"
 		;
@@ -115,13 +113,16 @@ static void process_cli_opts(test_t *ctx, int argc, char *argv[])
 	}
 }
 
-void test_read_input_file(test_t ctx[static 1], const char filename[static 1], 
-char **buf, size_t size[static 1])
+void test_read_input_file(test_t ctx[static 1], const char filename[static 1],
+	char** buf, size_t size[static 1])
 {
-	char *path = 0;
-	FILE *fd = 0;
+	char path[BUFSIZ] = { 0 };
+	FILE* fd = 0;
 
-	path = path_join(ctx->inputdir, filename);
+	int rez_ = path_join(BUFSIZ, path, ctx->inputdir, filename);
+
+	DBJ_ASSERT(rez_ == 0);
+
 	if ((fd = fopen(path, "r")) == NULL) {
 		printf("Failed to open %s\n", path);
 		exit(-1);
@@ -133,15 +134,21 @@ char **buf, size_t size[static 1])
 	}
 
 	fclose(fd);
-	safe_free(path);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-	char * last_loc = strrchr(argv[0], '\\');
-	char * input_folder_path = path_join( argv[0], "input");
+	// remove the basename
+	char* p = strrchr(argv[0], '\\');
+	if (p) p[1] = 0; // we need the last slash
 
-	test_module_t *tm = 0;
+	char input_folder_path[512] = { 0 };
+
+	int path_join_rezult = path_join(512, input_folder_path, argv[0], "input");
+
+	DBJ_ASSERT(path_join_rezult == 0);
+
+	test_module_t* tm = 0;
 	test_t test = { .inputdir = "input" };
 
 	// memset(&test, 0, sizeof(test_t));
