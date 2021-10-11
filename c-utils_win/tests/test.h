@@ -1,11 +1,15 @@
+
+#ifndef _TEST_H_
+#define _TEST_H_
 /*
  * Copyright (c) 2020-2021 Siddharth Chandrasekaran <sidcha.dev@gmail.com>
  *
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#ifndef _TEST_H_
-#define _TEST_H_
+#ifdef __clang__
+#pragma clang system_header
+#endif // __clang__
 
 #include <time.h>
 #include <stdio.h>
@@ -29,7 +33,7 @@ typedef struct
 } test_result_t;
 
 typedef struct {
-	char *inputdir;
+	char* inputdir;
 	time_t start_time;
 	time_t end_time;
 	int total;
@@ -37,13 +41,13 @@ typedef struct {
 } test_t;
 
 typedef struct {
-	const char *name;
-	void (*runner)(test_t *ctx, test_result_t *result);
+	const char* name;
+	void (*runner)(test_t* ctx, test_result_t* result);
 } test_module_t;
 
 // void test_read_input_file(test_t *ctx, char *filename, char **buf, size_t *size);
-void test_read_input_file(test_t ctx[static 1], const char filename[static 1], 
-char **buf, size_t size[static 1]);
+void test_read_input_file(test_t ctx[static 1], const char filename[static 1],
+	char** buf, size_t size[static 1]);
 
 
 #endif

@@ -1,5 +1,7 @@
 #pragma once
 
+#define __STDC_WANT_LIB_EXT1__ 1
+
 #include "include/utils/arg_parser.h"
 #include "include/utils/utils.h"
 #include "include/utils/list.h"
@@ -28,15 +30,23 @@
 // #include <utils/sockutils.h>
 // #include <utils/fdutils.h>
 
+#ifdef DBJ_CLI_HAS_OPTS
 #include "external/getopt.h"
+#endif // DBJ_CLI_HAS_OPTS
 
+#include <io.h>
 #include <crtdbg.h>
 
 #define DBJ_ASSERT _ASSERTE
 
 static inline bool str_begins_with(const char str[static 1], const char substr[static 1])
 {
-	return !strncmp(str, substr, strlen(substr));
+	const int str_len = strlen(str);
+	const int prefix_len = strlen(substr);
+
+	if (prefix_len >= str_len) return false;
+
+	return !strncmp(str, substr, prefix_len);
 }
 
 static inline bool str_ends_with(const char str[static 1], const char suffix[static 1])
@@ -44,9 +54,9 @@ static inline bool str_ends_with(const char str[static 1], const char suffix[sta
 	const int str_len = strlen(str);
 	const int suffix_len = strlen(suffix);
 
-	return
-		(str_len >= suffix_len) &&
-		(0 == strcmp(str + (str_len - suffix_len), suffix));
+	if (suffix_len >= str_len) return false;
+
+	return	(0 == strcmp(str + (str_len - suffix_len), suffix));
 }
 
 #define dbj_strtok_r_implementation
@@ -93,6 +103,31 @@ static inline char* strtok_r(char* s, const char* delim, char** save_ptr)
 }
 
 #endif // dbj_strtok_r_implementation
+
+static inline unsigned dbj_app_folder_subfolder(
+	const unsigned out_size, char out[static out_size], char app_full_path[static 1],
+	const unsigned subfolder_size, const char subfolder[static subfolder_size]
+)
+{
+	// to the basename
+	char* p = strrchr(app_full_path, '\\');
+
+	unsigned dist_ = (p + 1) - &app_full_path[0];
+	if (!(dist_ < out_size)) return EINVAL;
+
+#pragma warning(suppress:4996)
+	int rez_ = memcpy_s(out, out_size, app_full_path, dist_);
+
+	if (rez_ != 0) return EINVAL;
+
+	p = strrchr(out, '\\');
+	// the index of one past the last separator
+	dist_ = (p + 1) - &out[0];
+	if (!(dist_ < out_size)) return EINVAL;
+
+#pragma warning(suppress:4996)
+	return memcpy_s(&out[dist_], out_size - dist_, subfolder, subfolder_size);
+}
 
 
 

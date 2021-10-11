@@ -10,7 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "../dbj_common.h"
+ // #include "../dbj_common.h"
 
 #include "test.h"
 
@@ -63,6 +63,8 @@ static char* time_string(time_t* t)
 	return date_time;
 }
 
+#ifdef DBJ_CLI_HAS_OPTS
+
 static const char* TEST_HELP_TEXT =
 "test-bin [OPTIONS]\n"
 "\n"
@@ -112,6 +114,8 @@ static void process_cli_opts(test_t* ctx, int argc, char* argv[])
 		exit(-1);
 	}
 }
+#endif // DBJ_CLI_HAS_OPTS
+
 
 void test_read_input_file(test_t ctx[static 1], const char filename[static 1],
 	char** buf, size_t size[static 1])
@@ -138,27 +142,24 @@ void test_read_input_file(test_t ctx[static 1], const char filename[static 1],
 
 int main(int argc, char* argv[])
 {
-	// remove the basename
-	char* p = strrchr(argv[0], '\\');
-	if (p) p[1] = 0; // we need the last slash
+	static char input_folder_path[512] = { 0 };
 
-	char input_folder_path[512] = { 0 };
-
-	int path_join_rezult = path_join(512, input_folder_path, argv[0], "input");
-
-	DBJ_ASSERT(path_join_rezult == 0);
+	unsigned app_folder_rez = dbj_app_folder_subfolder(512, input_folder_path, argv[0], sizeof "input", "input");
+	DBJ_ASSERT(app_folder_rez == 0);
 
 	test_module_t* tm = 0;
-	test_t test = { .inputdir = "input" };
+	test_t test = { .inputdir = input_folder_path };
 
 	// memset(&test, 0, sizeof(test_t));
+#ifdef DBJ_CLI_HAS_OPTS
 	process_cli_opts(&test, argc, argv);
+#endif // DBJ_CLI_HAS_OPTS
 
 	// Display test header
-	printf("\n");
-	printf("------------------------------------------\n");
-	printf("       goToMain C Unit Test Framework     \n");
-	printf("------------------------------------------\n");
+	printf("\n"
+		"------------------------------------------\n"
+		"       goToMain C Unit Test Framework     \n"
+		"------------------------------------------\n");
 
 	// Run tests
 	test.start_time = time(NULL);
@@ -170,9 +171,10 @@ int main(int argc, char* argv[])
 	test.end_time = time(NULL);
 
 	// Test summary
-	printf("------------------------------------------\n");
-	printf("                Test Summary              \n");
-	printf("------------------------------------------\n");
+	printf("------------------------------------------\n"
+		"                Test Summary              \n"
+		"------------------------------------------\n");
+
 	printf("Start Time: %s\n", time_string(&test.start_time));
 	printf("End Time:   %s\n", time_string(&test.end_time));
 	printf("Executed: %d\n", test.total);

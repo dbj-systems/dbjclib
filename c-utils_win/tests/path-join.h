@@ -15,28 +15,36 @@
  (c) 2021 by dbj@dbj.org
  */
 
-static inline int path_join(const unsigned outsize, char out[static outsize], const char dir[static 1], const char file[static 1])
+static inline int path_join(
+	const unsigned outsize, char out[static outsize],
+	const char dir[static 1],
+	const char file[static 1])
 {
 	const int dir_len = strlen(dir);
 	const int size = dir_len + strlen(file) + 2;
 
 	if (size >= outsize) return EINVAL;
 
+#pragma warning(suppress:4996)
+	memset(out, 0, outsize);
+
+#pragma warning(suppress:4996)
 	strcpy(out, dir);
 
-	char* p = strrchr(out, PATH_JOIN_SEPERATOR);
+	char* p = strrchr(out, 0);
 
-	// add the sep if not dirname suffix
-	if (p == NULL) {
-		*(out + strlen(dir)) = PATH_JOIN_SEPERATOR;
+	// add the sep if not alread the last char
+	if (*(p - 1) != PATH_JOIN_SEPERATOR) {
+		*(p) = PATH_JOIN_SEPERATOR;
 	}
 
-	// dkip over the sep if its a  file prefix
+	// dkip over the sep if its a file first char
 	if (file[0] == PATH_JOIN_SEPERATOR) file++;
 
-	p = strrchr(out, PATH_JOIN_SEPERATOR);
+	p = strrchr(out, 0); // the one beyond the last
 
-	strcpy(p + 1, file);
+#pragma warning(suppress:4996)
+	strcpy(p, file);
 
 	return 0;
 }
