@@ -49,10 +49,13 @@ static void test_execute(test_t* t, test_module_t* tm)
 {
 	test_result_t result;
 
-	printf("Testing '%s'\n", tm->name);
+	printf( VT100_WHITE_BRIGHT_BOLD "Testing '%s'\n" VT100_RESET, tm->name);
+	clock_t start_time_ = clock() / (CLOCKS_PER_SEC / 1000);
 	tm->runner(t, &result);
+	clock_t end_time_ = clock() / (CLOCKS_PER_SEC / 1000);
 	mod_printf("Result: name:'%s' total:%d pass:%d\n",
 		tm->name, result.total, result.pass);
+		mod_printf("Elapsed: %ld", end_time_ - start_time_ );
 	t->pass += result.pass;
 	t->total += result.total;
 }
@@ -143,44 +146,48 @@ void test_read_input_file(test_t ctx[static 1], const char filename[static 1],
 
 int main(int argc, char* argv[])
 {
+/*
+    Absolute path will require copying the input from a source tree
+	to the binary output tree
+
 	static char input_folder_path[512] = { 0 };
-
 	unsigned app_folder_rez = dbj_app_folder_subfolder(512, input_folder_path, argv[0], sizeof "input", "input");
-	
 	DBJ_ASSERT(app_folder_rez == 0);
-
+*/
 	test_module_t* tm = 0;
-	test_t test = { .inputdir = input_folder_path };
+	test_t test = { .inputdir = "input" };
 
 	// memset(&test, 0, sizeof(test_t));
 #ifdef DBJ_CLI_HAS_OPTS
 	process_cli_opts(&test, argc, argv);
 #endif // DBJ_CLI_HAS_OPTS
 
+    system(" "); // win cmd.exe kick start ansi emulator
 	// Display test header
-	printf("\n"
+	printf("\n" VT100_GREEN_BOLD
 		"------------------------------------------\n"
 		"       goToMain C Unit Test Framework     \n"
-		"------------------------------------------\n");
+		"------------------------------------------\n"
+		VT100_RESET );
 
 	// Run tests
 	test.start_time = time(NULL);
 	tm = &(c_utils_test_modules[0]);
 	while (tm->name != NULL) {
-		test_execute(&test, tm);
+		test_execute(&test, tm); 
 		tm++;
 	}
 	test.end_time = time(NULL);
 
 	// Test summary
-	printf("------------------------------------------\n"
+	printf( VT100_GREEN_BOLD "------------------------------------------\n"
 		"                Test Summary              \n"
-		"------------------------------------------\n");
+		"------------------------------------------\n" VT100_RESET );
 
 	printf("Start Time: %s\n", time_string(&test.start_time));
 	printf("End Time:   %s\n", time_string(&test.end_time));
-	printf("Executed: %d\n", test.total);
+	printf( VT100_WHITE_BRIGHT_BOLD "Executed: %d\n" VT100_RESET, test.total);
 	printf("Successful: %d\n", test.pass);
-	printf("Result: %s\n\n", (test.total == test.pass) ? "PASS" : "FAIL");
+	printf( VT100_WHITE_BRIGHT "Result: %s\n\n" VT100_RESET, (test.total == test.pass) ? "PASS" : "FAIL");
 	return 0;
 }

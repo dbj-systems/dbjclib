@@ -139,5 +139,13 @@ static inline unsigned dbj_app_folder_subfolder(
 	return memcpy_s(&out[dist_], out_size - dist_, subfolder, subfolder_size);
 }
 
+#define VT100_RESET "\033[0m"
+#define VT100_RED_BOLD "\033[91m"
+#define VT100_GREEN_BOLD "\033[92m"
+#define VT100_YELLOW_BOLD "\033[93m"
+#define VT100_BLUE_BOLD "\033[94m"
+#define VT100_WHITE_BRIGHT "\033[97m"
+#define VT100_WHITE_BRIGHT_BOLD "\033[97;1m"
+
 
 
