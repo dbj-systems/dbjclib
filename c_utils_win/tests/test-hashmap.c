@@ -97,10 +97,10 @@ size_t test_build_word_list(char *buf, const char *const **word_list)
 	count = str_sep_count(buf, "\n\r \t");
 	words = safe_malloc(sizeof(char *) * count);
 
-	word = strtok_r(buf, SEP, &state);
+	word = dbj_strtok_r(buf, SEP, &state);
 	while (ndx < count && word != NULL) {
 		words[ndx] = word;
-		word = strtok_r(NULL, SEP, &state);
+		word = dbj_strtok_r(NULL, SEP, &state);
 		ndx += 1;
 	}
 	*word_list = (const char *const *)words;

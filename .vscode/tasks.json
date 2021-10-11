@@ -8,29 +8,27 @@
 			"args": [
 				"-Wall",
 				"-std=c11",
+				"-D_DEBUG",
 				"-g",
-				"${workspaceFolder}\\c-utils\\src\\circbuf.c",
-				"${workspaceFolder}\\c-utils\\src\\hashmap.c",
-				"${workspaceFolder}\\c-utils\\src\\list.c",
-				"${workspaceFolder}\\c-utils\\src\\logger.c",
-				"${workspaceFolder}\\c-utils\\src\\memory.c",
-				"${workspaceFolder}\\c-utils\\src\\queue.c",
-				"${workspaceFolder}\\c-utils\\src\\slab.c",
-				"${workspaceFolder}\\c-utils\\src\\stack.c",
-				"${workspaceFolder}\\c-utils\\src\\strlib.c",
-				"${workspaceFolder}\\c-utils\\src\\strutils.c",
-				"${workspaceFolder}\\c-utils\\src\\utils.c",
-				"${workspaceFolder}\\c-utils\\tests\\test-circbuf.c",
-				"${workspaceFolder}\\c-utils\\tests\\test-hashmap.c",
-				"${workspaceFolder}\\c-utils\\tests\\test-slab.c",
-				"${workspaceFolder}\\c-utils\\tests\\test-strlib.c",
-				"${workspaceFolder}\\c-utils\\tests\\test-strutils.c",
-				"${workspaceFolder}\\c-utils\\tests\\path-join.c",
-				"${workspaceFolder}\\c-utils\\tests\\test.c",
+				"${workspaceFolder}\\c_utils_win\\src\\circbuf.c",
+				"${workspaceFolder}\\c_utils_win\\src\\hashmap.c",
+				"${workspaceFolder}\\c_utils_win\\src\\list.c",
+				"${workspaceFolder}\\c_utils_win\\src\\logger.c",
+				"${workspaceFolder}\\c_utils_win\\src\\memory.c",
+				"${workspaceFolder}\\c_utils_win\\src\\queue.c",
+				"${workspaceFolder}\\c_utils_win\\src\\slab.c",
+				"${workspaceFolder}\\c_utils_win\\src\\stack.c",
+				"${workspaceFolder}\\c_utils_win\\src\\strlib.c",
+				"${workspaceFolder}\\c_utils_win\\src\\strutils.c",
+				"${workspaceFolder}\\c_utils_win\\src\\utils.c",
+				"${workspaceFolder}\\c_utils_win\\tests\\test-circbuf.c",
+				"${workspaceFolder}\\c_utils_win\\tests\\test-hashmap.c",
+				"${workspaceFolder}\\c_utils_win\\tests\\test-slab.c",
+				"${workspaceFolder}\\c_utils_win\\tests\\test-strlib.c",
+				"${workspaceFolder}\\c_utils_win\\tests\\test-strutils.c",
+				"${workspaceFolder}\\c_utils_win\\tests\\test.c",
 				"-o",
-				"${workspaceFolder}\\c-utils\\tests\\test.exe",
-				"-Xlinker",
-				"-L D:/vcpkg/installed/x86-windows/lib"
+				"${workspaceFolder}\\c_utils_win\\tests\\test.exe"
 			],
 			"options": {
 				"cwd": "${fileDirname}"
@@ -43,46 +41,6 @@
 				"isDefault": true
 			},
 			"detail": "compiler: D:\\PROD\\TDM-GCC-64\\bin\\gcc.exe"
-		},
-		{
-			"type": "cppbuild",
-			"label": "C/C++: cl.exe build active file",
-			"command": "cl.exe",
-			"args": [
-				"/std:c17",
-				"/Zi",
-				"/W2",
-				"/TC",
-				"/nologo",
-				"/Fe:",
-				"${fileDirname}\\${fileBasenameNoExtension}.exe",
-				"${workspaceFolder}\\c-utils\\src\\circbuf.c",
-				"${workspaceFolder}\\c-utils\\src\\hashmap.c",
-				"${workspaceFolder}\\c-utils\\src\\list.c",
-				// "${workspaceFolder}\\c-utils\\src\\logger.c",
-				"${workspaceFolder}\\c-utils\\src\\memory.c",
-				"${workspaceFolder}\\c-utils\\src\\queue.c",
-				"${workspaceFolder}\\c-utils\\src\\slab.c",
-				"${workspaceFolder}\\c-utils\\src\\stack.c",
-				"${workspaceFolder}\\c-utils\\src\\strlib.c",
-				"${workspaceFolder}\\c-utils\\src\\strutils.c",
-				"${workspaceFolder}\\c-utils\\src\\utils.c",
-				"${workspaceFolder}\\c-utils\\tests\\test-circbuf.c",
-				"${workspaceFolder}\\c-utils\\tests\\test-hashmap.c",
-				"${workspaceFolder}\\c-utils\\tests\\test-slab.c",
-				"${workspaceFolder}\\c-utils\\tests\\test-strlib.c",
-				"${workspaceFolder}\\c-utils\\tests\\test-strutils.c",
-				"${workspaceFolder}\\c-utils\\tests\\path-join.c",
-				"${workspaceFolder}\\c-utils\\tests\\test.c"			
-			],
-			"options": {
-				"cwd": "${fileDirname}"
-			},
-			"problemMatcher": [
-				"$msCompile"
-			],
-			"group": "build",
-			"detail": "compiler: cl.exe"
 		}
 	]
 }

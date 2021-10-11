@@ -154,7 +154,7 @@ int split_string(char* buf, char* sep, char*** tokens)
 	size_t length = 0, size = 0;
 	int chunk = 16;
 
-	tok = strtok_r(buf, sep, &rest);
+	tok = dbj_strtok_r(buf, sep, &rest);
 	while (tok != NULL) {
 		if (length >= size) {
 			toks = safe_realloc(toks, sizeof(char*) * (size + chunk));
@@ -163,7 +163,7 @@ int split_string(char* buf, char* sep, char*** tokens)
 		}
 		toks[length] = safe_strdup(tok);
 		length += 1;
-		tok = strtok_r(NULL, sep, &rest);
+		tok = dbj_strtok_r(NULL, sep, &rest);
 	}
 	if (toks == NULL) {
 		return -1;

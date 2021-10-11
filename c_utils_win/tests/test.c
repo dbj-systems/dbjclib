@@ -123,9 +123,10 @@ void test_read_input_file(test_t ctx[static 1], const char filename[static 1],
 	char path[BUFSIZ] = { 0 };
 	FILE* fd = 0;
 
-	int rez_ = path_join(BUFSIZ, path, ctx->inputdir, filename);
-
-	DBJ_ASSERT(rez_ == 0);
+	if ( 0 != path_join(BUFSIZ, path, ctx->inputdir, filename)){
+		printf("path_join failed, inputdir: %s, filename: %s\n", ctx->inputdir, filename);
+		exit(-1);
+	}
 
 	if ((fd = fopen(path, "r")) == NULL) {
 		printf("Failed to open %s\n", path);
@@ -145,6 +146,7 @@ int main(int argc, char* argv[])
 	static char input_folder_path[512] = { 0 };
 
 	unsigned app_folder_rez = dbj_app_folder_subfolder(512, input_folder_path, argv[0], sizeof "input", "input");
+	
 	DBJ_ASSERT(app_folder_rez == 0);
 
 	test_module_t* tm = 0;

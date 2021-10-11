@@ -28,7 +28,7 @@ int _test_str_sep_do(char *input, char *sep, int toks_len, char *toks[], bool ou
 int test_str_sep()
 {
 	int retval = -1;
-	char *empty = "", *tc01[] = { "1", "2", "3", "4", "5" };
+	char /* *empty = "",*/ *tc01[] = { "1", "2", "3", "4", "5" };
 
 	do {
 		_test_sep_pos("1,2,3,4,5", ",", tc01);

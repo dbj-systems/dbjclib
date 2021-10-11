@@ -35,9 +35,15 @@
 #endif // DBJ_CLI_HAS_OPTS
 
 #include <io.h>
-#include <crtdbg.h>
+#include <errno.h>
 
+#ifdef _MSC_VER
+#include <crtdbg.h>
 #define DBJ_ASSERT _ASSERTE
+#else
+#include <assert.h>
+#define DBJ_ASSERT assert
+#endif //  ! _MSC_VER
 
 static inline bool str_begins_with(const char str[static 1], const char substr[static 1])
 {
@@ -67,12 +73,12 @@ static inline bool str_ends_with(const char str[static 1], const char suffix[sta
    the next starting point.  For example:
 	char s[] = "-abc-=-def";
 	char *sp;
-	x = strtok_r(s, "-", &sp);        // x = "abc", sp = "=-def"
-	x = strtok_r(NULL, "-=", &sp);        // x = "def", sp = NULL
-	x = strtok_r(NULL, "=", &sp);        // x = NULL
+	x = dbj_strtok_r(s, "-", &sp);        // x = "abc", sp = "=-def"
+	x = dbj_strtok_r(NULL, "-=", &sp);        // x = "def", sp = NULL
+	x = dbj_strtok_r(NULL, "=", &sp);        // x = NULL
 		// s = "abc\0-def\0"
 */
-static inline char* strtok_r(char* s, const char* delim, char** save_ptr)
+static inline char* dbj_strtok_r(char* s, const char* delim, char** save_ptr)
 {
 	char* end;
 	if (s == NULL)
@@ -115,7 +121,9 @@ static inline unsigned dbj_app_folder_subfolder(
 	unsigned dist_ = (p + 1) - &app_full_path[0];
 	if (!(dist_ < out_size)) return EINVAL;
 
+#ifdef _MSC_VER
 #pragma warning(suppress:4996)
+#endif
 	int rez_ = memcpy_s(out, out_size, app_full_path, dist_);
 
 	if (rez_ != 0) return EINVAL;
@@ -125,7 +133,9 @@ static inline unsigned dbj_app_folder_subfolder(
 	dist_ = (p + 1) - &out[0];
 	if (!(dist_ < out_size)) return EINVAL;
 
+#ifdef _MSC_VER
 #pragma warning(suppress:4996)
+#endif
 	return memcpy_s(&out[dist_], out_size - dist_, subfolder, subfolder_size);
 }
 

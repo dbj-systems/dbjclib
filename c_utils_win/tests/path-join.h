@@ -25,10 +25,14 @@ static inline int path_join(
 
 	if (size >= outsize) return EINVAL;
 
+#ifdef _MSC_VER
 #pragma warning(suppress:4996)
+#endif
 	memset(out, 0, outsize);
 
+#ifdef _MSC_VER
 #pragma warning(suppress:4996)
+#endif
 	strcpy(out, dir);
 
 	char* p = strrchr(out, 0);
@@ -43,7 +47,9 @@ static inline int path_join(
 
 	p = strrchr(out, 0); // the one beyond the last
 
+#ifdef _MSC_VER
 #pragma warning(suppress:4996)
+#endif
 	strcpy(p, file);
 
 	return 0;
