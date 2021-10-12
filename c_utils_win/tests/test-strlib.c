@@ -13,14 +13,19 @@
 
 #include "test.h"
 
-STRING_DEF(test_str, 8);
+// DBJ Show eXpression
+#define SX(F,X) printf("\n%s : " F, (#X),(X))
+
+// DBJ: this is the one "test string", I made it static
+static STRING_DEF(test_str, 8);
 
 void test_print_info_string(const char *msg, string_t *s)
 {
-	printf("\t[%s] s->len: %zu s->max_len: %zu s->buf: %s\n",
+	printf( VT100_BLUE_BOLD  "\t[%s] s->len: %zu s->max_len: %zu s->buf: %s\n" VT100_RESET,
 		msg, s->len, s->max_len, s->buf);
 }
 
+// DBJ: -1 always means error for the strlib
 int test_check_str(string_t *s, const char *str)
 {
 	if (strcmp(s->buf, str) != 0)
@@ -29,18 +34,22 @@ int test_check_str(string_t *s, const char *str)
 	return 0;
 }
 
+// DBJ: -1 always means error for the strlib
 int test_str_printf()
 {
 	int ret;
+// DBJ: second arg is "mode", c == create, f == fill, a == append
+// one can combine into: "ca", "fa" it seems
+	SX("%d", ret = string_printf(&test_str, "c", "age: %d", 10)) ;
 
-	ret = string_printf(&test_str, "c", "age: %d", 10);
 	if (ret <= 0 || test_check_str(&test_str, "age: 10")) {
 		printf("\tret: %d", ret);
 		test_print_info_string("string_printf: create", &test_str);
 		return -1;
 	}
 
-	ret = string_printf(&test_str, "a", " id: %d", 101);
+	SX("%d", ret = string_printf(&test_str, "a", " id: %d", 101) ) ;
+
 	if (ret != -1) {
 		printf("\tret: %d", ret);
 		test_print_info_string("string_printf: create", &test_str);
@@ -54,31 +63,31 @@ int test_str_copy()
 {
 	int ret;
 
-	ret = string_copy(&test_str, "c", "1234567890", 10);
+	SX("%d", ret = string_copy(&test_str, "c", "1234567890", 10));
 	if (ret != -1) {
 		test_print_info_string("Create excess", &test_str);
 		return -1;
 	}
 
-	ret = string_copy(&test_str, "cf", "1234567890", 10);
+	SX("%d", ret = string_copy(&test_str, "cf", "1234567890", 10));
 	if (ret != 8) {
 		test_print_info_string("Create fill", &test_str);
 		return -1;
 	}
 
-	ret = string_copy(&test_str, "c", "1234567", 7);
+	SX("%d",ret = string_copy(&test_str, "c", "1234567", 7));
 	if (ret != 7) {
 		test_print_info_string("Create", &test_str);
 		return -1;
 	}
 
-	ret = string_copy(&test_str, "a", "1", 1);
+	SX("%d",ret = string_copy(&test_str, "a", "1", 1));
 	if (ret != 1) {
 		test_print_info_string("Append", &test_str);
 		return -1;
 	}
 
-	ret = string_copy(&test_str, "a", "123", 3);
+	SX("%d", ret = string_copy(&test_str, "a", "123", 3));
 	if (ret != -1) {
 		test_print_info_string("Append after full", &test_str);
 		return -1;
