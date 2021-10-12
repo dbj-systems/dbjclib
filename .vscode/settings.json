@@ -14,4 +14,6 @@
         "test.h": "c",
         "unistd.h": "c"
     }
+,
+        "editor.formatOnSave": true
 }

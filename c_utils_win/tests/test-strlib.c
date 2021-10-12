@@ -13,10 +13,8 @@
 
 #include "test.h"
 
-// DBJ Show eXpression
-#define SX(F,X) printf("\n%s : " F, (#X),(X))
-
 // DBJ: this is the one "test string", I made it static
+// due to its design it has to be global, on the level of compilation unit
 static STRING_DEF(test_str, 8);
 
 void test_print_info_string(const char *msg, string_t *s)

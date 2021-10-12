@@ -4,23 +4,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <stdio.h>
 #include <stdint.h>
-#include <time.h>
-#include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
- // #include "../dbj_common.h"
+// #include "../dbj_common.h"
 
+#include "path-join.h"  // dbj
 #include "test.h"
-
-#include "path-join.h" // dbj
 #define DBJ_FILE_READ_ALL_IMPLEMENTATION
-#include "dbj_file_read_all.h" // dbj
+#include "dbj_file_read_all.h"  // dbj
 
 #define DATE_TIME_STR_LEN 64
 
-static char date_time[DATE_TIME_STR_LEN] = { 0 };
+static char date_time[DATE_TIME_STR_LEN] = {0};
 
 TEST_DEF(circular_buffer);
 TEST_DEF(strlib);
@@ -33,161 +32,156 @@ TEST_DEF(slab);
 // TEST_DEF(bus_server);
 
 static test_module_t c_utils_test_modules[] = {
-	TEST_MOD(circular_buffer),
-	TEST_MOD(strlib),
-	TEST_MOD(hashmap),
-	TEST_MOD(strutils),
-	// TEST_MOD(filo),
-	TEST_MOD(slab),
-	// TEST_MOD(procutils),
-	// TEST_MOD(workqueue),
-	// TEST_MOD(bus_server),
-	TEST_MOD_SENTINEL,
+    TEST_MOD(circular_buffer),
+    TEST_MOD(strlib),
+    TEST_MOD(hashmap),
+    TEST_MOD(strutils),
+    // TEST_MOD(filo),
+    TEST_MOD(slab),
+    // TEST_MOD(procutils),
+    // TEST_MOD(workqueue),
+    // TEST_MOD(bus_server),
+    TEST_MOD_SENTINEL,
 };
 
-static void test_execute(test_t* t, test_module_t* tm)
-{
-	test_result_t result;
+static void test_execute(test_t* t, test_module_t* tm) {
+  test_result_t result;
 
-	printf( VT100_WHITE_BRIGHT_BOLD "Testing '%s'\n" VT100_RESET, tm->name);
-	clock_t start_time_ = clock() / (CLOCKS_PER_SEC / 1000);
-	tm->runner(t, &result);
-	clock_t end_time_ = clock() / (CLOCKS_PER_SEC / 1000);
-	mod_printf("Result: name:'%s' total:%d pass:%d\n",
-		tm->name, result.total, result.pass);
-		mod_printf("Elapsed: %ld", end_time_ - start_time_ );
-	t->pass += result.pass;
-	t->total += result.total;
+  printf(VT100_WHITE_BRIGHT_BOLD "\nTesting '%s'\n" VT100_RESET, tm->name);
+  clock_t start_time_ = clock() / (CLOCKS_PER_SEC / 1000);
+  tm->runner(t, &result);
+  clock_t end_time_ = clock() / (CLOCKS_PER_SEC / 1000);
+  mod_printf("\nResult: name:'%s' total:%d pass:%d\n", tm->name, result.total,
+             result.pass);
+  mod_printf("\nElapsed: %ld milli seconds", end_time_ - start_time_);
+  t->pass += result.pass;
+  t->total += result.total;
 }
 
-static char* time_string(time_t* t)
-{
-	strftime(date_time, DATE_TIME_STR_LEN, "%d/%m/%y-%H:%M:%S %z", localtime(t));
-	return date_time;
+static char* time_string(time_t* t) {
+  strftime(date_time, DATE_TIME_STR_LEN, "%d/%m/%y-%H:%M:%S %z", localtime(t));
+  return date_time;
 }
 
 #ifdef DBJ_CLI_HAS_OPTS
 
-static const char* TEST_HELP_TEXT =
-"test-bin [OPTIONS]\n"
-"\n"
-"OPTIONS:\n"
-"  -i   Input files directory\n"
-"  -h   Print this help text\n"
-"\n";
+static const char* TEST_HELP_TEXT = "test-bin [OPTIONS]\n"
+                                    "\n"
+                                    "OPTIONS:\n"
+                                    "  -i   Input files directory\n"
+                                    "  -h   Print this help text\n"
+                                    "\n";
 
-static void process_cli_opts(test_t* ctx, int argc, char* argv[])
-{
-	int c;
-	int opt_ndx;
-	static struct option opts[] = {
-		{ "inputdir",   required_argument, NULL,                   'i' },
-		{ "help",       no_argument,       NULL,                   'h' },
-		{ NULL,         0,                 NULL,                    0  }
-	};
-	const char* opt_str =
-		/* no_argument       */ "h"
-		/* required_argument */ "i:"
-		;
-	while ((c = getopt_long(argc, argv, opt_str, opts, &opt_ndx)) >= 0) {
-		switch (c) {
-		case 'i':
-			if (ctx->inputdir) {
-				printf("Cannot pass multiple --inputdir");
-				exit(-1);
-			}
-			ctx->inputdir = safe_strdup(optarg);
-			break;
-		case 'h':
-			printf("%s", TEST_HELP_TEXT);
-			exit(0);
-			break;
-		case '?':
-		default:
-			printf("%s", TEST_HELP_TEXT);
-			exit(-1);
-		}
-	}
+static void process_cli_opts(test_t* ctx, int argc, char* argv[]) {
+  int c;
+  int opt_ndx;
+  static struct option opts[] = {{"inputdir", required_argument, NULL, 'i'},
+                                 {"help", no_argument, NULL, 'h'},
+                                 {NULL, 0, NULL, 0}};
+  const char* opt_str =
+      /* no_argument       */ "h"
+                              /* required_argument */ "i:";
+  while ((c = getopt_long(argc, argv, opt_str, opts, &opt_ndx)) >= 0) {
+    switch (c) {
+      case 'i':
+        if (ctx->inputdir) {
+          printf("Cannot pass multiple --inputdir");
+          exit(-1);
+        }
+        ctx->inputdir = safe_strdup(optarg);
+        break;
+      case 'h':
+        printf("%s", TEST_HELP_TEXT);
+        exit(0);
+        break;
+      case '?':
+      default:
+        printf("%s", TEST_HELP_TEXT);
+        exit(-1);
+    }
+  }
 
-	argc -= optind;
-	argv += optind;
+  argc -= optind;
+  argv += optind;
 
-	if (argc != 0) {
-		printf("Invlaid arguments found\n");
-		exit(-1);
-	}
+  if (argc != 0) {
+    printf("Invlaid arguments found\n");
+    exit(-1);
+  }
 }
-#endif // DBJ_CLI_HAS_OPTS
-
+#endif  // DBJ_CLI_HAS_OPTS
 
 void test_read_input_file(test_t ctx[static 1], const char filename[static 1],
-	char** buf, size_t size[static 1])
-{
-	char path[BUFSIZ] = { 0 };
-	FILE* fd = 0;
+                          char** buf, size_t size[static 1]) {
+  char path[BUFSIZ] = {0};
+  FILE* fd = 0;
 
-	if ( 0 != path_join(BUFSIZ, path, ctx->inputdir, filename)){
-		printf("path_join failed, inputdir: %s, filename: %s\n", ctx->inputdir, filename);
-		exit(-1);
-	}
+  if (0 != path_join(BUFSIZ, path, ctx->inputdir, filename)) {
+    printf("path_join failed, inputdir: %s, filename: %s\n", ctx->inputdir,
+           filename);
+    exit(-1);
+  }
 
-	if ((fd = fopen(path, "r")) == NULL) {
-		printf("Failed to open %s\n", path);
-		exit(-1);
-	}
+  if ((fd = fopen(path, "r")) == NULL) {
+    printf("Failed to open %s\n", path);
+    exit(-1);
+  }
 
-	if (file_read_all(fd, buf, size)) {
-		printf("Failed to read contents of %s\n", path);
-		exit(-1);
-	}
+  if (file_read_all(fd, buf, size)) {
+    printf("Failed to read contents of %s\n", path);
+    exit(-1);
+  }
 
-	fclose(fd);
+  fclose(fd);
 }
 
-int main(int argc, char* argv[])
-{
-/*
-    Absolute path will require copying the input from a source tree
-	to the binary output tree
+int main(int argc, char* argv[]) {
+  system(" ");  // win cmd.exe kick start ansi emulator
 
-	static char input_folder_path[512] = { 0 };
-	unsigned app_folder_rez = dbj_app_folder_subfolder(512, input_folder_path, argv[0], sizeof "input", "input");
-	DBJ_ASSERT(app_folder_rez == 0);
-*/
-	test_module_t* tm = 0;
-	test_t test = { .inputdir = "input" };
+  DBJ_PROMPT(int main(int argc, char* argv[]));
+  /*
+  Absolute path will require copying the input from a source tree
+  to the binary output tree, or wherever it has to be copied
 
-	// memset(&test, 0, sizeof(test_t));
+  static char input_folder_path[512] = { 0 };
+  unsigned app_folder_rez = dbj_app_folder_subfolder(512,
+  input_folder_path, argv[0], sizeof "input", "input");
+  DBJ_ASSERT(app_folder_rez == 0);
+  */
+  test_module_t* tm = 0;
+  test_t test = {.inputdir = "input"};
+
+  // memset(&test, 0, sizeof(test_t));
 #ifdef DBJ_CLI_HAS_OPTS
-	process_cli_opts(&test, argc, argv);
-#endif // DBJ_CLI_HAS_OPTS
+  process_cli_opts(&test, argc, argv);
+#endif  // DBJ_CLI_HAS_OPTS
 
-    system(" "); // win cmd.exe kick start ansi emulator
-	// Display test header
-	printf("\n" VT100_GREEN_BOLD
-		"------------------------------------------\n"
-		"       goToMain C Unit Test Framework     \n"
-		"------------------------------------------\n"
-		VT100_RESET );
+  // Display test header
+  DBJ_PROMPT(------------------------------------------);
+  DBJ_PROMPT(C Unit Test Framework);
+  DBJ_PROMPT(------------------------------------------);
 
-	// Run tests
-	test.start_time = time(NULL);
-	tm = &(c_utils_test_modules[0]);
-	while (tm->name != NULL) {
-		test_execute(&test, tm); 
-		tm++;
-	}
-	test.end_time = time(NULL);
+  // Run tests
+  test.start_time = time(NULL);
+  tm = &(c_utils_test_modules[0]);
+  while (tm->name != NULL) {
+    test_execute(&test, tm);
+    tm++;
+  }
+  test.end_time = time(NULL);
 
-	// Test summary
-	printf( VT100_GREEN_BOLD "------------------------------------------\n"
-		"                Test Summary              \n"
-		"------------------------------------------\n" VT100_RESET );
+  // Test summary
+  DBJ_PROMPT(------------------------------------------);
+  DBJ_PROMPT(Summary);
+  DBJ_PROMPT(------------------------------------------);
 
-	printf("Start Time: %s\n", time_string(&test.start_time));
-	printf("End Time:   %s\n", time_string(&test.end_time));
-	printf( VT100_WHITE_BRIGHT_BOLD "Executed: %d\n" VT100_RESET, test.total);
-	printf("Successful: %d\n", test.pass);
-	printf( VT100_WHITE_BRIGHT "Result: %s\n\n" VT100_RESET, (test.total == test.pass) ? "PASS" : "FAIL");
-	return 0;
+  printf("\nStart Time: %s\n", time_string(&test.start_time));
+  printf("End Time:   %s\n", time_string(&test.end_time));
+  printf(VT100_WHITE_BRIGHT_BOLD "Executed: %d tests\n" VT100_RESET,
+         test.total);
+  printf("Successful: %d\n tests", test.pass);
+  printf(VT100_WHITE_BRIGHT " overal result: %s\n\n" VT100_RESET,
+         (test.total == test.pass) ? VT100_GREEN_BOLD "PASS" VT100_RESET
+                                   : VT100_RED_BOLD "FAIL" VT100_RESET);
+  return 0;
 }
