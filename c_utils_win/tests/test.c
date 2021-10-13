@@ -4,22 +4,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#define DBJ_FILE_READ_ALL_IMPLEMENTATION
+#include "test.h"
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
-// #include "../dbj_common.h"
-
-#include "path-join.h"  // dbj
-#include "test.h"
-#define DBJ_FILE_READ_ALL_IMPLEMENTATION
-#include "dbj_file_read_all.h"  // dbj
-
-#define DATE_TIME_STR_LEN 64
-
-static char date_time[DATE_TIME_STR_LEN] = {0};
+static char* time_string(time_t* t) {
+  enum { DATE_TIME_STR_LEN = 64 };
+  static char date_time[DATE_TIME_STR_LEN] = {0};
+  // no need for memset on date_time
+  strftime(date_time, DATE_TIME_STR_LEN, "%d/%m/%y-%H:%M:%S %z", localtime(t));
+  return date_time;
+}
 
 TEST_DEF(circular_buffer);
 TEST_DEF(strlib);
@@ -47,20 +47,17 @@ static test_module_t c_utils_test_modules[] = {
 static void test_execute(test_t* t, test_module_t* tm) {
   test_result_t result;
 
-  printf(VT100_WHITE_BRIGHT_BOLD "\nTesting '%s'\n" VT100_RESET, tm->name);
-  clock_t start_time_ = clock() / (CLOCKS_PER_SEC / 1000);
+  printf("\n");
+  DBJ_PROMPT(DBJ_TXT_LINE);
+  printf("\nTesting '%s'", tm->name);
+  const clock_t start_time_ = clock() / (CLOCKS_PER_SEC / 1000);
   tm->runner(t, &result);
-  clock_t end_time_ = clock() / (CLOCKS_PER_SEC / 1000);
-  mod_printf("\nResult: name:'%s' total:%d pass:%d\n", tm->name, result.total,
-             result.pass);
-  mod_printf("\nElapsed: %ld milli seconds", end_time_ - start_time_);
+  const clock_t end_time_ = clock() / (CLOCKS_PER_SEC / 1000);
+  printf("\n\nResult: name:\"%s\", total:%3d, pass:%3d", tm->name, result.total,
+         result.pass);
+  printf("\telapsed: %ld milli seconds", end_time_ - start_time_);
   t->pass += result.pass;
   t->total += result.total;
-}
-
-static char* time_string(time_t* t) {
-  strftime(date_time, DATE_TIME_STR_LEN, "%d/%m/%y-%H:%M:%S %z", localtime(t));
-  return date_time;
 }
 
 #ifdef DBJ_CLI_HAS_OPTS
@@ -111,8 +108,9 @@ static void process_cli_opts(test_t* ctx, int argc, char* argv[]) {
 }
 #endif  // DBJ_CLI_HAS_OPTS
 
-void test_read_input_file(test_t ctx[static 1], const char filename[static 1],
-                          char** buf, size_t size[static 1]) {
+void read_file_with_test_data(test_t ctx[static 1],
+                              const char filename[static 1], char** buf,
+                              size_t size[static 1]) {
   char path[BUFSIZ] = {0};
   FILE* fd = 0;
 
@@ -134,11 +132,10 @@ void test_read_input_file(test_t ctx[static 1], const char filename[static 1],
 
   fclose(fd);
 }
-
+/* ---------------------------------------------------------------- */
 int main(int argc, char* argv[]) {
   system(" ");  // win cmd.exe kick start ansi emulator
 
-  DBJ_PROMPT(int main(int argc, char* argv[]));
   /*
   Absolute path will require copying the input from a source tree
   to the binary output tree, or wherever it has to be copied
@@ -157,9 +154,9 @@ int main(int argc, char* argv[]) {
 #endif  // DBJ_CLI_HAS_OPTS
 
   // Display test header
-  DBJ_PROMPT(------------------------------------------);
+  DBJ_PROMPT(DBJ_TXT_LINE);
   DBJ_PROMPT(C Unit Test Framework);
-  DBJ_PROMPT(------------------------------------------);
+  DBJ_PROMPT(DBJ_TXT_LINE);
 
   // Run tests
   test.start_time = time(NULL);
@@ -171,9 +168,9 @@ int main(int argc, char* argv[]) {
   test.end_time = time(NULL);
 
   // Test summary
-  DBJ_PROMPT(------------------------------------------);
+  DBJ_PROMPT(DBJ_TXT_LINE);
   DBJ_PROMPT(Summary);
-  DBJ_PROMPT(------------------------------------------);
+  DBJ_PROMPT(DBJ_TXT_LINE);
 
   printf("\nStart Time: %s\n", time_string(&test.start_time));
   printf("End Time:   %s\n", time_string(&test.end_time));

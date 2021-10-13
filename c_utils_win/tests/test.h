@@ -16,7 +16,10 @@
 
 #include "../dbj_common.h"
 
-#define mod_printf(fmt, ...) fprintf(stdout, "  - " fmt "\n", ##__VA_ARGS__)
+// to be used from DBJ_PROMPT
+#define DBJ_TXT_LINE ------------------------------------------
+
+// #define printf(fmt, ...) fprintf(stdout, fmt, ##__VA_ARGS__)
 
 #define TEST_DEF(m)     void do_test_##m(test_t* ctx, test_result_t* res)
 #define TEST_MOD_INIT() test_result_t _test = {0, 0}
@@ -37,7 +40,7 @@
 #define TEST_MOD_SENTINEL \
   { NULL, NULL }
 
-#define TEST_MOD_READ_FILE(f, b, s) test_read_input_file(ctx, f, b, s);
+#define TEST_MOD_READ_FILE(f, b, s) read_file_with_test_data(ctx, f, b, s);
 
 typedef struct {
   int total;
@@ -57,9 +60,10 @@ typedef struct {
   void (*runner)(test_t* ctx, test_result_t* result);
 } test_module_t;
 
-// void test_read_input_file(test_t *ctx, char *filename, char **buf, size_t
+// void read_file_with_test_data(test_t *ctx, char *filename, char **buf, size_t
 // *size);
-void test_read_input_file(test_t ctx[static 1], const char filename[static 1],
-                          char** buf, size_t size[static 1]);
+void read_file_with_test_data(test_t ctx[static 1],
+                              const char filename[static 1], char** buf,
+                              size_t size[static 1]);
 
 #endif

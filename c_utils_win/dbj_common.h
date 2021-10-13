@@ -1,12 +1,72 @@
 #pragma once
 /*
-(c) 2021 by dbj@dbj.org
+(c) 2021 by dbj@dbj.org, https://dbj.org/license_dbj
+
+this is standard C, aka C11
 */
+
+#define VT100_RESET             "\033[0m"
+#define VT100_RED_BOLD          "\033[91m"
+#define VT100_GREEN_BOLD        "\033[92m"
+#define VT100_YELLOW_BOLD       "\033[93m"
+#define VT100_BLUE_BOLD         "\033[94m"
+#define VT100_WHITE_BRIGHT      "\033[97m"
+#define VT100_WHITE_BRIGHT_BOLD "\033[97;1m"
+
+#define DBJ_STR_(X) #X
+#define DBJ_STR(X)  DBJ_STR_(X)
+
+#define DBJ_PROMPT_(S_) printf(VT100_WHITE_BRIGHT_BOLD "\n%s" VT100_RESET, S_)
+#define DBJ_PROMPT(...) DBJ_PROMPT_(DBJ_STR(__VA_ARGS__))
+
 // DBJ Show eXpression
 #define SX(F, X) printf("\n%s : " F, (#X), (X))
 #define DBJ_SHOW_ENTRY                                                       \
   printf("\n------------------------------------------------------\n%s()\n", \
          __FUNCTION__)
+
+#ifdef _MSC_VER
+#include <crtdbg.h>
+#define DBJ_ASSERT _ASSERTE
+#else
+#include <assert.h>
+#define DBJ_ASSERT assert
+#endif  //  ! _MSC_VER
+
+/*
+(c) 2021 by dbj@dbj.org
+
+do not have to put it on separate previous line from the offending call
+sometimes one must put it immediately before . Example
+
+
+if ( SUPR4996 sscanf(line, "%[^=] = \"%[^\"]\"", key, value) == 2
+        || SUPR4996 sscanf(line, "%[^=] = '%[^\']'", key, value) == 2)
+{
+}
+
+only that will silence the cl.exe compiler
+
+*/
+#ifdef _MSC_VER
+#define SUPR4996 __pragma(warning(suppress : 4996))
+#else
+#define SUPR4996
+#endif
+
+#include "external/path-join.h"
+
+/*
+put this in one place inside a C file
+#define DBJ_FILE_READ_ALL_IMPLEMENTATION
+*/
+#include "external/dbj_file_read_all.h"  // dbj
+
+#ifdef DBJ_CLI_HAS_OPTS
+#include "external/getopt.h"
+#endif  // DBJ_CLI_HAS_OPTS
+
+/* --------------- other stuff ---------------- */
 
 #define __STDC_WANT_LIB_EXT1__ 1
 
@@ -37,20 +97,10 @@
 // #include <utils/sockutils.h>
 // #include <utils/fdutils.h>
 
-#ifdef DBJ_CLI_HAS_OPTS
-#include "external/getopt.h"
-#endif  // DBJ_CLI_HAS_OPTS
+/* ----------------- dbj functions -------------------------- */
 
 #include <errno.h>
 #include <io.h>
-
-#ifdef _MSC_VER
-#include <crtdbg.h>
-#define DBJ_ASSERT _ASSERTE
-#else
-#include <assert.h>
-#define DBJ_ASSERT assert
-#endif  //  ! _MSC_VER
 
 static inline bool str_begins_with(const char str[static 1],
                                    const char substr[static 1]) {
@@ -112,6 +162,9 @@ static inline char* dbj_strtok_r(char* s, const char* delim, char** save_ptr) {
 
 #endif  // dbj_strtok_r_implementation
 
+/*
+ append the sub folder to the app folder, returns 0 or EINVAL
+*/
 static inline unsigned dbj_app_folder_subfolder(
     const unsigned out_size, char out[static out_size],
     char app_full_path[static 1], const unsigned subfolder_size,
@@ -139,17 +192,3 @@ static inline unsigned dbj_app_folder_subfolder(
 #endif
   return memcpy_s(&out[dist_], out_size - dist_, subfolder, subfolder_size);
 }
-
-#define VT100_RESET             "\033[0m"
-#define VT100_RED_BOLD          "\033[91m"
-#define VT100_GREEN_BOLD        "\033[92m"
-#define VT100_YELLOW_BOLD       "\033[93m"
-#define VT100_BLUE_BOLD         "\033[94m"
-#define VT100_WHITE_BRIGHT      "\033[97m"
-#define VT100_WHITE_BRIGHT_BOLD "\033[97;1m"
-
-#define DBJ_STR_(X) #X
-#define DBJ_STR(X)  DBJ_STR_(X)
-
-#define DBJ_PROMPT_(S_) printf(VT100_WHITE_BRIGHT_BOLD "\n%s" VT100_RESET, S_)
-#define DBJ_PROMPT(...) DBJ_PROMPT_(DBJ_STR(__VA_ARGS__))
