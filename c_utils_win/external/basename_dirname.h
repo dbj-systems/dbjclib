@@ -19,8 +19,8 @@
 │ PERFORMANCE OF THIS SOFTWARE.                                                │
 ╚─────────────────────────────────────────────────────────────────────────────*/
 
-#include <string.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define ISSLASH(c) (c == '/' || c == '\\')
 #define ISDELIM(c) (ISSLASH(c) || c == '.')
@@ -32,31 +32,22 @@
  * dbj added prefix dbj_ to avoid possible complaints by various compilers
  */
 static inline char* dbj_dirname(char* s) {
-	size_t i = 0, n = 0;
-	if (!(n = strlen(s))) return s;
-	while (n && ISDELIM(s[n - 1])) --n;
-	if (n) {
-		while (n && !ISSLASH(s[n - 1])) --n;
-		if (n) {
-			while (n && ISDELIM(s[n - 1])) --n;
-			if (!n) ++n;
-		}
-		else {
-			s[n++] = '.';
-		}
-	}
-	else {
-		++n;
-	}
-	s[n] = '\0';
-	return s;
-}
-
-#undef ISSLASH
-#undef ISDELIM
-
-__forceinline  bool isslash(int c) {
-	return c == '/' || c == '\\';
+  size_t i = 0, n = 0;
+  if (!(n = strlen(s))) return s;
+  while (n && ISDELIM(s[n - 1])) --n;
+  if (n) {
+    while (n && !ISSLASH(s[n - 1])) --n;
+    if (n) {
+      while (n && ISDELIM(s[n - 1])) --n;
+      if (!n) ++n;
+    } else {
+      s[n++] = '.';
+    }
+  } else {
+    ++n;
+  }
+  s[n] = '\0';
+  return s;
 }
 
 /**
@@ -71,23 +62,26 @@ __forceinline  bool isslash(int c) {
  * @return pointer inside path or path itself
  */
 static inline char* dbj_basename_n(const char* path, size_t size) {
-	size_t i, l;
-	if (size) {
-		if (isslash(path[size - 1])) {
-			l = size - 1;
-			while (l && isslash(path[l - 1])) --l;
-			if (!l) return (/*unconst*/ char*)&path[size - 1];
-			size = l;
-		}
-		for (i = size; i > 0; --i) {
-			if (isslash(path[i - 1])) {
-				return (/*unconst*/ char*)&path[i];
-			}
-		}
-	}
-	return (/*unconst*/ char*)path;
+  size_t i, l;
+  if (size) {
+    if (ISSLASH(path[size - 1])) {
+      l = size - 1;
+      while (l && ISSLASH(path[l - 1])) --l;
+      if (!l) return (/*unconst*/ char*)&path[size - 1];
+      size = l;
+    }
+    for (i = size; i > 0; --i) {
+      if (ISSLASH(path[i - 1])) {
+        return (/*unconst*/ char*)&path[i];
+      }
+    }
+  }
+  return (/*unconst*/ char*)path;
 }
 
-static inline  char* dbj_basename(const char* path) {
-	return dbj_basename_n(path, strlen(path));
+static inline char* dbj_basename(const char* path) {
+  return dbj_basename_n(path, strlen(path));
 }
+
+#undef ISSLASH
+#undef ISDELIM

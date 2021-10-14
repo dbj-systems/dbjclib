@@ -1,6 +1,13 @@
 
 # c-utils
 
+- This is a VS Code playground. 
+- Also using **TDM-GCC-64**.
+- Testing app starts from `c_utils_win\tests\tes.c`
+- be there and do CTRL+SHIFT+B
+  - of course you would know hot to adjust `.vscode` stuff for your machine situation
+- `~\dbjclib\c_utils_win\external` is all the stuff I had to collect from elsewhere or develop myself, to make this work
+
 # DBJ refactoring for Windows build
 
 This repository hosts some modular, drop-in, C utilities that you can copy into
