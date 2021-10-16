@@ -51,6 +51,7 @@ only that will silence the cl.exe compiler
 #ifdef _MSC_VER
 #define SUPR4996 __pragma(warning(suppress : 4996))
 #else
+// suppress is a cl extension only
 #define SUPR4996
 #endif
 

@@ -12,8 +12,9 @@
         "utils.h": "c",
         "serial.h": "c",
         "test.h": "c",
-        "unistd.h": "c"
-    }
-,
-        "editor.formatOnSave": true
+        "unistd.h": "c",
+        "xstring": "c",
+        "xutility": "c"
+    },
+    "editor.formatOnSave": true
 }
