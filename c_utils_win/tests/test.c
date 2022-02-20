@@ -21,10 +21,10 @@ static char* time_string(time_t* t) {
   return date_time;
 }
 
-TEST_DEF(circular_buffer);
-TEST_DEF(strlib);
-TEST_DEF(hashmap);
-TEST_DEF(strutils);
+// TEST_DEF(circular_buffer);
+// TEST_DEF(strlib);
+// TEST_DEF(hashmap);
+// TEST_DEF(strutils);
 // TEST_DEF(filo);
 TEST_DEF(slab);
 // TEST_DEF(procutils);
@@ -32,10 +32,10 @@ TEST_DEF(slab);
 // TEST_DEF(bus_server);
 
 static test_module_t c_utils_test_modules[] = {
-    TEST_MOD(circular_buffer),
-    TEST_MOD(strlib),
-    TEST_MOD(hashmap),
-    TEST_MOD(strutils),
+    // TEST_MOD(circular_buffer),
+    // TEST_MOD(strlib),
+    // TEST_MOD(hashmap),
+    // TEST_MOD(strutils),
     // TEST_MOD(filo),
     TEST_MOD(slab),
     // TEST_MOD(procutils),
